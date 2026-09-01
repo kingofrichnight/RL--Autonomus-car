@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safeintent-rl"
+version = "0.1.0"
+description = "Intent-aware and safety-constrained reinforcement learning for interactive autonomous driving"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "gymnasium>=1.0,<2",
+  "highway-env>=1.10,<2",
+  "stable-baselines3>=2.4,<3",
+  "torch>=2.3,<3",
+  "numpy>=1.26,<3",
+  "pandas>=2.2,<3",
+  "matplotlib>=3.8,<4",
+  "pyyaml>=6,<7",
+  "tensorboard>=2.16,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+  "ruff>=0.6",
+]
+
+[tool.setuptools.packages.find]
+include = ["safeintent_rl*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]

@@ -1,1 +1,163 @@
-# RL--Autonomus-car
+# SafeIntent-RL
+
+**Intent-Aware and Safety-Constrained Reinforcement Learning for Interactive Autonomous Driving**
+
+SafeIntent-RL is a master's-level research project for studying whether inferred driver behavior and a time-to-collision (TTC) safety shield improve PPO decision-making at unsignalized intersections.
+
+The repository currently provides a complete, runnable research foundation:
+
+- Gymnasium + HighwayEnv intersection setup
+- PPO training and evaluation
+- cautious, normal, and aggressive NPC behavior profiles
+- trajectory collection for intent learning
+- a PyTorch GRU intent classifier
+- TTC and closing-speed safety metrics
+- a safety wrapper that can override unsafe high-level actions
+- rule-based and PPO baselines
+- video recording, CSV results, tests, and reproducible seeds
+
+## Research comparison
+
+| Method | Purpose |
+|---|---|
+| Rule-based | Non-learning reference baseline |
+| PPO | Standard reinforcement-learning baseline |
+| PPO + intent | PPO using learned behavior probabilities |
+| PPO + safety | PPO protected by a TTC shield |
+| SafeIntent-PPO | Intent-aware PPO with the TTC shield |
+
+## Installation
+
+Python 3.11 or 3.12 is recommended.
+
+```bash
+git clone https://github.com/kingofrichnight/SafeIntent-RL.git
+cd SafeIntent-RL
+python -m venv .venv
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
+```
+
+Linux/macOS:
+
+```bash
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
+```
+
+## Quick start
+
+Watch an untrained/random agent:
+
+```bash
+python scripts/random_agent.py --episodes 3 --render
+```
+
+Train a PPO baseline:
+
+```bash
+python scripts/train_ppo.py --timesteps 200000 --seed 42
+```
+
+Evaluate it:
+
+```bash
+python scripts/evaluate_policy.py --model models/ppo_intersection.zip --episodes 100
+```
+
+Train with the TTC safety shield:
+
+```bash
+python scripts/train_ppo.py --timesteps 200000 --safety-shield --seed 42
+```
+
+Train the intent-aware PPO variant after training the GRU:
+
+```bash
+python scripts/train_ppo.py --timesteps 200000 \
+  --intent-model models/intent_gru.pt --output models/ppo_intent
+```
+
+Train the complete SafeIntent-PPO variant:
+
+```bash
+python scripts/train_ppo.py --timesteps 200000 --intent-model models/intent_gru.pt \
+  --safety-shield --output models/safeintent_ppo
+```
+
+Record a trained episode:
+
+```bash
+python scripts/record_episode.py --model models/ppo_intersection.zip
+```
+
+Plot one or more evaluation CSV files:
+
+```bash
+python scripts/plot_results.py results/ppo.csv results/safeintent.csv \
+  --labels PPO SafeIntent-PPO
+```
+
+## Intent prediction pipeline
+
+1. Collect labeled NPC trajectory histories:
+
+```bash
+python scripts/collect_intent_data.py --episodes 300 --output data/intent_trajectories.npz
+```
+
+2. Train the GRU:
+
+```bash
+python scripts/train_intent.py --data data/intent_trajectories.npz --output models/intent_gru.pt
+```
+
+3. Inspect test-set performance:
+
+```bash
+python scripts/evaluate_intent.py --data data/intent_trajectories.npz --model models/intent_gru.pt
+```
+
+The dataset stores a short history of `[relative_x, relative_y, relative_vx, relative_vy, acceleration, distance]`, the hidden behavior label used by the simulator, and the source episode. Train/validation/test splitting is episode-based to prevent overlapping trajectory windows from leaking between splits.
+
+## Repository layout
+
+```text
+SafeIntent-RL/
+├── configs/                 Experiment configuration
+├── safeintent_rl/
+│   ├── agents/              Rule-based baseline
+│   ├── envs/                Environment and behavior wrappers
+│   ├── evaluation/          Episode metrics and summaries
+│   ├── intent/              Dataset, GRU model, inference
+│   └── safety/              TTC and safety shield
+├── scripts/                 Runnable entry points
+├── tests/                   Unit tests
+├── data/                    Generated datasets (ignored)
+├── models/                  Trained checkpoints (ignored)
+└── results/                 Evaluation outputs (ignored)
+```
+
+## Reproducible experiments
+
+Use at least five seeds for final comparisons:
+
+```bash
+for seed in 11 22 33 44 55; do
+  python scripts/train_ppo.py --seed $seed --timesteps 500000 \
+    --output "models/ppo_seed_${seed}"
+done
+```
+
+Report mean and standard deviation for success rate, collision rate, travel time, minimum TTC, unsafe-TTC events, and safety intervention rate.
+
+## Current scope
+
+This repository intentionally focuses on PPO + intent prediction + safety in HighwayEnv. CARLA, camera/LiDAR perception, world models, GNNs, multi-agent PPO, V2X, and adversarial RL are later extensions rather than part of the initial master's milestone.
