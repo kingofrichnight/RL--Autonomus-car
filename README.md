@@ -72,6 +72,12 @@ Evaluate it:
 python scripts/evaluate_policy.py --model models/ppo_intersection.zip --episodes 100
 ```
 
+Watch a trained policy drive live:
+
+```bash
+python scripts/watch_policy.py --model models/ppo_intersection.zip --episodes 3
+```
+
 Train with the TTC safety shield:
 
 ```bash

@@ -21,6 +21,20 @@ class EpisodeMetrics:
         return asdict(self)
 
 
+def detect_success(env: Any, final_info: dict[str, Any]) -> bool:
+    """Detect arrival across HighwayEnv versions and other Gymnasium environments."""
+    for key in ("is_success", "arrived"):
+        if key in final_info:
+            return bool(final_info[key])
+
+    base = getattr(env, "unwrapped", env)
+    has_arrived = getattr(base, "has_arrived", None)
+    vehicle = getattr(base, "vehicle", None)
+    if callable(has_arrived) and vehicle is not None:
+        return bool(has_arrived(vehicle))
+    return False
+
+
 def summarize_episodes(episodes: list[EpisodeMetrics]) -> dict[str, float]:
     if not episodes:
         raise ValueError("At least one episode is required")
@@ -40,4 +54,3 @@ def summarize_episodes(episodes: list[EpisodeMetrics]) -> dict[str, float]:
         "mean_unsafe_ttc_events": mean("unsafe_ttc_events"),
         "mean_safety_interventions": mean("safety_interventions"),
     }
-
