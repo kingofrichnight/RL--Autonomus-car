@@ -140,7 +140,7 @@ The driver profile is available internally only as a supervised-learning label. 
 | M5 | Correct evaluation and create live PPO viewer | Completed | 9 tests; 20-episode corrected evaluation |
 | M6 | Train publication-quality PPO baseline | Seed 42 evaluated; multi-seed study pending | 200,704-step checkpoint; 500 evaluation episodes |
 | M6A | Evaluate rule-based reference and diagnose PPO V1 | Evaluated | 500 episodes over seeds 42–541 |
-| M6B | Design and test PPO Baseline V2 reward | Planned next | Preserve V1; change reward under a controlled experiment |
+| M6B | Design and test PPO Baseline V2 reward | Implemented; training pending | Preserve V1; only three reward coefficients changed |
 | M7 | Collect intent dataset and train GRU | Planned after M6B reward experiment | Data and training scripts available |
 | M8 | Train PPO + intent | Planned | Requires final GRU checkpoint |
 | M9 | Evaluate TTC shield and PPO + safety | Planned | Safety code implemented |
@@ -841,7 +841,7 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | D-013 | Use environment arrival method | Depend only on `info` keys | Correct success measurement across versions | Retained |
 | D-014 | Preserve an append-only research history | Replace old values with only the latest result | Maintain an auditable record for supervision and thesis writing | Retained |
 | D-015 | Evaluate the rule-based controller before GRU work | Proceed directly to intent learning | PPO V1 success and collision rates require a fair non-learning reference and reward diagnosis | Completed and retained |
-| D-016 | Develop PPO Reward V2 before GRU work | Add more PPO timesteps with the original reward | Both evaluated baselines expose a safety-efficiency tradeoff caused partly by reward alignment | Active |
+| D-016 | Develop PPO Reward V2 before GRU work | Add more PPO timesteps with the original reward | Both evaluated baselines expose a safety-efficiency tradeoff caused partly by reward alignment | Implemented; evaluation pending |
 
 ---
 
@@ -864,6 +864,9 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | 2026-09-03 | Revised the immediate research sequence | PPO V1 achieved only 55.8% success and 43.6% collision | Baseline evidence review documented in Section 25 | `bde2b69` plus this update |
 | 2026-09-03 | Evaluated TTC rule-based reference over 500 episodes | Establish a non-learning comparison using identical seeds | Raw CSV and summary verified | Results: `97b6867`; documentation: this update |
 | 2026-09-03 | Selected PPO Reward V2 as the next experiment | Neither PPO V1 nor the conservative TTC rule was satisfactory | Quantitative comparison documented in Section 26 | This documentation update |
+| 2026-09-03 | Added isolated PPO Reward V2 configuration | Increase successful arrival while making collision-return negative | Coefficient-difference and reward-bound checks passed | `5f099ad`, `3395a81` |
+| 2026-09-03 | Added `--config` to PPO training and evaluation | Ensure V2 uses the same reward during both phases | GitHub source verification | `74b9833`, `d7c6324` |
+| 2026-09-03 | Documented V2 run commands | Make the controlled experiment reproducible | README reviewed | `cddfa85` |
 
 ---
 
@@ -1402,3 +1405,123 @@ w_a I_{arrival}
 $$
 
 The exact coefficients will be documented before training. The collision cost must dominate the maximum plausible accumulated speed reward. PPO V1 remains unchanged so V2 can be compared against it over the same seeds and 500-episode protocol.
+
+
+---
+
+## 27. Milestone M6B — PPO Reward V2 design
+
+**Experiment ID:** E-B1-V2-S42-200K  
+**Status:** Configuration implemented and verified; training pending  
+**Date:** 2026-09-03  
+**Primary objective:** increase successful arrivals while reducing collisions relative to PPO V1
+
+### 27.1 Controlled-variable design
+
+Only three environment reward coefficients change. PPO architecture, hyperparameters, observation space, action space, traffic configuration, seed, and training budget remain fixed.
+
+| Reward coefficient | PPO V1 | PPO V2 | Reason |
+|---|---:|---:|---|
+| Collision | -1.0 | -10.0 | Make collision return strongly negative |
+| Arrival | +1.0 | +5.0 | Directly strengthen the incentive to complete the route |
+| High speed | +0.2/decision | +0.05/decision | Prevent repeated speed reward from dominating safety and arrival |
+
+The implementation is stored in `configs/intersection_reward_v2.yaml`.
+
+### 27.2 Implemented reward
+
+Let:
+
+$$
+r_{speed}=\operatorname{clip}\left(\frac{v-7}{9-7},0,1\right)
+$$
+
+Before arrival:
+
+$$
+R_t^{V2}=I_{road}\left[-10I_{collision}+0.05r_{speed}\right]
+$$
+
+When HighwayEnv reports arrival, the terminal reward is replaced by:
+
+$$
+R_t^{V2}=+5
+$$
+
+At the nominal maximum of 150 policy decisions in 30 seconds, the largest possible accumulated speed component is:
+
+$$
+30\times5\times0.05=7.5
+$$
+
+Because:
+
+$$
+|R_{collision}|=10>7.5
+$$
+
+a collision cannot be made attractive solely by accumulating the maximum nominal speed reward.
+
+### 27.3 Why this may increase success
+
+The original reward paid repeated speed bonuses but only a small arrival bonus. V2 raises the explicit arrival outcome by five times while reducing the incentive for fast, risky motion. This gives PPO a clearer distinction among:
+
+- arrive safely: strongly positive;
+- wait for the whole episode: approximately zero;
+- collide: negative.
+
+A possible failure mode is excessive waiting because a zero-reward timeout may appear safer than exploration. That outcome will be measured rather than hidden.
+
+### 27.4 Predefined decision rule
+
+V2 is retained as an improvement only if the 500-episode seed-42 screening run satisfies both:
+
+$$
+Success_{V2}>55.8\%
+$$
+
+and:
+
+$$
+Collision_{V2}<43.6\%
+$$
+
+Reward magnitude alone is not an acceptance metric because V1 and V2 use different reward scales. Incomplete/time-out rate and travel time will also be reported. If collision falls but success does not rise, V2 is classified as overly conservative and the next controlled version will add progress or stall/time shaping.
+
+### 27.5 Verification
+
+- The V2 YAML differs from V1 only in the three documented coefficients.
+- The nominal maximum accumulated speed reward is 7.5.
+- The collision magnitude is 10.0 and therefore exceeds that bound.
+- Python syntax checks passed in the maintenance workspace.
+- Dedicated configuration tests were added.
+- Training and evaluation both accept the same explicit `--config` path.
+- The full test suite must be run in the configured project environment before training.
+
+### 27.6 Reproducible commands
+
+Pull and test:
+
+```powershell
+git pull origin main
+python -m pytest
+```
+
+Train:
+
+```powershell
+python scripts/train_ppo.py --config configs/intersection_reward_v2.yaml --timesteps 200000 --seed 42 --output models/ppo_reward_v2_seed42
+```
+
+Evaluate after training:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_reward_v2_seed42.zip --config configs/intersection_reward_v2.yaml --episodes 500 --seed 42 --output results/ppo_reward_v2_seed42.csv
+```
+
+Expected evaluation outputs:
+
+```text
+results/ppo_reward_v2_seed42.csv
+results/ppo_reward_v2_seed42.summary.json
+```
