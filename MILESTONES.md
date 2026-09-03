@@ -855,6 +855,7 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | 2026-09-03 | Added this living milestone record | Supervisor requested complete method/change record | Markdown review and repository link | `f1a396a` |
 | 2026-09-03 | Adopted an append-only record policy | Preserve old and new evidence throughout the project | Policy added to the update procedure | This documentation update |
 | 2026-09-03 | Completed and evaluated PPO baseline seed 42 | Establish the long-training B1 baseline | 200,704 training steps and 500 deterministic evaluation episodes | Training/results: `764a971`; documentation: this update |
+| 2026-09-03 | Corrected the M6 summary filename | Initial record omitted the `.summary` portion | Verified exact file list in commit `764a971` | This documentation update |
 
 ---
 
@@ -1171,7 +1172,9 @@ These are on-policy training-buffer statistics, not deterministic test results.
 | Intent model | Disabled |
 | Safety shield | Disabled |
 | Raw episode file | `results/ppo_baseline_seed42.csv` |
-| Summary file | `results/ppo_baseline_seed42.json` |
+| Summary file | `results/ppo_baseline_seed42.summary.json` |
+
+**Filename correction (2026-09-03):** the first documentation pass referred to `ppo_baseline_seed42.json`. The committed evaluator output is actually `ppo_baseline_seed42.summary.json`, as verified from commit `764a971`. The original naming error is recorded here for traceability.
 
 ### 24.3 Evaluation result
 
