@@ -4,6 +4,8 @@
 
 SafeIntent-RL is a master's-level research project for studying whether inferred driver behavior and a time-to-collision (TTC) safety shield improve PPO decision-making at unsignalized intersections.
 
+> **Research record:** See [MILESTONES.md](MILESTONES.md) for the complete chronological engineering log, mathematical formulation, experiment results, design decisions, failures, corrections, and planned milestones.
+
 The repository currently provides a complete, runnable research foundation:
 
 - Gymnasium + HighwayEnv intersection setup
@@ -31,8 +33,8 @@ The repository currently provides a complete, runnable research foundation:
 Python 3.11 or 3.12 is recommended.
 
 ```bash
-git clone https://github.com/kingofrichnight/SafeIntent-RL.git
-cd SafeIntent-RL
+git clone https://github.com/kingofrichnight/RL--Autonomus-car.git
+cd RL--Autonomus-car
 python -m venv .venv
 ```
 
