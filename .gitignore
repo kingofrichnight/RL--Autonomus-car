@@ -14,8 +14,6 @@ venv/
 logs/
 models/*.zip
 models/*.pt
-results/*.csv
-results/*.json
 results/*.png
 data/*.npz
 data/*.csv
