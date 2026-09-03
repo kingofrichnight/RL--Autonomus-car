@@ -138,7 +138,7 @@ The driver profile is available internally only as a supervised-learning label. 
 | M3 | Implement configurable environment and driver profiles | Implemented and smoke-tested | Environment completed episodes successfully |
 | M4 | Train first standard PPO smoke model | Completed | `ppo_smoke.zip`, 10,240 collected timesteps |
 | M5 | Correct evaluation and create live PPO viewer | Completed | 9 tests; 20-episode corrected evaluation |
-| M6 | Train publication-quality PPO baseline | Planned | Multiple seeds and longer training required |
+| M6 | Train publication-quality PPO baseline | Seed 42 evaluated; multi-seed study pending | 200,704-step checkpoint; 500 evaluation episodes |
 | M7 | Collect intent dataset and train GRU | Framework smoke-tested; full run pending | Data and training scripts available |
 | M8 | Train PPO + intent | Planned | Requires final GRU checkpoint |
 | M9 | Evaluate TTC shield and PPO + safety | Planned | Safety code implemented |
@@ -837,6 +837,7 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | D-011 | Use Python 3.12 | Python 3.14.6 | Dependency compatibility | Retained |
 | D-012 | Disable keyboard in PPO viewer | Allow simultaneous manual input | Prevent control conflict and invalid evaluation | Retained |
 | D-013 | Use environment arrival method | Depend only on `info` keys | Correct success measurement across versions | Retained |
+| D-014 | Preserve an append-only research history | Replace old values with only the latest result | Maintain an auditable record for supervision and thesis writing | Retained |
 
 ---
 
@@ -851,7 +852,9 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | 2026-09-01 | Fixed success-rate detection | `info` omitted arrival field | Corrected 20-episode evaluation; 9 tests | `5e14d3f` |
 | 2026-09-01 | Added trained-policy live viewer | Visually inspect PPO decisions | Viewer completed an arrival episode | `5e14d3f` |
 | 2026-09-03 | Disabled keyboard input in autonomous viewer | Arrow keys conflicted with PPO | Syntax check and source-level diagnosis | `d988e7e` |
-| 2026-09-03 | Added this living milestone record | Supervisor requested complete method/change record | Markdown review and repository link | Pending this update |
+| 2026-09-03 | Added this living milestone record | Supervisor requested complete method/change record | Markdown review and repository link | `f1a396a` |
+| 2026-09-03 | Adopted an append-only record policy | Preserve old and new evidence throughout the project | Policy added to the update procedure | This documentation update |
+| 2026-09-03 | Completed and evaluated PPO baseline seed 42 | Establish the long-training B1 baseline | 200,704 training steps and 500 deterministic evaluation episodes | Training/results: `764a971`; documentation: this update |
 
 ---
 
@@ -998,7 +1001,9 @@ $$
 
 ---
 
-## 20. Next approved milestone
+## 20. Recorded M6 plan before execution
+
+**Status:** Executed for seed 42 and documented in Section 24. The original plan is retained below as the pre-experiment record.
 
 ### M6 — Publication-quality PPO baseline
 
@@ -1074,6 +1079,17 @@ State whether the change is retained, rejected, or requires another experiment.
 
 ## 22. Update procedure for this record
 
+### Record-preservation policy
+
+This document is an append-only research history. Previous experiments, results, decisions, failures, and observations must not be deleted merely because a newer method performs better or a correction is made.
+
+- Every experiment receives a unique ID and date.
+- New results are added alongside earlier results, not substituted without explanation.
+- An outdated result is marked **Superseded**, **Rejected**, or **Corrected** and linked to its replacement.
+- A correction records the original value, corrected value, cause, verification method, and relevant Git commit.
+- Current technical sections may describe the latest implementation, but their earlier state remains recoverable through the dated change log and Git history.
+- Failed and inconclusive experiments remain because they are part of the research evidence.
+
 Whenever project code, equations, configurations, datasets, training procedures, or evaluation logic change:
 
 1. update the relevant technical section;
@@ -1096,3 +1112,100 @@ This procedure will be followed for all future SafeIntent-RL work.
 4. [Gymnasium custom environment documentation](https://gymnasium.farama.org/tutorials/gymnasium_basics/environment_creation/)
 5. K. Cho et al., “Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation,” 2014. [arXiv:1406.1078](https://arxiv.org/abs/1406.1078)
 
+
+
+---
+
+## 24. Milestone M6 — Long PPO baseline training and evaluation
+
+**Experiment ID:** E-B1-S42-200K  
+**Status:** Evaluated for one training seed; final multi-seed evaluation pending  
+**Date:** 2026-09-03  
+**Method:** Standard PPO without intent input or safety shield  
+**Training seed:** 42  
+**Raw-result commit:** [`764a971`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/764a97130806f990810b3005caa5192064c7d5dc)
+
+### 24.1 Training artifact verification
+
+The supplied checkpoint `ppo_baseline_seed42.zip` passed ZIP integrity checks and contained the expected Stable-Baselines3 policy, optimizer, variables, metadata, and system-information files.
+
+| Item | Verified value |
+|---|---:|
+| Requested training timesteps | 200,000 |
+| Actual collected timesteps | 200,704 |
+| PPO updates | 1,960 |
+| Seed | 42 |
+| Rollout steps | 1,024 |
+| Batch size | 64 |
+| Epochs per rollout | 10 |
+| Learning rate | 0.0003 |
+| Discount factor | 0.99 |
+| GAE lambda | 0.95 |
+| Clip range | 0.2 |
+| Entropy coefficient | 0.01 |
+| Value coefficient | 0.5 |
+| Network | [256, 256] |
+| Checkpoint SHA-256 | `bf6cdb5d258c795aba37e3ab8a1b93fb1bfc6f88b5fca2b77b7808e6f3b34901` |
+
+The checkpoint was produced using Python 3.12.9, Stable-Baselines3 2.9.0, PyTorch 2.13.0 CPU, Gymnasium 1.3.0, and NumPy 2.5.2.
+
+The final checkpoint's rolling 100-episode training buffer reported:
+
+| Training statistic | Value |
+|---|---:|
+| Mean reward | 6.7702 |
+| Reward standard deviation | 3.0222 |
+| Reward range | 1.1245–10.8000 |
+| Mean episode length | 36.77 decisions |
+| Episode-length range | 18–81 decisions |
+
+These are on-policy training-buffer statistics, not deterministic test results.
+
+### 24.2 Deterministic evaluation protocol
+
+| Setting | Value |
+|---|---:|
+| Evaluation episodes | 500 |
+| Environment seeds | 42–541 |
+| Action selection | Deterministic |
+| Intent model | Disabled |
+| Safety shield | Disabled |
+| Raw episode file | `results/ppo_baseline_seed42.csv` |
+| Summary file | `results/ppo_baseline_seed42.json` |
+
+### 24.3 Evaluation result
+
+| Metric | Result |
+|---|---:|
+| Successful episodes | 279/500 |
+| Collision episodes | 218/500 |
+| Incomplete non-collision episodes | 3/500 |
+| Mean reward | 6.9434 |
+| Mean episode length | 37.35 decisions |
+| Success rate | 55.8% |
+| Collision rate | 43.6% |
+| Mean travel time | 7.47 s |
+| Mean minimum finite TTC | 0.6332 s |
+| Mean unsafe-TTC events/episode | 15.142 |
+| Mean safety interventions | 0 |
+
+### 24.4 Comparison with the earlier smoke model
+
+The earlier smoke evaluation is retained in Section 10. It used only 20 episodes, so its changes are descriptive rather than a statistically controlled conclusion.
+
+| Metric | Smoke: 10,240 steps, 20 episodes | M6: 200,704 steps, 500 episodes | Observed change |
+|---|---:|---:|---:|
+| Mean reward | 6.6722 | 6.9434 | +0.2712 |
+| Mean episode length | 33.95 | 37.35 | +3.40 |
+| Success rate | 50.0% | 55.8% | +5.8 percentage points |
+| Collision rate | 50.0% | 43.6% | -6.4 percentage points |
+| Mean travel time | 6.79 s | 7.47 s | +0.68 s |
+| Mean minimum TTC | 0.5717 s | 0.6332 s | +0.0615 s |
+| Unsafe-TTC events/episode | 16.2 | 15.142 | -1.058 |
+| Safety interventions | 0 | 0 | No change; shield disabled |
+
+### 24.5 Interpretation and decision
+
+Longer training produced a modest descriptive improvement in success rate, collision rate, mean reward, and TTC relative to the smoke run. However, a 43.6% collision rate remains unacceptable for a safety-oriented controller, and the mean minimum TTC remains well below the initial 2.0-second risk threshold.
+
+**Decision:** retain this checkpoint as the standard-PPO seed-42 baseline. Do not describe it as safe. Proceed to the intent-data milestone while keeping multi-seed PPO training as a requirement for final statistical conclusions. Later experiments must compare intent and safety variants against this same evaluation protocol.
