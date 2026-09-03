@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 
+import pygame
 from stable_baselines3 import PPO
 
 from safeintent_rl.envs import make_intersection_env
@@ -24,9 +25,17 @@ def main() -> None:
         safety_shield=args.safety_shield,
         intent_model=args.intent_model,
     )
+    keyboard_blocked = False
     try:
         for episode in range(args.episodes):
             observation, _ = env.reset(seed=args.seed + episode)
+            if not keyboard_blocked:
+                # HighwayEnv otherwise forwards arrow-key events to the vehicle,
+                # which conflicts with the action selected by the PPO policy.
+                env.render()
+                pygame.event.set_blocked([pygame.KEYDOWN, pygame.KEYUP])
+                keyboard_blocked = True
+                print("Autonomous mode: PPO controls the vehicle; arrow keys are disabled.")
             terminated = truncated = False
             total_reward = 0.0
             final_info: dict = {}

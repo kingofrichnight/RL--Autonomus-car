@@ -78,6 +78,8 @@ Watch a trained policy drive live:
 python scripts/watch_policy.py --model models/ppo_intersection.zip --episodes 3
 ```
 
+`watch_policy.py` is autonomous mode: PPO controls the ego vehicle and arrow-key driving is disabled to prevent keyboard actions from conflicting with the learned policy. Close the animation window or press `Ctrl+C` in the terminal to stop it.
+
 Train with the TTC safety shield:
 
 ```bash
