@@ -16,6 +16,7 @@ from safeintent_rl.safety.ttc import minimum_ttc
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate a trained PPO policy")
     parser.add_argument("--model", required=True)
+    parser.add_argument("--config", default=None, help="Environment YAML configuration")
     parser.add_argument("--episodes", type=int, default=100)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--safety-shield", action="store_true")
@@ -26,6 +27,7 @@ def main() -> None:
 
     model = PPO.load(args.model)
     env = make_intersection_env(
+        config_path=args.config,
         seed=args.seed,
         safety_shield=args.safety_shield,
         intent_model=args.intent_model,
