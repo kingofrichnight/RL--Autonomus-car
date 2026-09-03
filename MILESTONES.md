@@ -139,8 +139,9 @@ The driver profile is available internally only as a supervised-learning label. 
 | M4 | Train first standard PPO smoke model | Completed | `ppo_smoke.zip`, 10,240 collected timesteps |
 | M5 | Correct evaluation and create live PPO viewer | Completed | 9 tests; 20-episode corrected evaluation |
 | M6 | Train publication-quality PPO baseline | Seed 42 evaluated; multi-seed study pending | 200,704-step checkpoint; 500 evaluation episodes |
-| M6A | Evaluate rule-based reference and diagnose PPO V1 | In progress | Evaluator added; 500-episode run pending |
-| M7 | Collect intent dataset and train GRU | Planned after M6A baseline diagnosis | Data and training scripts available |
+| M6A | Evaluate rule-based reference and diagnose PPO V1 | Evaluated | 500 episodes over seeds 42–541 |
+| M6B | Design and test PPO Baseline V2 reward | Planned next | Preserve V1; change reward under a controlled experiment |
+| M7 | Collect intent dataset and train GRU | Planned after M6B reward experiment | Data and training scripts available |
 | M8 | Train PPO + intent | Planned | Requires final GRU checkpoint |
 | M9 | Evaluate TTC shield and PPO + safety | Planned | Safety code implemented |
 | M10 | Train and evaluate SafeIntent-PPO | Planned | Requires M8 and M9 |
@@ -839,7 +840,8 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | D-012 | Disable keyboard in PPO viewer | Allow simultaneous manual input | Prevent control conflict and invalid evaluation | Retained |
 | D-013 | Use environment arrival method | Depend only on `info` keys | Correct success measurement across versions | Retained |
 | D-014 | Preserve an append-only research history | Replace old values with only the latest result | Maintain an auditable record for supervision and thesis writing | Retained |
-| D-015 | Evaluate the rule-based controller before GRU work | Proceed directly to intent learning | PPO V1 success and collision rates require a fair non-learning reference and reward diagnosis | Active |
+| D-015 | Evaluate the rule-based controller before GRU work | Proceed directly to intent learning | PPO V1 success and collision rates require a fair non-learning reference and reward diagnosis | Completed and retained |
+| D-016 | Develop PPO Reward V2 before GRU work | Add more PPO timesteps with the original reward | Both evaluated baselines expose a safety-efficiency tradeoff caused partly by reward alignment | Active |
 
 ---
 
@@ -860,6 +862,8 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | 2026-09-03 | Corrected the M6 summary filename | Initial record omitted the `.summary` portion | Verified exact file list in commit `764a971` | This documentation update |
 | 2026-09-03 | Added rule-based evaluation script | Compare B0 and B1 over identical seeds and metrics | Syntax and TTC threshold decisions verified | `b9f95d6`, `dcffeb3` |
 | 2026-09-03 | Revised the immediate research sequence | PPO V1 achieved only 55.8% success and 43.6% collision | Baseline evidence review documented in Section 25 | `bde2b69` plus this update |
+| 2026-09-03 | Evaluated TTC rule-based reference over 500 episodes | Establish a non-learning comparison using identical seeds | Raw CSV and summary verified | Results: `97b6867`; documentation: this update |
+| 2026-09-03 | Selected PPO Reward V2 as the next experiment | Neither PPO V1 nor the conservative TTC rule was satisfactory | Quantitative comparison documented in Section 26 | This documentation update |
 
 ---
 
@@ -1302,3 +1306,99 @@ Expected outputs:
 results/rule_based_seed42.csv
 results/rule_based_seed42.summary.json
 ```
+
+**Execution status:** completed. Results are recorded in Section 26; the original command remains above as the reproducibility record.
+
+
+---
+
+## 26. Milestone M6A result — Rule-based versus PPO V1
+
+**Experiment ID:** E-B0-S42-500E  
+**Status:** Evaluated for 500 episodes  
+**Date:** 2026-09-03  
+**Environment seeds:** 42–541  
+**Raw-result commit:** [`97b6867`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/97b68679f2a5586491e5fb77c4c6567674390cc4)
+
+### 26.1 Rule-based result
+
+| Metric | Result |
+|---|---:|
+| Successful episodes | 201/500 |
+| Collision episodes | 175/500 |
+| Incomplete non-collision episodes | 124/500 |
+| Mean reward | 3.8233 |
+| Mean episode length | 101.432 decisions |
+| Success rate | 40.2% |
+| Collision rate | 35.0% |
+| Mean travel time | 20.2864 s |
+| Mean minimum finite TTC | 1.1357 s |
+| Mean unsafe-TTC events/episode | 30.448 |
+| Safety interventions | 0 |
+
+The approximate 95% interval for rule-based success is 35.9%–44.5%; for collision rate it is 30.8%–39.2%.
+
+### 26.2 Controller action distribution
+
+The controller made 50,716 decisions:
+
+| Action | Count | Share |
+|---|---:|---:|
+| `SLOWER` | 15,224 | 30.02% |
+| `IDLE` | 30,130 | 59.41% |
+| `FASTER` | 5,362 | 10.57% |
+
+The high `IDLE` share and long episodes indicate conservative waiting behavior.
+
+### 26.3 Direct comparison
+
+Both methods were evaluated for 500 episodes over seeds 42–541.
+
+| Metric | PPO V1 | TTC rule-based | Rule minus PPO |
+|---|---:|---:|---:|
+| Success rate | 55.8% | 40.2% | -15.6 percentage points |
+| Collision rate | 43.6% | 35.0% | -8.6 percentage points |
+| Mean reward | 6.9434 | 3.8233 | -3.1201 |
+| Mean travel time | 7.47 s | 20.2864 s | +12.8164 s |
+| Mean minimum TTC | 0.6332 s | 1.1357 s | +0.5024 s |
+| Unsafe events/episode | 15.142 | 30.448 | +15.306 |
+
+The raw unsafe-event count is larger for the rule controller mainly because its episodes are 171.6% longer. Normalizing by episode decisions gives:
+
+$$
+Rate_{unsafe,PPO}=\frac{15.142}{37.35}=0.4054
+$$
+
+$$
+Rate_{unsafe,rule}=\frac{30.448}{101.432}=0.3002
+$$
+
+Thus the rule controller has approximately 26.0% fewer unsafe-TTC decisions proportionally, despite more unsafe events per episode.
+
+### 26.4 Interpretation
+
+The TTC rule reduces collision rate and increases minimum TTC, but it does not solve the driving task efficiently. It produces many timeouts and lowers success by 15.6 percentage points. Of its 299 unsuccessful episodes, 175 collided and 124 ended without either collision or arrival.
+
+PPO V1 arrives more often and much faster, but its collision rate is too high. The rule-based method is more conservative but frequently waits or reacts to radial closing risks without enough route-conflict context. Neither baseline is suitable as the proposed final controller.
+
+### 26.5 Decision and next experiment
+
+Both results are retained as reference baselines:
+
+- **B0:** TTC rule-based — safer but overly conservative;
+- **B1-V1:** standard PPO with original reward — more efficient but unsafe.
+
+The next controlled experiment is **B1-V2**, a revised standard-PPO reward. It must not include intent probabilities or the TTC safety shield, because those remain separate experimental factors.
+
+The proposed reward family is:
+
+$$
+R_t^{V2}=
+w_a I_{arrival}
+-w_c I_{collision}
++w_p\Delta progress
++w_v R_{speed}
+-w_w I_{stall}
+$$
+
+The exact coefficients will be documented before training. The collision cost must dominate the maximum plausible accumulated speed reward. PPO V1 remains unchanged so V2 can be compared against it over the same seeds and 500-episode protocol.
