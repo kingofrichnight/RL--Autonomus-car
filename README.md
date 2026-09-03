@@ -74,6 +74,13 @@ Evaluate it:
 python scripts/evaluate_policy.py --model models/ppo_intersection.zip --episodes 100
 ```
 
+Evaluate the TTC rule-based reference with the same seeds:
+
+```bash
+python scripts/evaluate_rule_based.py --episodes 500 --seed 42 \
+  --output results/rule_based_seed42.csv
+```
+
 Watch a trained policy drive live:
 
 ```bash
@@ -152,7 +159,7 @@ SafeIntent-RL/
 ├── tests/                   Unit tests
 ├── data/                    Generated datasets (ignored)
 ├── models/                  Trained checkpoints (ignored)
-└── results/                 Evaluation outputs (ignored)
+└── results/                 Versioned evaluation CSV/JSON outputs
 ```
 
 ## Reproducible experiments
