@@ -81,6 +81,21 @@ python scripts/evaluate_rule_based.py --episodes 500 --seed 42 \
   --output results/rule_based_seed42.csv
 ```
 
+Train PPO Reward V2 using the isolated reward configuration:
+
+```bash
+python scripts/train_ppo.py --config configs/intersection_reward_v2.yaml \
+  --timesteps 200000 --seed 42 --output models/ppo_reward_v2_seed42
+```
+
+Evaluate Reward V2 with the same configuration and seeds:
+
+```bash
+python scripts/evaluate_policy.py --model models/ppo_reward_v2_seed42.zip \
+  --config configs/intersection_reward_v2.yaml --episodes 500 --seed 42 \
+  --output results/ppo_reward_v2_seed42.csv
+```
+
 Watch a trained policy drive live:
 
 ```bash
