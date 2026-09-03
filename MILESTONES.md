@@ -139,7 +139,8 @@ The driver profile is available internally only as a supervised-learning label. 
 | M4 | Train first standard PPO smoke model | Completed | `ppo_smoke.zip`, 10,240 collected timesteps |
 | M5 | Correct evaluation and create live PPO viewer | Completed | 9 tests; 20-episode corrected evaluation |
 | M6 | Train publication-quality PPO baseline | Seed 42 evaluated; multi-seed study pending | 200,704-step checkpoint; 500 evaluation episodes |
-| M7 | Collect intent dataset and train GRU | Framework smoke-tested; full run pending | Data and training scripts available |
+| M6A | Evaluate rule-based reference and diagnose PPO V1 | In progress | Evaluator added; 500-episode run pending |
+| M7 | Collect intent dataset and train GRU | Planned after M6A baseline diagnosis | Data and training scripts available |
 | M8 | Train PPO + intent | Planned | Requires final GRU checkpoint |
 | M9 | Evaluate TTC shield and PPO + safety | Planned | Safety code implemented |
 | M10 | Train and evaluate SafeIntent-PPO | Planned | Requires M8 and M9 |
@@ -838,6 +839,7 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | D-012 | Disable keyboard in PPO viewer | Allow simultaneous manual input | Prevent control conflict and invalid evaluation | Retained |
 | D-013 | Use environment arrival method | Depend only on `info` keys | Correct success measurement across versions | Retained |
 | D-014 | Preserve an append-only research history | Replace old values with only the latest result | Maintain an auditable record for supervision and thesis writing | Retained |
+| D-015 | Evaluate the rule-based controller before GRU work | Proceed directly to intent learning | PPO V1 success and collision rates require a fair non-learning reference and reward diagnosis | Active |
 
 ---
 
@@ -856,6 +858,8 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | 2026-09-03 | Adopted an append-only record policy | Preserve old and new evidence throughout the project | Policy added to the update procedure | This documentation update |
 | 2026-09-03 | Completed and evaluated PPO baseline seed 42 | Establish the long-training B1 baseline | 200,704 training steps and 500 deterministic evaluation episodes | Training/results: `764a971`; documentation: this update |
 | 2026-09-03 | Corrected the M6 summary filename | Initial record omitted the `.summary` portion | Verified exact file list in commit `764a971` | This documentation update |
+| 2026-09-03 | Added rule-based evaluation script | Compare B0 and B1 over identical seeds and metrics | Syntax and TTC threshold decisions verified | `b9f95d6`, `dcffeb3` |
+| 2026-09-03 | Revised the immediate research sequence | PPO V1 achieved only 55.8% success and 43.6% collision | Baseline evidence review documented in Section 25 | `bde2b69` plus this update |
 
 ---
 
@@ -1212,3 +1216,89 @@ The earlier smoke evaluation is retained in Section 10. It used only 20 episodes
 Longer training produced a modest descriptive improvement in success rate, collision rate, mean reward, and TTC relative to the smoke run. However, a 43.6% collision rate remains unacceptable for a safety-oriented controller, and the mean minimum TTC remains well below the initial 2.0-second risk threshold.
 
 **Decision:** retain this checkpoint as the standard-PPO seed-42 baseline. Do not describe it as safe. Proceed to the intent-data milestone while keeping multi-seed PPO training as a requirement for final statistical conclusions. Later experiments must compare intent and safety variants against this same evaluation protocol.
+
+**Subsequent revision:** the instruction to proceed immediately to intent learning was superseded after reviewing the low success rate and dominant collision failure mode. Section 25 preserves the evidence and records the revised sequence.
+
+
+---
+
+## 25. Milestone M6A — Rule-based reference and PPO V1 diagnosis
+
+**Status:** In progress  
+**Date:** 2026-09-03  
+**Trigger:** Review of the M6 PPO V1 success and collision rates
+
+### 25.1 Evidence that triggered the revision
+
+PPO V1 succeeded in 279 of 500 episodes, collided in 218, and ended incomplete without a collision in only 3. Therefore:
+
+$$
+\frac{218}{500-279}\times100=98.64\%
+$$
+
+of unsuccessful episodes were collision failures.
+
+For the observed success proportion $\hat p=0.558$ over $n=500$ episodes, the approximate standard error is:
+
+$$
+SE=\sqrt{\frac{\hat p(1-\hat p)}{n}}\approx0.0222
+$$
+
+An approximate 95% interval is 51.4%–60.2%. Even the upper end is not a satisfactory final success level. The longer run improved success by only 5.8 percentage points and reduced collision by 6.4 percentage points relative to the small smoke evaluation, so simply increasing training steps may not address the underlying objective.
+
+### 25.2 Reward-design concern
+
+The current policy can receive up to approximately +0.2 speed reward at each decision while a collision contributes -1.0 when it occurs. Consequently, accumulated positive speed rewards can outweigh the terminal collision cost. The raw evaluation data confirms that many collision episodes still finish with positive total rewards.
+
+This means the policy may be optimizing the configured reward correctly while the configured reward does not sufficiently represent the research objective.
+
+### 25.3 Revised decision
+
+Before training the GRU intent model:
+
+1. preserve PPO Baseline V1 and its 500-episode result;
+2. evaluate the existing TTC rule-based controller over the same seeds 42–541;
+3. compare success, collision, travel time, TTC, and unsafe-event counts;
+4. design PPO Baseline V2 using the evidence from both controllers;
+5. keep TTC reward/shield effects separate from the standard-PPO baseline comparison.
+
+This revision supersedes only the immediate sequence stated in Section 24.5. It does not delete or alter the earlier evidence.
+
+### 25.4 Rule-based controller
+
+The reference controller applies:
+
+$$
+a_t=
+\begin{cases}
+\text{SLOWER}, & TTC_{min}\le2.0\text{ s}\\
+\text{FASTER}, & TTC_{min}\ge4.0\text{ s}\\
+\text{IDLE}, & \text{otherwise}
+\end{cases}
+$$
+
+The new `scripts/evaluate_rule_based.py` uses the same environment seeding and episode metrics as `evaluate_policy.py`. Its JSON summary also records the threshold settings and action counts.
+
+Verification completed before publication:
+
+- Python syntax compilation passed;
+- TTC = 2.0 s selected `SLOWER`;
+- TTC = 3.0 s selected `IDLE`;
+- TTC = 4.0 s selected `FASTER`;
+- three unit tests were added for these boundary decisions;
+- the full test runner was unavailable in the temporary maintenance workspace, so the project test suite must be run in the configured Python 3.12 environment.
+
+### 25.5 Next command
+
+After pulling the latest repository changes, run:
+
+```powershell
+python scripts/evaluate_rule_based.py --episodes 500 --seed 42 --output results/rule_based_seed42.csv
+```
+
+Expected outputs:
+
+```text
+results/rule_based_seed42.csv
+results/rule_based_seed42.summary.json
+```
