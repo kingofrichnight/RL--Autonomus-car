@@ -13,6 +13,7 @@ from safeintent_rl.envs.intersection import make_intersection_env
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train a PPO intersection policy")
+    parser.add_argument("--config", default=None, help="Environment YAML configuration")
     parser.add_argument("--timesteps", type=int, default=200_000)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--learning-rate", type=float, default=3e-4)
@@ -32,6 +33,7 @@ def main() -> None:
 
     def build_env(seed_offset: int = 0):
         env = make_intersection_env(
+            config_path=args.config,
             seed=args.seed + seed_offset,
             safety_shield=args.safety_shield,
             ttc_threshold=args.ttc_threshold,
