@@ -1,0 +1,65 @@
+{
+  "samples": 15923,
+  "accuracy": 0.6335489543427746,
+  "majority_class_accuracy": 0.476543364943792,
+  "balanced_accuracy": 0.6078736427956443,
+  "macro_precision": 0.6357679020585555,
+  "macro_recall": 0.6078736427956443,
+  "macro_f1": 0.6182894884252775,
+  "label_names": [
+    "cautious",
+    "normal",
+    "aggressive"
+  ],
+  "per_class": {
+    "cautious": {
+      "precision": 0.6494376645130414,
+      "recall": 0.5950449462837097,
+      "f1": 0.6210526315789475,
+      "support": 4561,
+      "predicted": 4179
+    },
+    "normal": {
+      "precision": 0.6267694786511682,
+      "recall": 0.7177121771217713,
+      "f1": 0.6691650795601155,
+      "support": 7588,
+      "predicted": 8689
+    },
+    "aggressive": {
+      "precision": 0.6310965630114567,
+      "recall": 0.510863804981452,
+      "f1": 0.5646507541367697,
+      "support": 3774,
+      "predicted": 3055
+    }
+  },
+  "confusion_matrix": [
+    [
+      2714,
+      1668,
+      179
+    ],
+    [
+      1194,
+      5446,
+      948
+    ],
+    [
+      271,
+      1575,
+      1928
+    ]
+  ],
+  "data_path": "data\\intent_trajectories_seed42.npz",
+  "model_path": "models\\intent_gru_seed42.pt",
+  "dataset_sha256": "56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0",
+  "split_mode": "episode",
+  "training_seed": 42,
+  "best_epoch": 28,
+  "validation_accuracy": 0.6346381267738883,
+  "checkpoint_test_accuracy": 0.6335489543427746,
+  "train_samples": 76761,
+  "validation_samples": 16912,
+  "test_samples": 15923
+}
