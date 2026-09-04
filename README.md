@@ -96,6 +96,21 @@ python scripts/evaluate_policy.py --model models/ppo_reward_v2_seed42.zip \
   --output results/ppo_reward_v2_seed42.csv
 ```
 
+Train PPO Reward V3 with dense route-progress feedback and a small time cost:
+
+```bash
+python scripts/train_ppo.py --config configs/intersection_reward_v3.yaml \
+  --timesteps 200000 --seed 42 --output models/ppo_reward_v3_seed42
+```
+
+Evaluate Reward V3 over the same 500 environment seeds:
+
+```bash
+python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip \
+  --config configs/intersection_reward_v3.yaml --episodes 500 --seed 42 \
+  --output results/ppo_reward_v3_seed42.csv
+```
+
 Watch a trained policy drive live:
 
 ```bash
