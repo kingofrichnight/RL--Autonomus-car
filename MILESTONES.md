@@ -2544,3 +2544,106 @@ The collection produced enough samples for the planned episode-grouped split whi
 | 2026-09-04 | Collected and accepted the frozen M7 intent dataset | Establish the leakage-resistant input artifact for the initial GRU screening | Archive structure, metadata, counts, episode coverage, class fractions, and SHA-256 matched the committed summary | Summary: `1ec8e03`; documentation: this update |
 
 **Next action:** pull this documentation update, rerun the complete test suite, and train only the frozen seed-42 GRU described in Section 35.6. Do not evaluate or tune it until the training result is preserved.
+
+
+---
+
+## 37. Milestone M7B result — frozen seed-42 GRU training
+
+**Experiment ID:** E-M7-GRU-S42-DATA56433621
+
+**Status:** Training completed; checkpoint validated and retained locally; frozen evaluator pending
+
+**Date recorded:** 2026-09-04
+
+**Dataset:** `data/intent_trajectories_seed42.npz`
+
+**Dataset SHA-256:** `56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0`
+
+**Changed factor:** none; this run used the frozen Section 35.6 training protocol
+
+### 37.1 Pre-training verification
+
+The complete checks were rerun after accepting the dataset and immediately before authorizing training:
+
+```text
+ruff check: passed
+pytest: 25 passed in 2.79 s
+```
+
+Training command:
+
+```powershell
+python scripts/train_intent.py --data data/intent_trajectories_seed42.npz --output models/intent_gru_seed42.pt --epochs 30 --batch-size 128 --learning-rate 0.001 --seed 42
+```
+
+### 37.2 Frozen training result
+
+| Property | Verified value |
+|---|---:|
+| Training seed | 42 |
+| Epochs | 30 |
+| Batch size | 128 |
+| Learning rate | 0.001 |
+| Model-selection metric | Validation accuracy |
+| Best epoch | 28 |
+| Best validation accuracy | 63.4638% |
+| Stored test accuracy | 63.3549% |
+| Split mode | Complete episode |
+| Train/validation/test episodes | 210/45/45 |
+| Train/validation/test samples | 76,761/16,912/15,923 |
+
+The stored test accuracy is a provisional checkpoint field produced by the frozen training script. It is not the complete M7 screening result. The separate evaluator must reproduce it and compute macro F1 and per-class recall before an acceptance decision is made.
+
+### 37.3 Split and checkpoint validation
+
+| Check | Result |
+|---|---|
+| Checkpoint dataset fingerprint matches the frozen archive | Passed |
+| Train, validation, and test indices cover all 109,596 samples exactly once | Passed |
+| Sample-index sets are pairwise disjoint | Passed |
+| Episode-ID sets are pairwise disjoint | Passed |
+| Every split contains all three classes | Passed |
+| Model tensors are finite | Passed |
+| Normalization statistics are finite with positive standard deviations | Passed |
+
+Class counts within each split:
+
+| Split | Cautious | Normal | Aggressive | Total |
+|---|---:|---:|---:|---:|
+| Train | 22,587 | 33,779 | 20,395 | 76,761 |
+| Validation | 5,483 | 7,846 | 3,583 | 16,912 |
+| Test | 4,561 | 7,588 | 3,774 | 15,923 |
+
+The test-set majority-class baseline is 47.6543%. The checkpoint's stored test accuracy is 15.7006 percentage points higher, so the accuracy portion of the screening gate is provisionally satisfied. Macro F1 and per-class recall remain unknown until the frozen evaluator is run.
+
+Checkpoint artifact details:
+
+| Property | Value |
+|---|---|
+| Local path | `models/intent_gru_seed42.pt` |
+| File size | 1,045,349 bytes |
+| SHA-256 | `10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05` |
+| Git status | Ignored by `models/*.pt`; not versioned |
+
+### 37.4 Documentation correction
+
+Section 36.3 stated that "training-only class weights remain necessary." That sentence was inaccurate: the frozen implementation uses unweighted `CrossEntropyLoss`, and no class weights, balancing, or resampling were added before this run. This correction is appended here rather than rewriting the earlier record. The Section 35.6 hyperparameters and executed training protocol remain unchanged.
+
+### 37.5 Interpretation and decision
+
+The checkpoint is structurally valid, matches the accepted dataset, and preserves a leakage-resistant episode split. Its accuracy is materially better than the test majority baseline, but accuracy alone cannot show whether cautious and aggressive drivers are recognized adequately.
+
+**Decision:** accept the local checkpoint as the sole input to the frozen held-out evaluator. Do not commit the `.pt`, retrain, tune, or inspect alternative epochs before evaluation. Run the evaluator once against the exact dataset and checkpoint, then version only `results/intent_gru_seed42.metrics.json` and append the result whether it passes or fails.
+
+### 37.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-028 | Retain the trained GRU checkpoint locally and proceed to one frozen held-out evaluation | Commit the `.pt`, retrain immediately, or select a different epoch after seeing results | Dataset/split integrity passed; best epoch 28; validation accuracy 63.4638%; checkpoint hash recorded | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-04 | Trained and validated the frozen seed-42 intent GRU | Test whether the fixed trajectory representation supports intent classification before PPO integration | Fingerprint, exact split coverage, episode isolation, class coverage, finite tensors, normalization statistics, and checkpoint hash verified | Documentation: this update |
+
+**Next action:** run the frozen evaluator once and commit only `results/intent_gru_seed42.metrics.json`; keep `models/intent_gru_seed42.pt` local.
