@@ -36,6 +36,8 @@ def make_intersection_env(
     ttc_threshold: float = 2.0,
     intent_model: str | Path | None = None,
     intent_neighbors: int = 5,
+    intent_device: str = "cpu",
+    intent_model_sha256: str | None = None,
 ) -> gym.Env:
     """Create the project's intersection environment with optional research wrappers."""
     loaded = load_config(config_path)
@@ -57,6 +59,8 @@ def make_intersection_env(
             env,
             checkpoint_path=intent_model,
             max_neighbors=intent_neighbors,
+            device=intent_device,
+            expected_checkpoint_sha256=intent_model_sha256,
         )
     if safety_shield:
         env = TTCSafetyShield(env, ttc_threshold=ttc_threshold)

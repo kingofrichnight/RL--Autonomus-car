@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from stable_baselines3 import PPO
@@ -9,6 +10,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
 
 from safeintent_rl.envs.intersection import make_intersection_env
+from safeintent_rl.intent.inference import file_sha256
 
 
 def main() -> None:
@@ -23,8 +25,27 @@ def main() -> None:
     parser.add_argument("--ttc-threshold", type=float, default=2.0)
     parser.add_argument("--intent-model", default=None)
     parser.add_argument("--intent-neighbors", type=int, default=5)
+    parser.add_argument("--intent-device", default="cpu")
+    parser.add_argument("--intent-model-sha256", default=None)
+    parser.add_argument("--eval-seed-offset", type=int, default=10_000)
+    parser.add_argument("--summary-output", default=None)
     parser.add_argument("--output", default="models/ppo_intersection")
     args = parser.parse_args()
+
+    if args.intent_model_sha256 is not None and args.intent_model is None:
+        parser.error("--intent-model-sha256 requires --intent-model")
+    if args.eval_seed_offset == 0:
+        parser.error("--eval-seed-offset must separate training and internal evaluation seeds")
+
+    intent_model_sha256 = None
+    if args.intent_model is not None:
+        intent_model_sha256 = file_sha256(args.intent_model)
+        if (
+            args.intent_model_sha256 is not None
+            and intent_model_sha256.lower() != args.intent_model_sha256.lower()
+        ):
+            raise ValueError("Intent checkpoint fingerprint does not match the requested model")
+    config_sha256 = file_sha256(args.config) if args.config is not None else None
 
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -39,11 +60,14 @@ def main() -> None:
             ttc_threshold=args.ttc_threshold,
             intent_model=args.intent_model,
             intent_neighbors=args.intent_neighbors,
+            intent_device=args.intent_device,
+            intent_model_sha256=intent_model_sha256,
         )
         return Monitor(env)
 
     train_env = DummyVecEnv([lambda: build_env(0)])
-    eval_env = DummyVecEnv([lambda: build_env(10_000)])
+    eval_env = DummyVecEnv([lambda: build_env(args.eval_seed_offset)])
+    observation_shape = list(train_env.observation_space.shape)
     model = PPO(
         "MlpPolicy",
         train_env,
@@ -71,9 +95,42 @@ def main() -> None:
     ]
     model.learn(total_timesteps=args.timesteps, callback=callbacks, progress_bar=False)
     model.save(output)
+    model_path = output if str(output).endswith(".zip") else Path(f"{output}.zip")
+    if args.summary_output is not None:
+        summary = {
+            "algorithm": "PPO",
+            "config_path": str(Path(args.config)) if args.config is not None else None,
+            "config_sha256": config_sha256,
+            "training_seed": args.seed,
+            "internal_evaluation_seed_offset": args.eval_seed_offset,
+            "timesteps_requested": args.timesteps,
+            "timesteps_collected": int(model.num_timesteps),
+            "learning_rate": args.learning_rate,
+            "n_steps": args.n_steps,
+            "batch_size": args.batch_size,
+            "gamma": 0.99,
+            "gae_lambda": 0.95,
+            "ent_coef": 0.01,
+            "policy_network": [256, 256],
+            "observation_shape": observation_shape,
+            "safety_shield": args.safety_shield,
+            "ttc_threshold": args.ttc_threshold,
+            "intent_model_path": (
+                str(Path(args.intent_model)) if args.intent_model is not None else None
+            ),
+            "intent_model_sha256": intent_model_sha256,
+            "intent_neighbors": args.intent_neighbors if args.intent_model is not None else 0,
+            "intent_device": args.intent_device if args.intent_model is not None else None,
+            "model_path": str(model_path),
+            "model_sha256": file_sha256(model_path),
+        }
+        summary_output = Path(args.summary_output)
+        summary_output.parent.mkdir(parents=True, exist_ok=True)
+        summary_output.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        print(f"Saved training summary to {summary_output}")
     train_env.close()
     eval_env.close()
-    print(f"Saved PPO policy to {output.with_suffix('.zip')}")
+    print(f"Saved PPO policy to {model_path}")
 
 
 if __name__ == "__main__":

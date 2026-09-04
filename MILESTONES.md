@@ -2760,3 +2760,187 @@ This is a single dataset and training seed. It establishes readiness for the con
 | 2026-09-04 | Evaluated and accepted the frozen seed-42 intent GRU | Determine whether the fixed trajectory representation supports all three intent classes before PPO integration | Metrics arithmetic, confusion matrix totals, dataset fingerprint, checkpoint accuracy, and all four gates independently verified | Metrics: `d478c04`; documentation: this update |
 
 **Next action:** audit and freeze M8 before starting any long PPO + intent training run.
+
+
+---
+
+## 39. Milestone M8 design and PPO + intent integration hardening
+
+**Experiment ID:** E-M8-PPO-INTENT-V1-S42-200K
+
+**Status:** Implemented, audited, and frozen; long training not yet started
+
+**Date fixed:** 2026-09-04
+
+**Primary hypothesis:** appending inferred driver-class probabilities to the V3 observation will improve completion and collision outcomes without causing conservative waiting
+
+**Primary changed factor:** 15 inferred intent probabilities for the first five visible traffic slots
+
+### 39.1 Pre-run audit findings
+
+The existing PPO + intent framework had not been validated for a long run. The audit found five issues:
+
+1. the wrapper ordered NPC probabilities by Euclidean distance, while HighwayEnv's configured kinematics observation orders traffic slots by absolute lane distance;
+2. the base observation can include road objects, so independently selecting only vehicles could shift probabilities away from the rows they were intended to describe;
+3. the wrapper invoked the GRU separately for each neighbor at every policy step, causing unnecessary inference overhead;
+4. checkpoint loading used unrestricted pickle deserialization and did not pin the accepted GRU fingerprint;
+5. PPO training/evaluation did not save complete model, configuration, intent-checkpoint, observation, and seed metadata in small JSON artifacts.
+
+The existing training callback also used a seed offset of 10,000, which overlaps the fixed holdout starting at seed 10042 for a training seed of 42. Although the callback does not update PPO or select the final saved checkpoint, M8 uses a distinct internal-evaluation offset to keep monitoring traffic separate from the paired holdout.
+
+### 39.2 Implemented corrections
+
+The following changes were made before M8 training:
+
+- query the exact sorted traffic objects used by the base kinematics observation;
+- keep obstacle slots aligned and append zero intent probabilities for those non-vehicle rows;
+- assign vehicle predictions to the corresponding visible traffic slots;
+- batch all ready neighbor histories into one GRU inference call per environment step;
+- require sorted kinematics observations and reject incompatible slot counts;
+- load checkpoints with `weights_only=True` and an explicit NumPy allowlist;
+- validate input size, label order, normalization shapes, finite values, and positive standard deviations;
+- pin the accepted intent checkpoint by SHA-256 for training and evaluation;
+- freeze CPU intent inference for the first controlled run;
+- expose the neighbor count, device, fingerprint, and internal-evaluation seed offset explicitly on the command line;
+- save a versionable PPO training-summary JSON containing configuration, model, intent-model, seed, hyperparameter, timestep, and observation metadata;
+- extend evaluation summaries with model/configuration fingerprints, seed range, intent settings, and shield state;
+- add focused tests for visible-slot alignment, batched inference, obstacle-slot preservation, incompatible ordering, safe checkpoint loading, and fingerprint rejection.
+
+No driver profile, intent feature, GRU weight, V3 reward coefficient, action, traffic setting, PPO optimization hyperparameter, training seed, or holdout seed changed.
+
+### 39.3 Verification and engineering smoke results
+
+Final static and unit verification:
+
+```text
+ruff check: passed
+pytest: 28 passed in 2.70 s
+```
+
+A real-environment paired smoke using the accepted GRU and identical seed/action sequence verified:
+
+```text
+augmented observation shape: (120,)
+all observation values finite: yes
+observation contained by declared space: yes
+two independent seeded environments identical: yes
+12 policy steps completed with batched intent predictions: yes
+```
+
+The first 32-step PPO smoke launch failed before environment creation because the maintenance workspace used an editable installation pointing to the user's separate checkout. It raised an import error for the newly added fingerprint helper; no PPO steps were collected. Rerunning the same smoke as a module resolved the maintenance-only import context and completed successfully:
+
+```text
+requested/collected timesteps: 32/32
+reported throughput: 58 fps
+training summary written: yes
+model/configuration/intent hashes written: yes
+observation shape recorded as [120]: yes
+```
+
+These are engineering smoke results only and are not M8 policy-performance evidence.
+
+### 39.4 Frozen observation interface
+
+The original V3 kinematics observation remains 15 rows by 7 features, flattened to 105 values by the intent wrapper. The appended block contains three probabilities for each of the first five visible traffic slots:
+
+$$
+o_t^{M8}=[o_t^{V3},\hat p_1(C,N,A),\ldots,\hat p_5(C,N,A)]
+$$
+
+Therefore:
+
+$$
+\dim(o_t^{M8})=105+5\times3=120
+$$
+
+For a visible vehicle with fewer than ten consecutive history steps, its probability triplet is `(1/3, 1/3, 1/3)`. Missing traffic slots and observed obstacle slots receive `(0, 0, 0)`. Once ten steps are available, the frozen GRU supplies cautious, normal, and aggressive softmax probabilities in that order. Ground-truth driver labels are never appended or read by the intent wrapper.
+
+### 39.5 Frozen M8 training protocol
+
+| Setting | Fixed value |
+|---|---:|
+| Environment/reward configuration | `configs/intersection_reward_v3.yaml` |
+| Configuration SHA-256 | `433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69` |
+| Training seed | 42 |
+| Requested timesteps | 200,000 |
+| Expected collected timesteps | 200,704 |
+| Learning rate | 0.0003 |
+| PPO rollout steps | 1,024 |
+| Batch size | 64 |
+| Gamma | 0.99 |
+| GAE lambda | 0.95 |
+| Entropy coefficient | 0.01 |
+| Policy network | `[256, 256]` |
+| Intent checkpoint | `models/intent_gru_seed42.pt` |
+| Intent checkpoint SHA-256 | `10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05` |
+| Intent neighbors | 5 visible slots |
+| Intent history | 10 policy observations |
+| Intent inference device | CPU |
+| Augmented observation shape | 120 |
+| Internal-evaluation seed offset | 1,000 |
+| Internal evaluation | 20 episodes every 10,000 calls |
+| Safety shield | Disabled |
+| Final checkpoint | `models/ppo_intent_v1_seed42.zip` |
+| Training summary | `results/ppo_intent_v1_seed42.training.json` |
+
+The final post-training PPO state is the experiment checkpoint, matching the V3 procedure. The callback's best model remains diagnostic and is not substituted after observing evaluation results.
+
+Training command:
+
+```powershell
+python scripts/train_ppo.py --config configs/intersection_reward_v3.yaml --timesteps 200000 --seed 42 --intent-model models/intent_gru_seed42.pt --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 --intent-neighbors 5 --intent-device cpu --eval-seed-offset 1000 --summary-output results/ppo_intent_v1_seed42.training.json --output models/ppo_intent_v1_seed42
+```
+
+After training, stop and validate the JSON before evaluation. It must report the fixed configuration and intent hashes, seed 42, 200,704 collected timesteps, observation shape `[120]`, five neighbors, CPU intent inference, and no safety shield. The ZIP remains local; only the training summary is versioned.
+
+### 39.6 Frozen paired holdout protocol
+
+After the training artifact is recorded, evaluate exactly 500 episodes on seeds 10042–10541:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_intent_v1_seed42.zip --config configs/intersection_reward_v3.yaml --episodes 500 --seed 10042 --intent-model models/intent_gru_seed42.pt --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 --intent-neighbors 5 --intent-device cpu --output results/ppo_intent_v1_holdout_seed10042.csv
+```
+
+Expected versionable outputs:
+
+```text
+results/ppo_intent_v1_holdout_seed10042.csv
+results/ppo_intent_v1_holdout_seed10042.summary.json
+```
+
+The comparator is the existing V3 holdout over the identical seeds:
+
+| V3 metric | Fixed baseline |
+|---|---:|
+| Success | 59.6% |
+| Collision | 40.4% |
+| Incomplete | 0.0% |
+| Mean minimum TTC | 0.6164 s |
+
+M8 passes its initial driving-policy screen only if all predefined conditions hold:
+
+1. success is at least 62.6%;
+2. collision is at most 37.4%;
+3. incomplete non-collision episodes are at most 2.0%;
+4. mean minimum TTC is at least 0.6164 seconds;
+5. the paired success change is favorable with an exact two-sided McNemar test at `p < 0.05`.
+
+These thresholds reuse the previously defined minimum three-percentage-point effect and completion/safety constraints. Reward magnitude is not an acceptance metric. A failed or mixed result must be recorded before any classifier, neighbor-count, history, or PPO change is considered.
+
+### 39.7 Interpretation and decisions
+
+This design isolates the value of inferred intent as closely as possible: the V3 dynamics, reward, PPO budget, optimization settings, training seed, and holdout episodes remain fixed. Only the augmented observation changes. The internal monitoring seed offset and result metadata are research-hygiene corrections that do not supply PPO gradients or alter the final-state selection rule.
+
+The rejected 2.0-second safety shield is not enabled in M8. Combining safety and intent remains a later experiment requiring a separately recorded safety design.
+
+| ID | Decision | Alternatives considered | Reason | Status |
+|---|---|---|---|---|
+| D-030 | Align intent triplets to the exact visible traffic slots and preserve obstacle positions | Sort an independent NPC list by Euclidean distance or disable obstacles | Prevent semantic row mismatch and avoid changing the V3 base observation | Retained |
+| D-031 | Batch inference and pin the accepted GRU fingerprint on CPU | Per-neighbor calls, automatic device selection, or an unverified checkpoint path | Reduce long-run overhead and guarantee the evaluated classifier is used | Retained |
+| D-032 | Compare PPO + intent against V3 under the fixed 200K/seed-42/holdout protocol | Change reward, add the rejected shield, or tune intent after seeing holdout results | Isolate the contribution of inferred intent | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-04 | Hardened and froze the M8 PPO + intent experiment | Correct observation alignment, obstacle handling, inference overhead, checkpoint loading, fingerprinting, monitoring seeds, and artifact metadata before a long run | Ruff passed; 28 tests passed; deterministic real-environment smoke passed; 32-step PPO smoke passed after one recorded import-context failure | This implementation update |
+
+**Next action:** pull this implementation, rerun the complete test suite, and execute only the frozen M8 training command. Do not start holdout evaluation until the training summary is validated and appended.

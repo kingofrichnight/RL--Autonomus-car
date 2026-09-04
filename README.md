@@ -148,19 +148,30 @@ Train with the TTC safety shield:
 python scripts/train_ppo.py --timesteps 200000 --safety-shield --seed 42
 ```
 
-Train the intent-aware PPO variant after training the GRU:
+Train the first controlled intent-aware PPO variant with the accepted GRU and V3 reward:
 
 ```bash
-python scripts/train_ppo.py --timesteps 200000 \
-  --intent-model models/intent_gru.pt --output models/ppo_intent
+python scripts/train_ppo.py --config configs/intersection_reward_v3.yaml \
+  --timesteps 200000 --seed 42 --intent-model models/intent_gru_seed42.pt \
+  --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 \
+  --intent-neighbors 5 --intent-device cpu --eval-seed-offset 1000 \
+  --summary-output results/ppo_intent_v1_seed42.training.json \
+  --output models/ppo_intent_v1_seed42
 ```
 
-Train the complete SafeIntent-PPO variant:
+Evaluate it on the paired V3 holdout only after recording the training summary:
 
 ```bash
-python scripts/train_ppo.py --timesteps 200000 --intent-model models/intent_gru.pt \
-  --safety-shield --output models/safeintent_ppo
+python scripts/evaluate_policy.py --model models/ppo_intent_v1_seed42.zip \
+  --config configs/intersection_reward_v3.yaml --episodes 500 --seed 10042 \
+  --intent-model models/intent_gru_seed42.pt \
+  --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 \
+  --intent-neighbors 5 --intent-device cpu \
+  --output results/ppo_intent_v1_holdout_seed10042.csv
 ```
+
+The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
+the intent-aware policy until a new safety experiment is explicitly designed and recorded.
 
 Record a trained episode:
 

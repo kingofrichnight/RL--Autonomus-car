@@ -6,6 +6,7 @@ import torch
 
 from safeintent_rl.intent.dataset import TrajectoryCollector, save_dataset
 from safeintent_rl.intent.evaluation import classification_metrics
+from safeintent_rl.intent.inference import IntentPredictor, load_intent_checkpoint
 from safeintent_rl.intent.training import (
     _clone_state_dict,
     create_data_split,
@@ -105,7 +106,7 @@ def test_intent_training_checkpoint_records_reproducibility_metadata(tmp_path) -
     np.savez_compressed(data_path, x=x, y=y, episode_ids=episode_ids)
 
     result = train_intent_model(data_path, model_path, epochs=1, batch_size=8, seed=7)
-    checkpoint = torch.load(model_path, map_location="cpu", weights_only=False)
+    checkpoint = load_intent_checkpoint(model_path, map_location="cpu")
 
     assert result.best_epoch == 1
     assert result.split_mode == "episode"
@@ -114,3 +115,6 @@ def test_intent_training_checkpoint_records_reproducibility_metadata(tmp_path) -
     assert len(checkpoint["train_indices"]) == result.train_samples
     assert len(checkpoint["validation_indices"]) == result.validation_samples
     assert len(checkpoint["test_indices"]) == result.test_samples
+
+    with pytest.raises(ValueError, match="fingerprint"):
+        IntentPredictor(model_path, device="cpu", expected_sha256="0" * 64)

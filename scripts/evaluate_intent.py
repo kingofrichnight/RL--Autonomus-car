@@ -5,10 +5,9 @@ import json
 from pathlib import Path
 
 import numpy as np
-import torch
 
 from safeintent_rl.intent.evaluation import classification_metrics
-from safeintent_rl.intent.inference import IntentPredictor
+from safeintent_rl.intent.inference import IntentPredictor, load_intent_checkpoint
 from safeintent_rl.intent.training import file_sha256
 
 
@@ -22,7 +21,7 @@ def main() -> None:
     with np.load(args.data) as archive:
         x = archive["x"].astype(np.float32)
         y = archive["y"].astype(np.int64)
-    checkpoint = torch.load(args.model, map_location="cpu", weights_only=False)
+    checkpoint = load_intent_checkpoint(args.model, map_location="cpu")
     if "test_indices" not in checkpoint:
         raise ValueError("Checkpoint does not contain a held-out test split")
     expected_hash = checkpoint.get("dataset_sha256")

@@ -19,6 +19,8 @@ class IntentObservationWrapper(gym.Wrapper):
         checkpoint_path: str | Path,
         max_neighbors: int = 5,
         history_length: int = 10,
+        device: str = "cpu",
+        expected_checkpoint_sha256: str | None = None,
     ) -> None:
         super().__init__(env)
         if not isinstance(env.observation_space, gym.spaces.Box):
@@ -26,7 +28,20 @@ class IntentObservationWrapper(gym.Wrapper):
         if max_neighbors <= 0 or history_length <= 0:
             raise ValueError("max_neighbors and history_length must be positive")
 
-        self.predictor = IntentPredictor(checkpoint_path)
+        observation_type = getattr(self.unwrapped, "observation_type", None)
+        if observation_type is None:
+            raise TypeError("IntentObservationWrapper requires a kinematics observation")
+        if getattr(observation_type, "order", None) != "sorted":
+            raise ValueError("IntentObservationWrapper requires sorted vehicle observations")
+        observed_slots = int(getattr(observation_type, "vehicles_count", 1)) - 1
+        if max_neighbors > observed_slots:
+            raise ValueError("max_neighbors exceeds the number of observed traffic slots")
+
+        self.predictor = IntentPredictor(
+            checkpoint_path,
+            device=device,
+            expected_sha256=expected_checkpoint_sha256,
+        )
         self.max_neighbors = max_neighbors
         self.history_length = history_length
         self.histories: dict[int, deque[np.ndarray]] = defaultdict(
@@ -62,15 +77,23 @@ class IntentObservationWrapper(gym.Wrapper):
 
         ego_position = np.asarray(ego.position, dtype=np.float32)
         ego_velocity = np.asarray(ego.velocity, dtype=np.float32)
-        neighbors = sorted(
-            (vehicle for vehicle in road.vehicles if vehicle is not ego),
-            key=lambda vehicle: float(
-                np.linalg.norm(np.asarray(vehicle.position, dtype=np.float32) - ego_position)
-            ),
-        )[: self.max_neighbors]
+        observation_type = base.observation_type
+        neighbors = road.close_objects_to(
+            getattr(observation_type, "observer_vehicle", ego),
+            float(base.PERCEPTION_DISTANCE),
+            count=self.max_neighbors,
+            see_behind=bool(observation_type.see_behind),
+            sort=True,
+            vehicles_only=not bool(observation_type.include_obstacles),
+        )
+        road_vehicle_ids = {id(vehicle) for vehicle in road.vehicles}
         active_ids: set[int] = set()
+        ready_rows: list[int] = []
+        ready_histories: list[np.ndarray] = []
         for row, vehicle in enumerate(neighbors):
             key = id(vehicle)
+            if key not in road_vehicle_ids:
+                continue
             active_ids.add(key)
             velocity = np.asarray(vehicle.velocity, dtype=np.float32)
             previous = self.previous_velocity.get(key, velocity)
@@ -90,14 +113,21 @@ class IntentObservationWrapper(gym.Wrapper):
             self.histories[key].append(feature)
             self.previous_velocity[key] = velocity
             if len(self.histories[key]) == self.history_length:
-                probabilities[row] = self.predictor.predict_proba(
-                    np.stack(self.histories[key])
-                )[0]
+                ready_rows.append(row)
+                ready_histories.append(np.stack(self.histories[key]))
             else:
                 probabilities[row] = 1.0 / 3.0
+
+        if ready_histories:
+            predicted = np.asarray(
+                self.predictor.predict_proba(np.stack(ready_histories)),
+                dtype=np.float32,
+            )
+            if predicted.shape != (len(ready_rows), 3) or not np.isfinite(predicted).all():
+                raise RuntimeError("Intent predictor returned invalid probabilities")
+            probabilities[ready_rows] = predicted
 
         for stale in set(self.histories) - active_ids:
             self.histories.pop(stale, None)
             self.previous_velocity.pop(stale, None)
         return np.concatenate([flat_observation, probabilities.reshape(-1)]).astype(np.float32)
-
