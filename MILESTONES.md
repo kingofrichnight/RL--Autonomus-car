@@ -141,7 +141,8 @@ The driver profile is available internally only as a supervised-learning label. 
 | M6 | Train publication-quality PPO baseline | Seed 42 evaluated; multi-seed study pending | 200,704-step checkpoint; 500 evaluation episodes |
 | M6A | Evaluate rule-based reference and diagnose PPO V1 | Evaluated | 500 episodes over seeds 42–541 |
 | M6B | Design and test PPO Baseline V2 reward | Evaluated; rejected as improvement | Success 54.0%, collision 42.6%; predefined gate failed |
-| M6C | Add progress/stall shaping for PPO V3 | Implemented; training pending | Route-progress wrapper, isolated config, and tests added |
+| M6C | Add progress/stall shaping for PPO V3 | Evaluated; screening gate passed narrowly | Success 56.6%, collision 43.4%, no incomplete episodes; paired gain not significant |
+| M6D | Add TTC-risk shaping for PPO V4 | Implemented; holdout evaluation pending | Preserve V3 completion while reducing collision risk on untouched seeds |
 | M7 | Collect intent dataset and train GRU | Planned after M6C reward experiment | Data and training scripts available |
 | M8 | Train PPO + intent | Planned | Requires final GRU checkpoint |
 | M9 | Evaluate TTC shield and PPO + safety | Planned | Safety code implemented |
@@ -844,7 +845,8 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | D-015 | Evaluate the rule-based controller before GRU work | Proceed directly to intent learning | PPO V1 success and collision rates require a fair non-learning reference and reward diagnosis | Completed and retained |
 | D-016 | Develop PPO Reward V2 before GRU work | Add more PPO timesteps with the original reward | Both evaluated baselines expose a safety-efficiency tradeoff caused partly by reward alignment | Evaluated; V2 rejected |
 | D-017 | Preserve V2 as a negative result and design V3 | Accept V2 because collision fell slightly | V2 failed the predefined success-and-collision gate and increased timeouts | Retained |
-| D-018 | Add normalized route progress and a small time cost in V3 | Tune PPO hyperparameters or add intent immediately | V2 lacked dense goal feedback and produced 17 timeouts | Active; evaluation pending |
+| D-018 | Add normalized route progress and a small time cost in V3 | Tune PPO hyperparameters or add intent immediately | V2 lacked dense goal feedback and produced 17 timeouts | Evaluated; retained as screening candidate |
+| D-019 | Add a bounded TTC-risk penalty in V4 and use untouched holdout seeds | Continue reward tuning on seeds 42–541 | V3 eliminated timeouts but retained 43.4% collision and showed worse TTC-risk indicators | Active; evaluation pending |
 
 ---
 
@@ -874,6 +876,9 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | 2026-09-04 | Rejected V2 as an improvement | Success fell to 54.0% despite collision falling to 42.6% | Predefined Section 27.4 gate applied | This documentation update |
 | 2026-09-04 | Implemented PPO Reward V3 route-progress shaping | Provide dense goal feedback and penalize waiting while retaining V2 collision/arrival priorities | Source, isolated YAML, integration, and two unit tests added; syntax checks passed | `5303b63`, `9860c91`, `cd74532`, `1562432`, `2f8411b` |
 | 2026-09-04 | Documented reproducible V3 commands | Ensure training and evaluation use the identical V3 configuration | README command review | `ca59c64` |
+| 2026-09-04 | Evaluated PPO Reward V3 over 500 episodes | Test whether progress/time shaping restores completion | Raw CSV/JSON, acceptance gate, paired transitions, and exact McNemar test verified | Results: `31b3af1`; documentation: this update |
+| 2026-09-04 | Implemented bounded TTC-risk shaping for V4 | Reduce collision-dominated failures while preserving V3 progress pressure | Syntax checks passed; dedicated risk test added; full pytest pending in project environment | `9c14fa1`, `e3133e9`, `a296317` |
+| 2026-09-04 | Created untouched V3/V4 holdout protocol | Avoid further selection on evaluation seeds 42–541 | Seeds 10042–10541 and acceptance rules fixed before V4 training | `7f114fb` plus this update |
 
 ---
 
@@ -1652,7 +1657,7 @@ V2 improved reward alignment: collisions became negative and the normalized unsa
 ## 29. Milestone M6C design — PPO Reward V3
 
 **Experiment ID:** E-B1-V3-S42-200K  
-**Status:** Implemented; training and evaluation pending  
+**Status:** Evaluated; result recorded in Section 30  
 **Date fixed:** 2026-09-04  
 **Primary changed factor:** dense route-progress shaping plus a per-decision time cost  
 **Configuration:** `configs/intersection_reward_v3.yaml`
@@ -1777,4 +1782,235 @@ results/ppo_reward_v3_seed42.summary.json
 ```
 
 After evaluation, both files and the observed acceptance-test decision must be appended to this record even if V3 performs worse.
+
+---
+
+## 30. Milestone M6C result — PPO Reward V3
+
+**Experiment ID:** E-B1-V3-S42-200K  
+**Status:** Evaluated; screening gate passed, improvement not statistically confirmed  
+**Date recorded:** 2026-09-04  
+**Training seed:** 42  
+**Evaluation seeds:** 42–541  
+**Raw-result commit:** [`31b3af1`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/31b3af13f2d5d6a3247a788d2f0c75f15eadeacb)
+
+### 30.1 Verified result
+
+| Metric | PPO V3 result |
+|---|---:|
+| Successful episodes | 283/500 |
+| Collision episodes | 217/500 |
+| Incomplete non-collision episodes | 0/500 |
+| Mean reward | 1.5800 |
+| Mean episode length | 37.256 decisions |
+| Success rate | 56.6% |
+| Collision rate | 43.4% |
+| Mean travel time | 7.4512 s |
+| Mean minimum finite TTC | 0.6212 s |
+| Mean unsafe-TTC events/episode | 15.346 |
+| Mean unsafe-TTC events/decision | 0.4119 |
+| Mean safety interventions | 0 |
+
+The raw CSV and summary JSON were verified in the repository. Reward magnitude is not compared with V1 or V2 because each version uses a different reward definition.
+
+### 30.2 Predefined screening gate
+
+The V3 conditions were fixed before training:
+
+$$
+Success_{V3}>55.8\%
+$$
+
+$$
+Collision_{V3}<43.6\%
+$$
+
+$$
+Incomplete_{V3}<3.4\%
+$$
+
+Observed:
+
+$$
+56.6\%>55.8\%,\qquad43.4\%<43.6\%,\qquad0.0\%<3.4\%
+$$
+
+V3 passed all three screening conditions. The margins over V1 were small, so passing this engineering gate is not treated as proof of a general improvement.
+
+### 30.3 Comparison across reward versions
+
+| Metric | PPO V1 | PPO V2 | PPO V3 | V3 minus V1 |
+|---|---:|---:|---:|---:|
+| Success rate | 55.8% | 54.0% | 56.6% | +0.8 pp |
+| Collision rate | 43.6% | 42.6% | 43.4% | -0.2 pp |
+| Incomplete rate | 0.6% | 3.4% | 0.0% | -0.6 pp |
+| Mean travel time | 7.4700 s | 9.5344 s | 7.4512 s | -0.0188 s |
+| Mean minimum TTC | 0.6332 s | 0.6549 s | 0.6212 s | -0.0120 s |
+| Unsafe events/episode | 15.142 | 16.414 | 15.346 | +0.204 |
+| Unsafe events/decision | 0.4054 | 0.3443 | 0.4119 | +0.0065 |
+
+V3 eliminated the V2 timeout behavior and restored efficient completion. However, minimum TTC decreased and unsafe-event frequency per decision increased relative to both earlier policies. The progress/time terms therefore produced a more decisive policy, not a clearly safer one.
+
+### 30.4 Paired V1-to-V3 transitions
+
+The 500 rows correspond to identical environment seeds.
+
+| V1 outcome | V3 outcome | Episodes |
+|---|---|---:|
+| Success | Success | 266 |
+| Success | Collision | 13 |
+| Collision | Success | 16 |
+| Collision | Collision | 202 |
+| Incomplete | Success | 1 |
+| Incomplete | Collision | 2 |
+
+Relative to V1, V3 gained 17 successful episodes and lost 13. An exact paired McNemar test on success disagreement gave:
+
+$$
+p=0.5847
+$$
+
+The observed +0.8 percentage-point success change is not statistically significant at the 0.05 level.
+
+### 30.5 Paired V2-to-V3 transitions
+
+| V2 outcome | V3 outcome | Episodes |
+|---|---|---:|
+| Success | Success | 249 |
+| Success | Collision | 21 |
+| Collision | Success | 32 |
+| Collision | Collision | 181 |
+| Incomplete | Success | 2 |
+| Incomplete | Collision | 15 |
+
+V3 gained 34 successes and lost 21 relative to V2. The exact paired McNemar result was (p=0.1048), which is also not significant at the 0.05 level.
+
+### 30.6 Decision
+
+V3 is retained as a better completion-oriented screening candidate because it passed the predefined gate and produced no incomplete episodes. It is not declared the final baseline or a statistically confirmed improvement.
+
+All V3 failures were collisions. The next controlled change must therefore target interaction risk while preserving the progress and time terms that eliminated waiting.
+
+---
+
+## 31. Milestone M6D design — PPO Reward V4 risk-aware experiment
+
+**Experiment ID:** E-B1-V4-S42-200K-H10042  
+**Status:** Implemented; execution pending  
+**Date fixed:** 2026-09-04  
+**Configuration:** `configs/intersection_reward_v4.yaml`  
+**Primary changed factor:** bounded TTC-risk penalty
+
+### 31.1 Hypothesis
+
+Adding a moderate dense penalty as TTC approaches zero will teach PPO to avoid collision trajectories earlier. Retaining V3's progress reward and time cost should prevent the conservative timeout failure observed in V2.
+
+### 31.2 Risk term
+
+For finite minimum TTC (	au_t) and threshold (	au_c=2.0\text{ s}), define:
+
+$$
+q_t=\max\left(0,1-\frac{\tau_t}{\tau_c}\right)
+$$
+
+For no finite closing interaction, (q_t=0). The V4 reward is:
+
+$$
+R_t^{V4}=R_t^{V3}-w_q q_t
+$$
+
+with:
+
+$$
+w_q=0.2
+$$
+
+Therefore:
+
+$$
+0\leq w_q q_t\leq0.2
+$$
+
+per policy decision. The term is largest when collision is imminent and becomes zero at or above 2.0 seconds TTC. This TTC is a radial constant-velocity risk surrogate, not a guaranteed physical collision probability.
+
+### 31.3 Controlled variables
+
+Unchanged from V3:
+
+- environment and traffic configuration;
+- observation and three-action control space;
+- V2 base reward coefficients;
+- progress weight 2.0;
+- time cost 0.005;
+- PPO hyperparameters;
+- 200,000 requested training timesteps;
+- training seed 42.
+
+Only the TTC-risk term is activated.
+
+### 31.4 Untouched holdout protocol
+
+Seeds 42–541 have already influenced V4 design and will not be used for V4 selection. Before V4 training is interpreted, the existing V3 checkpoint is evaluated on the untouched seeds:
+
+$$
+10042,10043,\ldots,10541
+$$
+
+V4 is then evaluated on exactly the same 500 holdout episodes. Paired rows permit direct transition analysis and an exact McNemar test.
+
+A meaningful screening improvement requires:
+
+1. V4 success at least 3 percentage points above V3 holdout;
+2. V4 collision at least 3 percentage points below V3 holdout;
+3. V4 incomplete rate no greater than 2%;
+4. V4 mean minimum TTC no lower than V3 holdout;
+5. paired success improvement with (p<0.05).
+
+A promising but non-significant result may advance only to multi-training-seed confirmation; it will not be called an improvement.
+
+### 31.5 Verification status
+
+- V4 YAML differs from V3 only by `risk_weight: 0.2` and `risk_ttc_threshold: 2.0`.
+- The risk term is bounded and zero for TTC at or above the threshold.
+- A unit test checks TTC 1.5 s, normalized risk 0.25, and penalty 0.05.
+- Python syntax checks passed.
+- The maintenance environment lacked pytest, so the complete suite must pass in the user's Python 3.12 environment before training.
+
+### 31.6 Reproducible commands
+
+Pull and test:
+
+```powershell
+git pull origin main
+python -m pytest
+```
+
+Evaluate the existing V3 model on the untouched holdout first:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip --config configs/intersection_reward_v3.yaml --episodes 500 --seed 10042 --output results/ppo_reward_v3_holdout_seed10042.csv
+```
+
+Train V4:
+
+```powershell
+python scripts/train_ppo.py --config configs/intersection_reward_v4.yaml --timesteps 200000 --seed 42 --output models/ppo_reward_v4_seed42
+```
+
+Evaluate V4 on the identical holdout:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_reward_v4_seed42.zip --config configs/intersection_reward_v4.yaml --episodes 500 --seed 10042 --output results/ppo_reward_v4_holdout_seed10042.csv
+```
+
+Expected comparison artifacts:
+
+```text
+results/ppo_reward_v3_holdout_seed10042.csv
+results/ppo_reward_v3_holdout_seed10042.summary.json
+results/ppo_reward_v4_holdout_seed10042.csv
+results/ppo_reward_v4_holdout_seed10042.summary.json
+```
+
+The result and decision must be appended even if V4 performs worse.
 
