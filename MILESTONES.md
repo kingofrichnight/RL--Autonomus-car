@@ -2014,3 +2014,258 @@ results/ppo_reward_v4_holdout_seed10042.summary.json
 
 The result and decision must be appended even if V4 performs worse.
 
+
+---
+
+## 32. Milestone M6D result — PPO Reward V4 holdout
+
+**Experiment ID:** E-B1-V4-S42-200K-H10042
+
+**Status:** Evaluated and rejected as an improvement
+
+**Date recorded:** 2026-09-04
+
+**Training seed:** 42
+
+**Evaluation seeds:** 10042–10541
+
+**Configuration:** `configs/intersection_reward_v4.yaml`
+
+**Raw-result commit:** [`a29e705`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/a29e705415f5f5b7a88c74c598d5d5e7babef2ae)
+
+**Raw result paths:** `results/ppo_reward_v4_holdout_seed10042.csv` and `results/ppo_reward_v4_holdout_seed10042.summary.json`
+
+### 32.1 Verified holdout result
+
+| Metric | V3 holdout | V4 holdout | V4 minus V3 |
+|---|---:|---:|---:|
+| Successful episodes | 298/500 | 271/500 | -27 |
+| Collision episodes | 202/500 | 205/500 | +3 |
+| Incomplete non-collision episodes | 0/500 | 24/500 | +24 |
+| Success rate | 59.6% | 54.2% | -5.4 pp |
+| Collision rate | 40.4% | 41.0% | +0.6 pp |
+| Incomplete rate | 0.0% | 4.8% | +4.8 pp |
+| Mean reward | 2.0889 | 0.0787 | -2.0102 |
+| Mean episode length | 38.106 | 49.200 | +11.094 decisions |
+| Mean travel time | 7.6212 s | 9.8400 s | +2.2188 s |
+| Mean minimum finite TTC | 0.6164 s | 0.6316 s | +0.0152 s |
+| Mean unsafe-TTC events/episode | 15.816 | 17.186 | +1.370 |
+| Unsafe-TTC events/decision | 0.4151 | 0.3493 | -15.8% relative |
+
+V4 improved mean minimum TTC and reduced unsafe-TTC frequency after normalizing for its longer episodes. Those safety indicators did not translate into fewer collisions or more completed routes.
+
+### 32.2 Predefined acceptance test
+
+The Section 31.4 gate was fixed before V4 training. Relative to the V3 holdout, V4 required at least 62.6% success, at most 37.4% collision, at most 2% incomplete episodes, non-worsening mean minimum TTC, and a paired success improvement with $p<0.05$.
+
+Observed:
+
+| Requirement | Observed V4 result | Decision |
+|---|---:|---|
+| Success at least 62.6% | 54.2% | Failed |
+| Collision at most 37.4% | 41.0% | Failed |
+| Incomplete at most 2.0% | 4.8% | Failed |
+| Mean minimum TTC at least 0.6164 s | 0.6316 s | Passed |
+| Significant paired success improvement | Significant decrease, $p=0.00182$ | Failed |
+
+V4 failed four of the five predefined requirements.
+
+### 32.3 Paired V3-to-V4 outcome transitions
+
+The 500 rows correspond to the identical environment seeds.
+
+| V3 holdout outcome | V4 holdout outcome | Episodes |
+|---|---|---:|
+| Success | Success | 249 |
+| Success | Collision | 36 |
+| Success | Incomplete | 13 |
+| Collision | Success | 22 |
+| Collision | Collision | 169 |
+| Collision | Incomplete | 11 |
+
+V4 gained 22 successes from V3 collision episodes but lost 49 V3 successes. An exact two-sided McNemar test on success disagreement gave:
+
+$$
+p=0.0018204
+$$
+
+The significant direction is harmful: V4 reduced success. For collision disagreement, V4 removed 33 V3 collisions and introduced 36 new collisions, giving:
+
+$$
+p=0.80995
+$$
+
+There is no paired evidence that V4 changed collision probability.
+
+### 32.4 Interpretation and decision
+
+The bounded TTC-risk reward made the policy more cautious, as shown by higher mean TTC and fewer unsafe decisions proportionally. It also increased travel time by 29.1% and produced 24 incomplete episodes without reducing collision rate. This reproduces the conservative-waiting failure previously observed in V2.
+
+**Decision:** reject V4 as an improvement and preserve it as a negative result. Do not replace V3. V3 remains the current best completion-oriented policy for the next controlled comparisons.
+
+
+---
+
+## 33. Milestone M9 result — PPO V3 with TTC safety shield
+
+**Experiment ID:** E-B3-V3-S42-H10042-TTC2
+
+**Status:** Evaluated for one training seed; rejected as a replacement for unshielded V3
+
+**Date recorded:** 2026-09-04
+
+**Base checkpoint:** `models/ppo_reward_v3_seed42.zip`
+
+**Training seed:** 42
+
+**Evaluation seeds:** 10042–10541
+
+**Configuration:** `configs/intersection_reward_v3.yaml`
+
+**Changed factor:** inference-time TTC safety shield enabled
+
+**TTC threshold:** 2.0 s
+
+**Raw-result commit:** [`3e5dcfb`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/3e5dcfb5e3b830f996f18a591d11d85c19d607ac)
+
+**Raw result paths:** `results/ppo_reward_v3_shield_holdout_seed10042.csv` and `results/ppo_reward_v3_shield_holdout_seed10042.summary.json`
+
+No model retraining, reward coefficient, environment configuration, seed, episode count, or evaluation rule changed. The only experimental difference from the V3 holdout was `--safety-shield`.
+
+### 33.1 Pre-experiment verification
+
+The complete project test suite was run before accepting the experiment result:
+
+```text
+17 passed in 2.07 s
+```
+
+Command:
+
+```powershell
+python -m pytest -p no:cacheprovider
+```
+
+The shield rule remained the Section 11 rule:
+
+```text
+IF minimum TTC <= 2.0 s
+AND PPO proposes FASTER or IDLE
+THEN execute SLOWER
+ELSE execute PPO action
+```
+
+Evaluation command:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip --config configs/intersection_reward_v3.yaml --episodes 500 --seed 10042 --safety-shield --output results/ppo_reward_v3_shield_holdout_seed10042.csv
+```
+
+### 33.2 Artifact validation
+
+The CSV contains exactly 500 rows and the expected eight metric columns. No row is simultaneously marked as success and collision. Every value in the summary JSON was recomputed from the CSV and matched.
+
+SHA-256 checksums:
+
+```text
+ppo_reward_v3_shield_holdout_seed10042.csv
+397a3c897302773c1af697395cdd1f74252f5ace490e261e6adffff2db793215
+
+ppo_reward_v3_shield_holdout_seed10042.summary.json
+e94fe9ea13a1ef0c4e25dd5f869936f9be929927555fded7643da7056106e2fd
+```
+
+### 33.3 Verified result
+
+| Metric | V3 holdout | V3 + shield | Shield minus V3 |
+|---|---:|---:|---:|
+| Successful episodes | 298/500 | 201/500 | -97 |
+| Collision episodes | 202/500 | 156/500 | -46 |
+| Incomplete non-collision episodes | 0/500 | 143/500 | +143 |
+| Success rate | 59.6% | 40.2% | -19.4 pp |
+| Collision rate | 40.4% | 31.2% | -9.2 pp |
+| Incomplete rate | 0.0% | 28.6% | +28.6 pp |
+| Mean reward | 2.0889 | 1.0006 | -1.0883 |
+| Mean episode length | 38.106 | 96.474 | +58.368 decisions |
+| Mean travel time | 7.6212 s | 19.2948 s | +11.6736 s |
+| Mean minimum finite TTC | 0.6164 s | 1.1315 s | +0.5152 s |
+| Mean unsafe-TTC events/episode | 15.816 | 34.962 | +19.146 |
+| Unsafe-TTC events/decision | 0.4151 | 0.3624 | -12.7% relative |
+| Mean safety interventions/episode | 0 | 34.72 | +34.72 |
+| Aggregate intervention rate | 0.0% | 35.99% | +35.99 pp |
+
+The shield executed 17,360 overrides across 48,237 policy decisions. Raw unsafe-event counts rose because shielded episodes were much longer; the normalized unsafe-event frequency fell.
+
+### 33.4 Paired V3-to-shield outcome transitions
+
+| V3 holdout outcome | V3 + shield outcome | Episodes |
+|---|---|---:|
+| Success | Success | 143 |
+| Success | Collision | 63 |
+| Success | Incomplete | 92 |
+| Collision | Success | 58 |
+| Collision | Collision | 93 |
+| Collision | Incomplete | 51 |
+
+The shield converted 58 V3 collisions into successes, but it lost 155 V3 successes: 63 became collisions and 92 became incomplete episodes. An exact two-sided McNemar test on success disagreement gave:
+
+$$
+p=2.1493\times10^{-11}
+$$
+
+The success reduction is statistically significant. For collision disagreement, the shield removed 109 V3 collisions and introduced 63 new collisions. The exact paired result was:
+
+$$
+p=0.00056145
+$$
+
+The collision reduction is also statistically significant, but 51 of the removed collisions became incomplete episodes rather than successes.
+
+### 33.5 Interpretation and decision
+
+The 2.0-second radial-TTC shield produced a real collision reduction and substantially increased minimum TTC. However, it intervened on approximately 36% of all decisions, more than doubled mean travel time, reduced success by 19.4 percentage points, and caused 143 timeouts. It is therefore too conservative under the current rule.
+
+This result resembles the rule-based and V2 waiting failures. Radial closing TTC reacts to nearby closing motion without modeling route-conflict geometry, future steering, or intent. Repeatedly replacing both `IDLE` and `FASTER` with `SLOWER` can stop the ego vehicle even when proceeding would complete the route safely.
+
+**Decision:** retain this run as the evaluated B3 safety-shield ablation and as a scientifically useful negative result. Reject the current 2.0-second shield as a replacement for V3. Do not silently change its threshold or action rule. Any shield redesign or threshold sweep must be recorded as a new experiment. V3 remains the current best policy.
+
+
+---
+
+## 34. Append-only status, workflow, and decision update
+
+**Date:** 2026-09-04
+
+This section updates current status without deleting or rewriting the earlier planned-state tables.
+
+### 34.1 Milestone status updates
+
+| Milestone | Earlier recorded state | Current state after Sections 32–33 |
+|---:|---|---|
+| M6D | Implemented; holdout evaluation pending | Evaluated; rejected because success fell, collision did not improve, and incomplete episodes increased |
+| M9 | Planned; safety code implemented | Single-seed V3 + shield holdout evaluated; current 2.0 s shield rejected as a V3 replacement |
+
+### 34.2 Decision-register additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-020 | Reject PPO Reward V4 and retain PPO V3 | Retain V4 because minimum TTC improved | V4 success 54.2%, collision 41.0%, incomplete 4.8%; predefined gate failed | Retained |
+| D-021 | Preserve the 2.0 s V3 shield as a negative ablation result | Replace V3 with shielded V3 because collision fell | Collision fell to 31.2%, but success fell to 40.2%, incomplete rose to 28.6%, and intervention rate was 35.99% | Retained |
+| D-022 | Separate long runs from repository maintenance | Run long PPO jobs inside maintenance tasks or commit model ZIPs | Local computer is better suited to long training/evaluation/animation; GitHub should store code, small raw results, and documentation | Retained |
+
+### 34.3 Change-log additions
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-04 | Evaluated and rejected PPO Reward V4 on holdout seeds 10042–10541 | Test whether bounded TTC-risk shaping reduces collision while preserving V3 completion | 500-row V3/V4 paired analysis and exact McNemar tests | Raw results: `a29e705`; documentation: this update |
+| 2026-09-04 | Evaluated V3 with the 2.0 s TTC safety shield | Isolate the effect of inference-time shielding without retraining | 17 tests passed; 500-row CSV/JSON consistency, checksums, paired transitions, and exact tests verified | Raw results: `3e5dcfb`; documentation: this update |
+| 2026-09-04 | Formalized local/Codex/GitHub workflow | Keep long simulation jobs local and version only appropriate artifacts | No model ZIP added; only code, small CSV/JSON results, and documentation are eligible for GitHub | This documentation update |
+
+### 34.4 Artifact-storage rule
+
+Large model checkpoints remain intentionally excluded from Git. They will be committed only if a dedicated artifact-storage mechanism is explicitly selected and configured. The current repository commit includes only source code, configurations, tests, small CSV/JSON results, and documentation.
+
+### 34.5 Next planned milestone
+
+With V4 and the initial shield rule both rejected, the next planned project phase remains M7: verify the intent-data pipeline, freeze its dataset protocol, collect the trajectory dataset on the local computer, and train/evaluate the GRU before proceeding to PPO + intent. No intent-data command, dataset size, or GRU result is claimed by this status update.
+
