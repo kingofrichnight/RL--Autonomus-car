@@ -180,22 +180,33 @@ python scripts/plot_results.py results/ppo.csv results/safeintent.csv \
 1. Collect labeled NPC trajectory histories:
 
 ```bash
-python scripts/collect_intent_data.py --episodes 300 --output data/intent_trajectories.npz
+python scripts/collect_intent_data.py --episodes 300 --history-length 10 \
+  --sample-stride 2 --seed 42 --output data/intent_trajectories_seed42.npz \
+  --summary-output results/intent_dataset_seed42.summary.json
 ```
 
 2. Train the GRU:
 
 ```bash
-python scripts/train_intent.py --data data/intent_trajectories.npz --output models/intent_gru.pt
+python scripts/train_intent.py --data data/intent_trajectories_seed42.npz \
+  --output models/intent_gru_seed42.pt --epochs 30 --batch-size 128 \
+  --learning-rate 0.001 --seed 42
 ```
 
 3. Inspect test-set performance:
 
 ```bash
-python scripts/evaluate_intent.py --data data/intent_trajectories.npz --model models/intent_gru.pt
+python scripts/evaluate_intent.py --data data/intent_trajectories_seed42.npz \
+  --model models/intent_gru_seed42.pt \
+  --output results/intent_gru_seed42.metrics.json
 ```
 
 The dataset stores a short history of `[relative_x, relative_y, relative_vx, relative_vy, acceleration, distance]`, the hidden behavior label used by the simulator, and the source episode. Train/validation/test splitting is episode-based to prevent overlapping trajectory windows from leaking between splits.
+
+The collection script seeds both the environment and random ego action sampler. The training
+checkpoint stores the dataset SHA-256 fingerprint and exact split indices; evaluation refuses a
+different dataset. The large `.npz` dataset and `.pt` checkpoint remain local and ignored by Git.
+Commit only the small dataset-summary and held-out-metrics JSON files after they are verified.
 
 ## Repository layout
 

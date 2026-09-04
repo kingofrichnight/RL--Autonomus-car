@@ -85,7 +85,9 @@ def main() -> None:
             "brake_ttc": args.brake_ttc,
             "accelerate_ttc": args.accelerate_ttc,
             "unsafe_ttc": args.unsafe_ttc,
-            "action_counts": {str(action): count for action, count in sorted(action_counts.items())},
+            "action_counts": {
+                str(action): count for action, count in sorted(action_counts.items())
+            },
         }
     )
     summary_path = output.with_suffix(".summary.json")

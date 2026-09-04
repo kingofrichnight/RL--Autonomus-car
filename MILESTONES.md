@@ -2269,3 +2269,169 @@ Large model checkpoints remain intentionally excluded from Git. They will be com
 
 With V4 and the initial shield rule both rejected, the next planned project phase remains M7: verify the intent-data pipeline, freeze its dataset protocol, collect the trajectory dataset on the local computer, and train/evaluate the GRU before proceeding to PPO + intent. No intent-data command, dataset size, or GRU result is claimed by this status update.
 
+
+---
+
+## 35. Milestone M7 design and intent-pipeline hardening
+
+**Experiment ID:** E-I1-DATA-S42-300E
+
+**Status:** Implementation corrected and verified; full dataset collection pending
+
+**Date fixed:** 2026-09-04
+
+**Primary objective:** create a reproducible, leakage-resistant trajectory dataset and a verifiable held-out GRU evaluation before PPO + intent training
+
+### 35.1 Pre-run audit findings
+
+The intent pipeline existed and had been smoke-tested, but the audit found four issues that had to be corrected before a long dataset or GRU run:
+
+1. `action_space.sample()` had its own random-number generator. Seeding only the environment did not make the random ego trajectory reproducible.
+2. The stored best GRU state used `detach().cpu()` without `clone()`. On CPU, those tensors can share storage with the live model, allowing later optimization epochs to overwrite the state selected at the best validation epoch.
+3. A grouped split could contain no samples from one driver class, making macro metrics and conclusions invalid.
+4. Intent evaluation printed metrics to the terminal but did not save a small versionable result artifact or verify that the supplied dataset was the exact archive used for training.
+
+### 35.2 Implemented corrections
+
+The following changes were made without changing the six intent features, GRU architecture, driver-profile probabilities, or environment configuration:
+
+- seed the action space after every environment reset, because HighwayEnv may recreate the action space during reset;
+- validate positive history length and sample stride;
+- validate dataset shape, label range, sample/label length, and episode-ID length;
+- save collection parameters in the dataset archive and a separate summary JSON;
+- create deterministic 70%/15%/15% splits by complete episode;
+- require the training, validation, and test splits each to contain cautious, normal, and aggressive samples;
+- clone the selected best model state so it cannot share CPU tensor storage with later epochs;
+- store the exact train, validation, and test indices in the checkpoint;
+- store training seed, hyperparameters, class counts, best epoch, and dataset SHA-256 in the checkpoint;
+- require evaluation to match the checkpoint's dataset fingerprint and held-out indices;
+- save accuracy, majority-class accuracy, balanced accuracy, macro precision/recall/F1, per-class metrics, and the confusion matrix to JSON;
+- add focused tests for validation, grouped splitting, checkpoint isolation, reproducibility metadata, and classification metrics.
+
+The large dataset archive and model checkpoint remain ignored by Git. Only the small collection-summary and held-out-metrics JSON files are intended for GitHub.
+
+### 35.3 Reproducibility smoke tests and corrections
+
+An initial three-episode engineering smoke run produced a held-out split with no aggressive samples. Its one-epoch accuracy and macro-F1 values are invalid as research evidence and must not be reported as model performance. This failure motivated the new all-class split gate.
+
+During the same audit, repeated collection over seeds 42–44 produced different sample totals when the action space was seeded before reset. After moving the action-space seed after reset, two independent collections produced exactly 365 samples each with identical feature arrays, labels, episode IDs, label names, and metadata.
+
+The corrected three-episode smoke distribution was:
+
+| Class | Samples |
+|---|---:|
+| Cautious | 108 |
+| Normal | 201 |
+| Aggressive | 56 |
+| Total | 365 |
+
+These are engineering smoke counts only. They are not the M7 dataset result.
+
+### 35.4 Verification
+
+```text
+ruff check: passed
+pytest: 25 passed in 2.86 s
+repeated seeded collection: arrays and metadata identical
+```
+
+The pre-existing 101-character line in `scripts/evaluate_rule_based.py` was also wrapped during lint cleanup; its behavior did not change.
+
+### 35.5 Frozen dataset protocol
+
+| Setting | Fixed value |
+|---|---:|
+| Environment configuration | `configs/intersection.yaml` |
+| Driver behaviors | Enabled |
+| Ego collection policy | Seeded random discrete actions |
+| Episodes | 300 |
+| Environment/action seeds | 42–341 |
+| History length | 10 observations |
+| Sample stride | 2 policy decisions |
+| Features/history step | 6 |
+| Dataset path | `data/intent_trajectories_seed42.npz` |
+| Summary path | `results/intent_dataset_seed42.summary.json` |
+
+The feature vector remains:
+
+$$
+x_t=[\Delta x,\Delta y,\Delta v_x,\Delta v_y,\Delta v,d]
+$$
+
+The fifth feature remains the recorded velocity-change magnitude rather than physical acceleration. Changing it now would define a new dataset experiment.
+
+The collection result is accepted for GRU training only if:
+
+1. all 300 requested episodes produce samples;
+2. cautious, normal, and aggressive samples are all present;
+3. each class represents at least 10% of all samples;
+4. the archive and summary report matching parameters and SHA-256 fingerprint.
+
+If any condition fails, the dataset remains recorded as an unsuccessful collection and the training step does not begin until a new protocol is documented.
+
+### 35.6 Frozen GRU training and evaluation protocol
+
+The existing model architecture remains unchanged: one 64-unit GRU followed by LayerNorm, a 32-unit ReLU layer, and a three-class output layer.
+
+| Setting | Fixed value |
+|---|---:|
+| Split unit | Complete episode |
+| Train/validation/test proportions | 70%/15%/15% |
+| Split seed | 42 |
+| Epochs | 30 |
+| Batch size | 128 |
+| Learning rate | 0.001 |
+| Model-selection metric | Validation accuracy |
+| Checkpoint path | `models/intent_gru_seed42.pt` |
+| Held-out metrics path | `results/intent_gru_seed42.metrics.json` |
+
+The GRU passes its initial screening only if all of the following hold on the untouched test episodes:
+
+1. accuracy exceeds the test-set majority-class baseline by at least 5 percentage points;
+2. macro F1 is at least 0.50;
+3. recall for every driver class is at least 0.40;
+4. recomputed accuracy exactly matches the accuracy stored in the checkpoint.
+
+These are screening criteria for one dataset/training seed, not a final multi-seed intent result. A failed or inconclusive result must be appended and preserved before feature or model changes are proposed.
+
+### 35.7 Reproducible local-compute commands
+
+Pull and verify before collection:
+
+```powershell
+git pull origin main
+python -m pytest
+```
+
+Collect the frozen dataset:
+
+```powershell
+python scripts/collect_intent_data.py --episodes 300 --history-length 10 --sample-stride 2 --seed 42 --output data/intent_trajectories_seed42.npz --summary-output results/intent_dataset_seed42.summary.json
+```
+
+After the collection summary is reviewed and recorded, train the GRU:
+
+```powershell
+python scripts/train_intent.py --data data/intent_trajectories_seed42.npz --output models/intent_gru_seed42.pt --epochs 30 --batch-size 128 --learning-rate 0.001 --seed 42
+```
+
+Evaluate only the checkpoint's untouched test split:
+
+```powershell
+python scripts/evaluate_intent.py --data data/intent_trajectories_seed42.npz --model models/intent_gru_seed42.pt --output results/intent_gru_seed42.metrics.json
+```
+
+### 35.8 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Reason | Status |
+|---|---|---|---|---|
+| D-023 | Seed the random ego action space after every reset | Seed only the environment or seed before reset | Repeated collections were not reproducible until post-reset action seeding | Retained |
+| D-024 | Require dataset fingerprints, exact split indices, and all-class split coverage | Trust filenames and silently evaluate any supplied archive | Prevent dataset mismatch, sample leakage, and invalid class metrics | Retained |
+| D-025 | Clone the best CPU model state | Keep `detach().cpu()` references | Prevent later epochs from overwriting the validation-selected checkpoint | Retained |
+| D-026 | Version only intent summary/metrics JSON artifacts | Commit `.npz` datasets and `.pt` checkpoints | Follow the local-compute/GitHub artifact-storage boundary | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-04 | Hardened and froze the M7 intent pipeline | Correct reproducibility, checkpoint-selection, split-validity, and result-storage defects before long runs | Ruff passed; 24 tests passed; repeated seeded collection matched | This implementation update |
+
+**Next action:** run only the 300-episode collection command first. Review and append its summary before starting GRU training.

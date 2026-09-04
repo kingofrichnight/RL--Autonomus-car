@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections import defaultdict, deque
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,10 @@ class TrajectoryCollector:
     """Build labeled fixed-length NPC histories directly from HighwayEnv vehicle states."""
 
     def __init__(self, history_length: int = 10, sample_stride: int = 2) -> None:
+        if history_length <= 0:
+            raise ValueError("history_length must be positive")
+        if sample_stride <= 0:
+            raise ValueError("sample_stride must be positive")
         self.history_length = history_length
         self.sample_stride = sample_stride
         self.histories: dict[int, deque[np.ndarray]] = defaultdict(
@@ -97,11 +102,21 @@ def save_dataset(
     samples: list[np.ndarray],
     labels: list[int],
     episode_ids: list[int] | None = None,
+    *,
+    metadata: dict[str, int | float | str] | None = None,
 ) -> None:
     output = Path(path)
     output.parent.mkdir(parents=True, exist_ok=True)
     x = np.asarray(samples, dtype=np.float32)
     y = np.asarray(labels, dtype=np.int64)
+    if x.ndim != 3 or x.shape[-1] != 6:
+        raise ValueError("samples must have shape [samples, timesteps, 6]")
+    if len(x) != len(y):
+        raise ValueError("samples and labels must contain the same number of items")
+    if len(y) == 0:
+        raise ValueError("at least one trajectory sample is required")
+    if np.any((y < 0) | (y >= len(LABELS))):
+        raise ValueError("labels must use the cautious/normal/aggressive class indices")
     if episode_ids is None:
         episode_ids = list(range(len(samples)))
     groups = np.asarray(episode_ids, dtype=np.int64)
@@ -113,4 +128,5 @@ def save_dataset(
         y=y,
         episode_ids=groups,
         label_names=np.asarray(list(LABELS)),
+        metadata_json=np.asarray(json.dumps(metadata or {}, sort_keys=True)),
     )

@@ -25,9 +25,15 @@ def main() -> None:
     )
     print(f"best_validation_accuracy={result.best_validation_accuracy:.4f}")
     print(f"test_accuracy={result.test_accuracy:.4f}")
+    print(f"best_epoch={result.best_epoch}")
+    print(f"split_mode={result.split_mode}")
+    print(
+        "split_samples="
+        f"{result.train_samples}/{result.validation_samples}/{result.test_samples}"
+    )
+    print(f"dataset_sha256={result.dataset_sha256}")
     print(f"checkpoint={result.checkpoint_path}")
 
 
 if __name__ == "__main__":
     main()
-
