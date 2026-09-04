@@ -9,6 +9,7 @@ import highway_env  # noqa: F401  Registers HighwayEnv environments with Gymnasi
 
 from safeintent_rl.config import load_config, split_env_config
 from safeintent_rl.envs.driver_behavior import DriverBehaviorWrapper
+from safeintent_rl.envs.reward import RouteProgressRewardWrapper
 from safeintent_rl.intent.wrapper import IntentObservationWrapper
 from safeintent_rl.safety.shield import TTCSafetyShield
 
@@ -38,12 +39,19 @@ def make_intersection_env(
 ) -> gym.Env:
     """Create the project's intersection environment with optional research wrappers."""
     loaded = load_config(config_path)
+    reward_wrapper_config = loaded.pop("reward_wrapper", None)
     preferred_id, env_config = split_env_config(loaded)
     env_id = _available_intersection_id(preferred_id)
     env = gym.make(env_id, render_mode=render_mode, config=env_config)
 
     if driver_behaviors:
         env = DriverBehaviorWrapper(env)
+    if reward_wrapper_config is not None:
+        wrapper_config = dict(reward_wrapper_config)
+        wrapper_type = wrapper_config.pop("type", "RouteProgressReward")
+        if wrapper_type != "RouteProgressReward":
+            raise ValueError(f"Unsupported reward wrapper: {wrapper_type}")
+        env = RouteProgressRewardWrapper(env, **wrapper_config)
     if intent_model is not None:
         env = IntentObservationWrapper(
             env,
