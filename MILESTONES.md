@@ -2432,6 +2432,6 @@ python scripts/evaluate_intent.py --data data/intent_trajectories_seed42.npz --m
 
 | Date | Change | Reason | Verification | Git commit |
 |---|---|---|---|---|
-| 2026-09-04 | Hardened and froze the M7 intent pipeline | Correct reproducibility, checkpoint-selection, split-validity, and result-storage defects before long runs | Ruff passed; 24 tests passed; repeated seeded collection matched | This implementation update |
+| 2026-09-04 | Hardened and froze the M7 intent pipeline | Correct reproducibility, checkpoint-selection, split-validity, and result-storage defects before long runs | Ruff passed; 25 tests passed; repeated seeded collection matched | This implementation update |
 
 **Next action:** run only the 300-episode collection command first. Review and append its summary before starting GRU training.
