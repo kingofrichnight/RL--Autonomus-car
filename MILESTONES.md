@@ -2647,3 +2647,116 @@ The checkpoint is structurally valid, matches the accepted dataset, and preserve
 | 2026-09-04 | Trained and validated the frozen seed-42 intent GRU | Test whether the fixed trajectory representation supports intent classification before PPO integration | Fingerprint, exact split coverage, episode isolation, class coverage, finite tensors, normalization statistics, and checkpoint hash verified | Documentation: this update |
 
 **Next action:** run the frozen evaluator once and commit only `results/intent_gru_seed42.metrics.json`; keep `models/intent_gru_seed42.pt` local.
+
+
+---
+
+## 38. Milestone M7C result — frozen GRU held-out evaluation
+
+**Experiment ID:** E-M7-GRU-EVAL-S42-DATA56433621
+
+**Status:** Evaluated; all predefined initial screening gates passed
+
+**Date recorded:** 2026-09-04
+
+**Dataset:** `data/intent_trajectories_seed42.npz`
+
+**Dataset SHA-256:** `56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0`
+
+**Checkpoint:** local `models/intent_gru_seed42.pt`
+
+**Checkpoint SHA-256:** `10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05`
+
+**Metrics commit:** [`d478c04`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/d478c04278bcdf5fd52f6cab37510314119ab059)
+
+**Changed factor:** none; this was the single frozen evaluation specified in Sections 35.6 and 37.5
+
+The `.pt` checkpoint remains local and ignored. Only `results/intent_gru_seed42.metrics.json` was committed.
+
+### 38.1 Verification context and command
+
+The 25-test project suite passed immediately before the frozen training phase, and no source code or evaluation protocol changed between training and evaluation. The user subsequently reported completion of the prescribed pull, test, and evaluation sequence.
+
+Evaluation command:
+
+```powershell
+python scripts/evaluate_intent.py --data data/intent_trajectories_seed42.npz --model models/intent_gru_seed42.pt --output results/intent_gru_seed42.metrics.json
+```
+
+### 38.2 Verified held-out metrics
+
+| Metric | Result |
+|---|---:|
+| Test samples | 15,923 |
+| Accuracy | 63.3549% |
+| Majority-class accuracy | 47.6543% |
+| Accuracy margin over majority | +15.7006 pp |
+| Balanced accuracy | 60.7874% |
+| Macro precision | 63.5768% |
+| Macro recall | 60.7874% |
+| Macro F1 | 61.8289% |
+
+Per-class results:
+
+| Class | Precision | Recall | F1 | Support | Predicted |
+|---|---:|---:|---:|---:|---:|
+| Cautious | 64.9438% | 59.5045% | 62.1053% | 4,561 | 4,179 |
+| Normal | 62.6769% | 71.7712% | 66.9165% | 7,588 | 8,689 |
+| Aggressive | 63.1097% | 51.0864% | 56.4651% | 3,774 | 3,055 |
+
+Confusion matrix, with true classes in rows and predicted classes in columns:
+
+| True / predicted | Cautious | Normal | Aggressive |
+|---|---:|---:|---:|
+| Cautious | 2,714 | 1,668 | 179 |
+| Normal | 1,194 | 5,446 | 948 |
+| Aggressive | 271 | 1,575 | 1,928 |
+
+### 38.3 Independent artifact validation
+
+The metrics JSON was independently recomputed from its confusion matrix:
+
+- row totals exactly match the three reported class supports;
+- column totals exactly match the three reported prediction counts;
+- the diagonal contains 10,088 correct predictions out of 15,923;
+- recomputed accuracy is exactly `0.6335489543427746`;
+- recomputed macro F1 is exactly `0.6182894884252775`;
+- the reported accuracy exactly matches the checkpoint's stored test accuracy;
+- the metrics dataset fingerprint matches the accepted dataset.
+
+Metrics JSON SHA-256:
+
+```text
+7e4fcf349049dcc969c449aa00b38bbaac777b3ecf4e4608ec11555cd71a73f2
+```
+
+### 38.4 Predefined screening decision
+
+| Requirement | Threshold | Observed | Decision |
+|---|---:|---:|---|
+| Accuracy exceeds majority baseline by at least 5 pp | At least 52.6543% | 63.3549% | Passed |
+| Macro F1 | At least 50.0000% | 61.8289% | Passed |
+| Recall for every class | At least 40.0000% | Minimum 51.0864% | Passed |
+| Accuracy reproduces checkpoint value exactly | Exact equality | Exact equality | Passed |
+
+All four predefined gates passed.
+
+### 38.5 Interpretation and decision
+
+The fixed six-feature, ten-step history contains usable predictive information for all three driver classes. Normal drivers are identified most reliably. Aggressive-driver recall is the weakest at 51.0864%; 1,575 of 3,774 aggressive samples were predicted as normal. The classifier therefore passes the initial screening but remains imperfect, and downstream PPO must receive predictions rather than privileged ground-truth labels.
+
+This is a single dataset and training seed. It establishes readiness for the controlled PPO + intent experiment, not final classifier generalization or a claim that intent will improve driving outcomes.
+
+**Decision:** accept the seed-42 GRU as the fixed intent model for the first PPO + intent experiment. Do not tune or retrain it based on this test result. Before M8 training, audit and freeze the PPO + intent configuration, observation interface, training seed/timesteps, evaluation seeds, and acceptance criteria. V3 remains the driving-policy baseline until a paired holdout evaluation proves improvement.
+
+### 38.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-029 | Accept the frozen seed-42 GRU for the first controlled PPO + intent experiment | Reject the classifier, tune on the test split, or retrain before integration | All four predefined screening gates passed; macro F1 61.8289%; minimum class recall 51.0864% | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-04 | Evaluated and accepted the frozen seed-42 intent GRU | Determine whether the fixed trajectory representation supports all three intent classes before PPO integration | Metrics arithmetic, confusion matrix totals, dataset fingerprint, checkpoint accuracy, and all four gates independently verified | Metrics: `d478c04`; documentation: this update |
+
+**Next action:** audit and freeze M8 before starting any long PPO + intent training run.
