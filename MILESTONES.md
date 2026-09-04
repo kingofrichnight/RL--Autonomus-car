@@ -141,7 +141,7 @@ The driver profile is available internally only as a supervised-learning label. 
 | M6 | Train publication-quality PPO baseline | Seed 42 evaluated; multi-seed study pending | 200,704-step checkpoint; 500 evaluation episodes |
 | M6A | Evaluate rule-based reference and diagnose PPO V1 | Evaluated | 500 episodes over seeds 42–541 |
 | M6B | Design and test PPO Baseline V2 reward | Evaluated; rejected as improvement | Success 54.0%, collision 42.6%; predefined gate failed |
-| M6C | Add progress/stall shaping for PPO V3 | Planned next | Increase completion without restoring reckless speed incentive |
+| M6C | Add progress/stall shaping for PPO V3 | Implemented; training pending | Route-progress wrapper, isolated config, and tests added |
 | M7 | Collect intent dataset and train GRU | Planned after M6C reward experiment | Data and training scripts available |
 | M8 | Train PPO + intent | Planned | Requires final GRU checkpoint |
 | M9 | Evaluate TTC shield and PPO + safety | Planned | Safety code implemented |
@@ -843,7 +843,8 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | D-014 | Preserve an append-only research history | Replace old values with only the latest result | Maintain an auditable record for supervision and thesis writing | Retained |
 | D-015 | Evaluate the rule-based controller before GRU work | Proceed directly to intent learning | PPO V1 success and collision rates require a fair non-learning reference and reward diagnosis | Completed and retained |
 | D-016 | Develop PPO Reward V2 before GRU work | Add more PPO timesteps with the original reward | Both evaluated baselines expose a safety-efficiency tradeoff caused partly by reward alignment | Evaluated; V2 rejected |
-| D-017 | Preserve V2 as a negative result and design V3 | Accept V2 because collision fell slightly | V2 failed the predefined success-and-collision gate and increased timeouts | Active |
+| D-017 | Preserve V2 as a negative result and design V3 | Accept V2 because collision fell slightly | V2 failed the predefined success-and-collision gate and increased timeouts | Retained |
+| D-018 | Add normalized route progress and a small time cost in V3 | Tune PPO hyperparameters or add intent immediately | V2 lacked dense goal feedback and produced 17 timeouts | Active; evaluation pending |
 
 ---
 
@@ -871,6 +872,8 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | 2026-09-03 | Documented V2 run commands | Make the controlled experiment reproducible | README reviewed | `cddfa85` |
 | 2026-09-04 | Evaluated PPO Reward V2 over 500 episodes | Test whether reward rebalance improves completion and safety | Raw CSV, JSON, and paired-seed analysis verified | Results: `81b9fd7`; documentation: this update |
 | 2026-09-04 | Rejected V2 as an improvement | Success fell to 54.0% despite collision falling to 42.6% | Predefined Section 27.4 gate applied | This documentation update |
+| 2026-09-04 | Implemented PPO Reward V3 route-progress shaping | Provide dense goal feedback and penalize waiting while retaining V2 collision/arrival priorities | Source, isolated YAML, integration, and two unit tests added; syntax checks passed | `5303b63`, `9860c91`, `cd74532`, `1562432`, `2f8411b` |
+| 2026-09-04 | Documented reproducible V3 commands | Ensure training and evaluation use the identical V3 configuration | README command review | `ca59c64` |
 
 ---
 
@@ -1643,3 +1646,135 @@ The revised reward correctly made collision episodes strongly negative. However,
 V2 improved reward alignment: collisions became negative and the normalized unsafe-event rate decreased. It did not solve task completion. Raising the arrival reward is insufficient when the agent receives little dense feedback about approaching the goal, while a zero-reward or slightly positive timeout can remain preferable to risky exploration.
 
 **Decision:** preserve V2 as a scientifically useful negative result. Do not replace V1 with V2. The next controlled experiment, PPO V3, will retain the strong collision and arrival terms while adding a dense route-progress signal and a small stall/time cost. The V3 coefficients and route-progress calculation must be fixed and documented before training.
+
+---
+
+## 29. Milestone M6C design — PPO Reward V3
+
+**Experiment ID:** E-B1-V3-S42-200K  
+**Status:** Implemented; training and evaluation pending  
+**Date fixed:** 2026-09-04  
+**Primary changed factor:** dense route-progress shaping plus a per-decision time cost  
+**Configuration:** `configs/intersection_reward_v3.yaml`
+
+### 29.1 Motivation from V2 evidence
+
+PPO V2 reduced the proportion of unsafe-TTC decisions but lowered success from 55.8% to 54.0% and increased incomplete episodes from 0.6% to 3.4%. Its reward strongly distinguished arrival from collision, but it supplied little intermediate information about whether an action moved the ego vehicle toward successful route completion.
+
+V3 targets that failure directly. It retains the V2 collision, arrival, and speed coefficients and adds:
+
+1. normalized forward route-progress reward;
+2. a small cost for every policy decision, including waiting.
+
+No PPO hyperparameter, observation, action, traffic, training-budget, or seed change is introduced in this experiment.
+
+### 29.2 Route-progress calculation
+
+At reset, the wrapper captures the planned route and the length (L_k) of every route lane. The final exit lane is capped at the configured arrival distance:
+
+$$
+L_m^*=\min(L_m,25\ \text{m})
+$$
+
+For route-lane index (j) and longitudinal lane coordinate (s_t), absolute progress is:
+
+$$
+P_t=\sum_{k<j}L_k+\min(\max(s_t,0),L_j^*)
+$$
+
+where only the final lane uses the capped length. Let (P_0) be progress at reset and (P_g) the route goal. The non-negative normalized progress increment is:
+
+$$
+\Delta p_t=
+\frac{\max(0,P_t-P_{t-1})}
+{\max(P_g-P_0,1)}
+$$
+
+Backward motion cannot earn a negative progress term, and repeated forward distance cannot be rewarded twice because the wrapper stores the greatest achieved progress.
+
+### 29.3 V3 reward
+
+The fixed V2 base coefficients remain:
+
+| Component | V3 value |
+|---|---:|
+| Collision reward | -10.0 |
+| Arrival reward | +5.0 |
+| High-speed reward | +0.05 |
+
+The wrapper applies:
+
+$$
+R_t^{V3}=R_t^{V2}+2.0\Delta p_t-0.005
+$$
+
+At the 5 Hz policy frequency and 30-second duration, a full timeout contains at most 150 decisions, so its maximum cumulative time cost is:
+
+$$
+150\times0.005=0.75
+$$
+
+The cumulative normalized progress bonus is bounded by 2.0 for a monotonic route completion. This gives PPO useful intermediate feedback while keeping collision as the dominant single terminal penalty.
+
+### 29.4 Hypothesis and acceptance rule
+
+**Hypothesis:** dense progress feedback will reduce waiting/timeouts and increase successful completion relative to both V1 and V2, without reversing V2's collision improvement.
+
+V3 is retained for the next research phase only if the 500-episode seed-42 screening run satisfies all three predefined conditions:
+
+$$
+Success_{V3}>55.8\%
+$$
+
+$$
+Collision_{V3}<43.6\%
+$$
+
+$$
+Incomplete_{V3}<3.4\%
+$$
+
+Reward magnitude is not an acceptance metric because V3 uses a different reward definition.
+
+### 29.5 Implementation and verification
+
+Added:
+
+- `safeintent_rl/envs/reward.py`: `RouteProgressRewardWrapper`;
+- `configs/intersection_reward_v3.yaml`: isolated V3 coefficients;
+- `tests/test_progress_reward.py`: progress and stall test cases;
+- environment-factory integration and package export;
+- per-step diagnostic fields for base reward, route progress, progress delta, progress reward, time cost, and shaped reward.
+
+Python syntax checks passed in the maintenance workspace. The complete dependency-based test suite must be run in the user's Python 3.12 project environment before training.
+
+### 29.6 Reproducible execution
+
+Pull and test:
+
+```powershell
+git pull origin main
+python -m pytest
+```
+
+Train:
+
+```powershell
+python scripts/train_ppo.py --config configs/intersection_reward_v3.yaml --timesteps 200000 --seed 42 --output models/ppo_reward_v3_seed42
+```
+
+Evaluate after training:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip --config configs/intersection_reward_v3.yaml --episodes 500 --seed 42 --output results/ppo_reward_v3_seed42.csv
+```
+
+Expected evaluation outputs:
+
+```text
+results/ppo_reward_v3_seed42.csv
+results/ppo_reward_v3_seed42.summary.json
+```
+
+After evaluation, both files and the observed acceptance-test decision must be appended to this record even if V3 performs worse.
+
