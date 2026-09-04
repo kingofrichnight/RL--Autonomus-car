@@ -1,0 +1,25 @@
+{
+  "collector": "seeded_random_ego_policy",
+  "episodes": 300,
+  "first_seed": 42,
+  "last_seed": 341,
+  "history_length": 10,
+  "sample_stride": 2,
+  "samples": 109596,
+  "feature_count": 6,
+  "label_counts": {
+    "cautious": 32631,
+    "normal": 49213,
+    "aggressive": 27752
+  },
+  "label_fractions": {
+    "cautious": 0.2977389685754955,
+    "normal": 0.4490401109529545,
+    "aggressive": 0.25322092047155004
+  },
+  "episodes_with_samples": 300,
+  "minimum_samples_per_episode": 18,
+  "maximum_samples_per_episode": 1421,
+  "dataset_sha256": "56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0",
+  "dataset_path": "data\\intent_trajectories_seed42.npz"
+}
