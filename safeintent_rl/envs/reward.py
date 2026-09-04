@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import math
 from typing import Any
 
 import gymnasium as gym
 
+from safeintent_rl.safety.ttc import minimum_ttc
+
 
 class RouteProgressRewardWrapper(gym.Wrapper):
-    """Add normalized route progress and a small time cost to the base reward."""
+    """Add route progress, time cost, and optional TTC risk shaping."""
 
     def __init__(
         self,
@@ -15,6 +18,8 @@ class RouteProgressRewardWrapper(gym.Wrapper):
         progress_weight: float = 2.0,
         time_penalty: float = 0.005,
         arrival_distance: float = 25.0,
+        risk_weight: float = 0.0,
+        risk_ttc_threshold: float = 2.0,
     ) -> None:
         super().__init__(env)
         if progress_weight < 0:
@@ -23,10 +28,16 @@ class RouteProgressRewardWrapper(gym.Wrapper):
             raise ValueError("time_penalty must be non-negative")
         if arrival_distance <= 0:
             raise ValueError("arrival_distance must be positive")
+        if risk_weight < 0:
+            raise ValueError("risk_weight must be non-negative")
+        if risk_ttc_threshold <= 0:
+            raise ValueError("risk_ttc_threshold must be positive")
 
         self.progress_weight = float(progress_weight)
         self.time_penalty = float(time_penalty)
         self.arrival_distance = float(arrival_distance)
+        self.risk_weight = float(risk_weight)
+        self.risk_ttc_threshold = float(risk_ttc_threshold)
         self._route: list[tuple[Any, Any, int]] = []
         self._lane_lengths: list[float] = []
         self._goal_progress = 0.0
@@ -45,7 +56,13 @@ class RouteProgressRewardWrapper(gym.Wrapper):
         distance_delta = max(0.0, current_progress - self._previous_progress)
         normalized_delta = distance_delta / self._remaining_distance
         progress_reward = self.progress_weight * normalized_delta
-        shaped_reward = float(base_reward) + progress_reward - self.time_penalty
+        risk_ttc, risk_fraction, risk_penalty = self._risk_penalty()
+        shaped_reward = (
+            float(base_reward)
+            + progress_reward
+            - self.time_penalty
+            - risk_penalty
+        )
         self._previous_progress = max(self._previous_progress, current_progress)
 
         details = dict(info)
@@ -56,10 +73,28 @@ class RouteProgressRewardWrapper(gym.Wrapper):
                 "route_progress_delta": normalized_delta,
                 "progress_reward": progress_reward,
                 "time_penalty": self.time_penalty,
+                "reward_min_ttc": risk_ttc,
+                "risk_fraction": risk_fraction,
+                "risk_penalty": risk_penalty,
                 "shaped_reward": shaped_reward,
             }
         )
         return observation, shaped_reward, terminated, truncated, details
+
+    def _risk_penalty(self) -> tuple[float, float, float]:
+        if self.risk_weight == 0.0:
+            return math.inf, 0.0, 0.0
+
+        base = self.env.unwrapped
+        ttc = minimum_ttc(base.vehicle, list(base.road.vehicles))
+        if not math.isfinite(ttc):
+            return ttc, 0.0, 0.0
+
+        risk_fraction = max(
+            0.0,
+            1.0 - (ttc / self.risk_ttc_threshold),
+        )
+        return ttc, risk_fraction, self.risk_weight * risk_fraction
 
     def _capture_route(self) -> None:
         base = self.env.unwrapped
