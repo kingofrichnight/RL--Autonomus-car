@@ -1,0 +1,11 @@
+{
+  "episodes": 500.0,
+  "mean_reward": 2.0889171115899763,
+  "mean_length": 38.106,
+  "success_rate": 0.596,
+  "collision_rate": 0.404,
+  "mean_travel_time": 7.621200000000001,
+  "mean_min_ttc": 0.6163851307757378,
+  "mean_unsafe_ttc_events": 15.816,
+  "mean_safety_interventions": 0.0
+}
