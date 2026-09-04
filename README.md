@@ -111,6 +111,29 @@ python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip \
   --output results/ppo_reward_v3_seed42.csv
 ```
 
+Before comparing Reward V4, evaluate the existing V3 model on the untouched holdout seeds 10042–10541:
+
+```bash
+python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip \
+  --config configs/intersection_reward_v3.yaml --episodes 500 --seed 10042 \
+  --output results/ppo_reward_v3_holdout_seed10042.csv
+```
+
+Train risk-aware PPO Reward V4:
+
+```bash
+python scripts/train_ppo.py --config configs/intersection_reward_v4.yaml \
+  --timesteps 200000 --seed 42 --output models/ppo_reward_v4_seed42
+```
+
+Evaluate V4 on the identical holdout seeds:
+
+```bash
+python scripts/evaluate_policy.py --model models/ppo_reward_v4_seed42.zip \
+  --config configs/intersection_reward_v4.yaml --episodes 500 --seed 10042 \
+  --output results/ppo_reward_v4_holdout_seed10042.csv
+```
+
 Watch a trained policy drive live:
 
 ```bash
