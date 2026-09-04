@@ -6,7 +6,7 @@
 **Primary algorithm:** Proximal Policy Optimization (PPO)  
 **Document type:** Living technical record  
 **Created:** 2026-09-03  
-**Last updated:** 2026-09-03  
+**Last updated:** 2026-09-04  
 
 ---
 
@@ -140,8 +140,9 @@ The driver profile is available internally only as a supervised-learning label. 
 | M5 | Correct evaluation and create live PPO viewer | Completed | 9 tests; 20-episode corrected evaluation |
 | M6 | Train publication-quality PPO baseline | Seed 42 evaluated; multi-seed study pending | 200,704-step checkpoint; 500 evaluation episodes |
 | M6A | Evaluate rule-based reference and diagnose PPO V1 | Evaluated | 500 episodes over seeds 42–541 |
-| M6B | Design and test PPO Baseline V2 reward | Implemented; training pending | Preserve V1; only three reward coefficients changed |
-| M7 | Collect intent dataset and train GRU | Planned after M6B reward experiment | Data and training scripts available |
+| M6B | Design and test PPO Baseline V2 reward | Evaluated; rejected as improvement | Success 54.0%, collision 42.6%; predefined gate failed |
+| M6C | Add progress/stall shaping for PPO V3 | Planned next | Increase completion without restoring reckless speed incentive |
+| M7 | Collect intent dataset and train GRU | Planned after M6C reward experiment | Data and training scripts available |
 | M8 | Train PPO + intent | Planned | Requires final GRU checkpoint |
 | M9 | Evaluate TTC shield and PPO + safety | Planned | Safety code implemented |
 | M10 | Train and evaluate SafeIntent-PPO | Planned | Requires M8 and M9 |
@@ -841,7 +842,8 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | D-013 | Use environment arrival method | Depend only on `info` keys | Correct success measurement across versions | Retained |
 | D-014 | Preserve an append-only research history | Replace old values with only the latest result | Maintain an auditable record for supervision and thesis writing | Retained |
 | D-015 | Evaluate the rule-based controller before GRU work | Proceed directly to intent learning | PPO V1 success and collision rates require a fair non-learning reference and reward diagnosis | Completed and retained |
-| D-016 | Develop PPO Reward V2 before GRU work | Add more PPO timesteps with the original reward | Both evaluated baselines expose a safety-efficiency tradeoff caused partly by reward alignment | Implemented; evaluation pending |
+| D-016 | Develop PPO Reward V2 before GRU work | Add more PPO timesteps with the original reward | Both evaluated baselines expose a safety-efficiency tradeoff caused partly by reward alignment | Evaluated; V2 rejected |
+| D-017 | Preserve V2 as a negative result and design V3 | Accept V2 because collision fell slightly | V2 failed the predefined success-and-collision gate and increased timeouts | Active |
 
 ---
 
@@ -867,6 +869,8 @@ This separation prevents human inputs from invalidating autonomous-policy evalua
 | 2026-09-03 | Added isolated PPO Reward V2 configuration | Increase successful arrival while making collision-return negative | Coefficient-difference and reward-bound checks passed | `5f099ad`, `3395a81` |
 | 2026-09-03 | Added `--config` to PPO training and evaluation | Ensure V2 uses the same reward during both phases | GitHub source verification | `74b9833`, `d7c6324` |
 | 2026-09-03 | Documented V2 run commands | Make the controlled experiment reproducible | README reviewed | `cddfa85` |
+| 2026-09-04 | Evaluated PPO Reward V2 over 500 episodes | Test whether reward rebalance improves completion and safety | Raw CSV, JSON, and paired-seed analysis verified | Results: `81b9fd7`; documentation: this update |
+| 2026-09-04 | Rejected V2 as an improvement | Success fell to 54.0% despite collision falling to 42.6% | Predefined Section 27.4 gate applied | This documentation update |
 
 ---
 
@@ -1525,3 +1529,117 @@ Expected evaluation outputs:
 results/ppo_reward_v2_seed42.csv
 results/ppo_reward_v2_seed42.summary.json
 ```
+
+**Execution status:** completed; outcome recorded in Section 28.
+
+
+---
+
+## 28. Milestone M6B result — PPO Reward V2
+
+**Experiment ID:** E-B1-V2-S42-200K  
+**Status:** Evaluated and rejected as an improvement  
+**Date recorded:** 2026-09-04  
+**Training seed:** 42  
+**Evaluation seeds:** 42–541  
+**Raw-result commit:** [`81b9fd7`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/81b9fd77164fb9a2d44eaf03df2804ad36348589)
+
+### 28.1 Evaluation result
+
+| Metric | PPO V2 result |
+|---|---:|
+| Successful episodes | 270/500 |
+| Collision episodes | 213/500 |
+| Incomplete non-collision episodes | 17/500 |
+| Mean reward | -0.0236 |
+| Mean episode length | 47.672 decisions |
+| Success rate | 54.0% |
+| Collision rate | 42.6% |
+| Mean travel time | 9.5344 s |
+| Mean minimum finite TTC | 0.6549 s |
+| Mean unsafe-TTC events/episode | 16.414 |
+| Mean safety interventions | 0 |
+
+Mean reward is not compared directly with V1 because the reward scale changed.
+
+### 28.2 Predefined acceptance test
+
+The decision rule was fixed before evaluation:
+
+$$
+Success_{V2}>55.8\%
+$$
+
+and:
+
+$$
+Collision_{V2}<43.6\%
+$$
+
+Observed:
+
+$$
+54.0\%\not>55.8\%
+$$
+
+$$
+42.6\%<43.6\%
+$$
+
+V2 passed the collision condition but failed the success condition. It is therefore rejected as an overall improvement under the predefined rule.
+
+### 28.3 Comparison with PPO V1
+
+| Metric | PPO V1 | PPO V2 | V2 minus V1 |
+|---|---:|---:|---:|
+| Success rate | 55.8% | 54.0% | -1.8 percentage points |
+| Collision rate | 43.6% | 42.6% | -1.0 percentage point |
+| Incomplete rate | 0.6% | 3.4% | +2.8 percentage points |
+| Mean travel time | 7.47 s | 9.5344 s | +2.0644 s |
+| Mean minimum TTC | 0.6332 s | 0.6549 s | +0.0216 s |
+| Unsafe events/episode | 15.142 | 16.414 | +1.272 |
+
+V2 episodes were 27.6% longer. Normalized unsafe-TTC frequency was:
+
+$$
+Rate_{unsafe,V1}=\frac{15.142}{37.35}=0.4054
+$$
+
+$$
+Rate_{unsafe,V2}=\frac{16.414}{47.672}=0.3443
+$$
+
+This is a 15.1% reduction in unsafe-TTC decisions proportionally, but it did not translate into higher success.
+
+### 28.4 Paired-seed outcome transitions
+
+Because both policies used the same 500 environment seeds, episode outcomes were paired directly.
+
+| PPO V1 outcome | PPO V2 outcome | Episodes |
+|---|---|---:|
+| Success | Success | 249 |
+| Success | Collision | 29 |
+| Success | Incomplete | 1 |
+| Collision | Success | 21 |
+| Collision | Collision | 183 |
+| Collision | Incomplete | 14 |
+| Incomplete | Collision | 1 |
+| Incomplete | Incomplete | 2 |
+
+V2 converted 21 former collisions into successes, but 30 former successes were lost. Fourteen former collisions became timeouts. The net changes were nine fewer successes, five fewer collisions, and fourteen more incomplete episodes.
+
+### 28.5 Outcome-specific V2 behavior
+
+| V2 outcome | Episodes | Mean reward | Mean length | Mean minimum TTC |
+|---|---:|---:|---:|---:|
+| Success | 270 | 6.9711 | 51.25 | 0.6333 s |
+| Collision | 213 | -8.9318 | 34.89 | 0.6378 s |
+| Incomplete | 17 | 0.4976 | 151.00 | 1.2109 s |
+
+The revised reward correctly made collision episodes strongly negative. However, some policies avoided collision by waiting until truncation, and overall successful completion did not improve.
+
+### 28.6 Interpretation and next decision
+
+V2 improved reward alignment: collisions became negative and the normalized unsafe-event rate decreased. It did not solve task completion. Raising the arrival reward is insufficient when the agent receives little dense feedback about approaching the goal, while a zero-reward or slightly positive timeout can remain preferable to risky exploration.
+
+**Decision:** preserve V2 as a scientifically useful negative result. Do not replace V1 with V2. The next controlled experiment, PPO V3, will retain the strong collision and arrival terms while adding a dense route-progress signal and a small stall/time cost. The V3 coefficients and route-progress calculation must be fixed and documented before training.
