@@ -37,12 +37,21 @@ class _ProgressEnv(gym.Env):
             lane_index=first,
             lane=lanes[first],
             position=[60.0, 0.0],
+            velocity=[10.0, 0.0],
         )
-        self.road = SimpleNamespace(network=_Network(lanes))
+        self.other_vehicle = SimpleNamespace(
+            position=[63.0, 0.0],
+            velocity=[8.0, 0.0],
+        )
+        self.road = SimpleNamespace(
+            network=_Network(lanes),
+            vehicles=[self.vehicle, self.other_vehicle],
+        )
 
     def reset(self, *, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
         self.vehicle.position = [60.0, 0.0]
+        self.other_vehicle.position = [63.0, 0.0]
         return [60.0], {}
 
     def step(self, action: int):
@@ -73,3 +82,20 @@ def test_stall_receives_time_cost_without_progress_reward() -> None:
     assert info["route_progress_delta"] == 0.0
     assert info["progress_reward"] == 0.0
     assert reward == pytest.approx(0.995)
+
+
+def test_ttc_risk_penalty_is_bounded_and_actionable() -> None:
+    env = RouteProgressRewardWrapper(
+        _ProgressEnv(),
+        progress_weight=2.0,
+        time_penalty=0.005,
+        risk_weight=0.2,
+        risk_ttc_threshold=2.0,
+    )
+    env.reset()
+    _, reward, _, _, info = env.step(0)
+
+    assert info["reward_min_ttc"] == pytest.approx(1.5)
+    assert info["risk_fraction"] == pytest.approx(0.25)
+    assert info["risk_penalty"] == pytest.approx(0.05)
+    assert reward == pytest.approx(0.945)
