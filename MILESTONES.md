@@ -2435,3 +2435,112 @@ python scripts/evaluate_intent.py --data data/intent_trajectories_seed42.npz --m
 | 2026-09-04 | Hardened and froze the M7 intent pipeline | Correct reproducibility, checkpoint-selection, split-validity, and result-storage defects before long runs | Ruff passed; 25 tests passed; repeated seeded collection matched | This implementation update |
 
 **Next action:** run only the 300-episode collection command first. Review and append its summary before starting GRU training.
+
+
+---
+
+## 36. Milestone M7A result — frozen intent dataset collection
+
+**Experiment ID:** E-M7-DATA-S42-E300-H10-K2
+
+**Status:** Collected, validated, and accepted for the initial GRU screening
+
+**Date recorded:** 2026-09-04
+
+**Environment configuration:** `configs/intersection.yaml`
+
+**Collector:** seeded random ego policy with driver behaviors enabled
+
+**Episode seeds:** 42–341
+
+**Changed factor:** none; this run used the frozen Section 35.5 protocol
+
+**Summary commit:** [`1ec8e03`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/1ec8e03a6e420baf4a361e61e9695495a5caedc6)
+
+**Local dataset path:** `data/intent_trajectories_seed42.npz`
+
+**Versioned summary path:** `results/intent_dataset_seed42.summary.json`
+
+The dataset archive remains local and ignored by Git. Only its small summary JSON was committed.
+
+### 36.1 Pre-collection verification
+
+The M7 implementation was verified immediately before the collection phase as recorded in Section 35.4:
+
+```text
+ruff check: passed
+pytest: 25 passed in 2.86 s
+repeated seeded collection: arrays and metadata identical
+```
+
+Collection command:
+
+```powershell
+python scripts/collect_intent_data.py --episodes 300 --history-length 10 --sample-stride 2 --seed 42 --output data/intent_trajectories_seed42.npz --summary-output results/intent_dataset_seed42.summary.json
+```
+
+### 36.2 Artifact validation
+
+The local archive and committed summary were inspected after collection.
+
+| Property | Verified value |
+|---|---:|
+| Dataset file size | 5,415,856 bytes |
+| Feature-array shape | `(109596, 10, 6)` |
+| Label-array shape | `(109596,)` |
+| Episode-ID shape | `(109596,)` |
+| Unique episode IDs | 300 |
+| Episode-ID range | 0–299 |
+| Samples per episode | 18–1,421 |
+| Label names | cautious, normal, aggressive |
+| Metadata collector | `seeded_random_ego_policy` |
+| Metadata episode count | 300 |
+| Metadata seed range | 42–341 |
+| Metadata history length | 10 |
+| Metadata sample stride | 2 |
+
+The label counts sum exactly to 109,596 samples. The dataset SHA-256 recomputed from the local archive matches the fingerprint stored in the committed summary:
+
+```text
+56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0
+```
+
+### 36.3 Class distribution
+
+| Driver class | Samples | Fraction |
+|---|---:|---:|
+| Cautious | 32,631 | 29.774% |
+| Normal | 49,213 | 44.904% |
+| Aggressive | 27,752 | 25.322% |
+| **Total** | **109,596** | **100.000%** |
+
+The distribution is not uniform, but no class is rare enough to fail the predefined collection gate. Episode-grouped splitting and the training-only class weights remain necessary; no balancing or resampling was introduced after seeing these counts.
+
+### 36.4 Predefined collection gate
+
+| Requirement | Observed result | Decision |
+|---|---:|---|
+| All 300 episodes produce samples | 300/300 episodes | Passed |
+| All three classes are present | 3/3 classes | Passed |
+| Every class is at least 10% | Minimum 25.322% | Passed |
+| Archive and summary parameters/fingerprint match | Exact match | Passed |
+
+All four frozen acceptance conditions passed.
+
+### 36.5 Interpretation and decision
+
+The collection produced enough samples for the planned episode-grouped split while retaining substantial representation of all three simulated driver classes. The wide range in samples per episode reflects differing episode durations, so samples must not be randomly split across episodes. The frozen group-split rule prevents histories from the same episode leaking into multiple partitions.
+
+**Decision:** accept this archive as the single frozen dataset for the initial seed-42 GRU screening. Proceed with the Section 35.6 hyperparameters only after pulling this record and rerunning the test suite. Do not recollect, rebalance, alter features, change the split seed, or substitute another dataset without recording a new experiment.
+
+### 36.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-027 | Accept `intent_trajectories_seed42.npz` for the initial GRU screening | Recollect or rebalance after observing the class distribution | All four predefined dataset gates passed; 109,596 samples across all 300 episodes; minimum class fraction 25.322%; fingerprint verified | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-04 | Collected and accepted the frozen M7 intent dataset | Establish the leakage-resistant input artifact for the initial GRU screening | Archive structure, metadata, counts, episode coverage, class fractions, and SHA-256 matched the committed summary | Summary: `1ec8e03`; documentation: this update |
+
+**Next action:** pull this documentation update, rerun the complete test suite, and train only the frozen seed-42 GRU described in Section 35.6. Do not evaluate or tune it until the training result is preserved.
