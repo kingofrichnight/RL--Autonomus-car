@@ -45,6 +45,8 @@ class _KinematicsEnv(gym.Env):
         self.vehicle = _Vehicle((0.0, 0.0), (1.0, 0.0))
         first = _Vehicle((4.0, 1.0), (2.0, 0.0))
         second = _Vehicle((7.0, -2.0), (0.5, 0.5))
+        first.safeintent_driver_label = "cautious"
+        second.safeintent_driver_label = "aggressive"
         self.road = _Road(self.vehicle, [first, second])
         self.PERCEPTION_DISTANCE = 60.0
         self.observation_type = SimpleNamespace(
@@ -71,6 +73,7 @@ class _Predictor:
 
     def __init__(self, *args, **kwargs) -> None:
         self.calls: list[np.ndarray] = []
+        self.label_names = ["cautious", "normal", "aggressive"]
         self.instances.append(self)
 
     def predict_proba(self, histories: np.ndarray) -> np.ndarray:
@@ -137,3 +140,31 @@ def test_wrapper_preserves_an_obstacle_slot_without_assigning_intent(monkeypatch
     assert predictor.calls[0].shape == (1, 1, 6)
     np.testing.assert_allclose(observation[-6:], [0.0, 0.0, 0.0, 0.1, 0.2, 0.7])
     assert env.road.last_query["vehicles_only"] is False
+
+
+def test_diagnostics_do_not_change_augmented_observation(monkeypatch) -> None:
+    _Predictor.instances.clear()
+    monkeypatch.setattr(wrapper_module, "IntentPredictor", _Predictor)
+    plain = IntentObservationWrapper(
+        _KinematicsEnv(),
+        "unused.pt",
+        max_neighbors=2,
+        history_length=1,
+    )
+    diagnostic = IntentObservationWrapper(
+        _KinematicsEnv(),
+        "unused.pt",
+        max_neighbors=2,
+        history_length=1,
+        collect_diagnostics=True,
+    )
+
+    plain_observation, _ = plain.reset(seed=42)
+    diagnostic_observation, _ = diagnostic.reset(seed=42)
+
+    np.testing.assert_array_equal(plain_observation, diagnostic_observation)
+    snapshot = diagnostic.last_intent_diagnostics
+    assert snapshot["predicted_vehicle_slots"] == 2
+    assert snapshot["labeled_predictions"] == 2
+    assert snapshot["true_labels"] == [0, 2]
+    assert snapshot["predicted_labels"] == [2, 0]

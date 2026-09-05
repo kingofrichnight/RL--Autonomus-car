@@ -3164,3 +3164,148 @@ Before any retraining, instrument the frozen M8 rollout to measure how often int
 | 2026-09-05 | Evaluated and rejected PPO + intent V1 on the paired V3 holdout | Test whether inferred driver intent improves V3 under a single-factor comparison | 500-row CSV/summary validation, artifact hashes, paired transitions, exact McNemar test, and five frozen gates | Results: `dc20045`; documentation: this update |
 
 **Next action:** implement and freeze a non-interventional online-intent diagnostic using the existing V1 checkpoint and the same holdout trajectories; do not start another PPO training run yet.
+
+
+---
+
+## 42. Milestone M8C design — frozen online-intent rollout diagnostic
+
+**Experiment ID:** E-M8C-INTENT-DIAGNOSTIC-V1-H10042
+
+**Status:** Diagnostic implemented and frozen; 500-episode run pending
+
+**Date recorded:** 2026-09-05
+
+**Policy checkpoint:** local `models/ppo_intent_v1_seed42.zip`
+
+**Evaluation seeds:** 10042–10541
+
+**Configuration:** `configs/intersection_reward_v3.yaml`
+
+**Intervention:** none; the diagnostic neither retrains PPO nor changes its observations, actions, rewards, termination rules, or environment randomness
+
+### 42.1 Question and fixed measurement unit
+
+M8B produced essentially no paired task effect despite a GRU that passed the offline held-out screen. This diagnostic separates three explanations before another training run:
+
+1. too few visible-vehicle slots acquire the required ten-step consecutive history;
+2. the classifier degrades on PPO's online trajectory distribution;
+3. predictions are sufficiently available and accurate, but the PPO control policy did not exploit them.
+
+One diagnostic observation is one of the first five visible traffic slots at one **pre-action policy decision**. These slot observations repeat vehicles across time and therefore are correlated; classification metrics are decision-slot-weighted diagnostic evidence, not independent per-vehicle generalization estimates.
+
+Missing slots and obstacle slots are counted separately. A visible vehicle is `warmup` until ten consecutive observations exist and `predicted` after the frozen GRU supplies probabilities. Classification includes only predicted vehicle slots with a valid hidden simulator label. The wrapper reads that label strictly after inference and only when diagnostics are enabled; it never appends the label to the observation or uses it to choose an action.
+
+### 42.2 Frozen metrics and formulas
+
+For five configured traffic slots and $D$ policy decisions:
+
+$$
+N_{slots}=5D
+$$
+
+$$
+\text{vehicle-slot rate}=\frac{N_{vehicle}}{N_{slots}},\qquad
+\text{prediction coverage}=\frac{N_{predicted}}{N_{vehicle}}
+$$
+
+$$
+\text{labeled-prediction rate}=\frac{N_{labeled}}{N_{predicted}}
+$$
+
+For each predicted probability vector $p=(p_C,p_N,p_A)$, confidence is $\max_k p_k$ and normalized entropy is:
+
+$$
+H_{norm}(p)=\frac{-\sum_k p_k\log p_k}{\log 3}
+$$
+
+The output also records the three-class confusion matrix, accuracy, majority-class accuracy, balanced accuracy, macro precision/recall/F1, and per-class precision/recall/F1/support. Undefined rates remain JSON `null`; zero prediction coverage is preserved as valid diagnostic evidence rather than treated as a software crash.
+
+### 42.3 Frozen protocol and integrity controls
+
+| Property | Frozen value |
+|---|---|
+| PPO model SHA-256 | `954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8` |
+| Intent model SHA-256 | `10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05` |
+| Configuration SHA-256 | `433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69` |
+| Reference CSV SHA-256 | `72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498` |
+| Episodes and seeds | 500; 10042–10541 |
+| Policy inference | Deterministic PPO on CPU |
+| Intent inference | Frozen GRU on CPU; five aligned slots |
+| Safety shield | Disabled |
+| Unsafe-TTC reporting threshold | 2.0 seconds |
+| Required history | Ten consecutive observations |
+| Reference tolerance | Exact booleans/integers; numeric absolute tolerance `1e-12`, relative tolerance zero |
+| Output | `results/ppo_intent_v1_online_diagnostics_seed10042.json` |
+
+CPU is explicitly frozen because the original M8 evaluation machine reported no available CUDA device. The new runner verifies every supplied SHA-256 before rollout, validates the reference schema and row count, rejects an existing output path, and requires its recreated episode metrics to match all 500 committed M8B CSV rows. A mismatch marks the run `failed`, saves the partial evidence and reason to the JSON, and raises an error instead of silently accepting a different trajectory.
+
+### 42.4 Predefined interpretation gates
+
+The following routing rules were fixed before the 500-episode diagnostic:
+
+| Gate | Fixed rule | Interpretation if failed |
+|---|---|---|
+| Episode reproduction | All 500 reference rows match | Invalid diagnostic run; investigate reproducibility only |
+| Prediction coverage | At least 70% of visible-vehicle slots | History continuity or slot churn is the primary limitation; do not retrain PPO |
+| Label availability | At least 99% of predictions have a hidden label | Simulator/instrumentation mismatch; do not interpret classifier metrics |
+| Class support | All three true classes observed | Otherwise classification comparison is inconclusive |
+| Online accuracy | At least majority-class accuracy + 5 percentage points | Predictions provide insufficient improvement over the online class prior |
+| Online macro F1 | At least 50% | Material on-policy classifier degradation if failed |
+| Minimum class recall | At least 40% | One intent class is insufficiently recovered if failed |
+| Offline-to-online accuracy drop | Less than 5 percentage points below 63.3549% | A larger drop flags distribution shift |
+
+Routing is fixed as follows. Coverage below 70% directs the next experiment toward history/slot availability without PPO retraining. With adequate coverage, a failed classification or distribution-shift gate directs the next experiment toward collecting on-policy intent data. If coverage and classification both pass, the next experiment is an oracle-label upper-bound ablation to test whether the control problem can use intent before changing PPO architecture or budget.
+
+These gates diagnose mechanism; they cannot retroactively promote the rejected M8 policy or establish statistical independence of repeated slot observations.
+
+### 42.5 Implementation and verification
+
+The implementation adds opt-in diagnostic snapshots to the existing intent wrapper and a standalone rollout accumulator/runner. Probability shape, finiteness, bounds, row sums, counter identities, class indices, confidence, entropy, and final decision/slot totals are validated before a result is accepted. The standard wrapper path remains unchanged when diagnostics are disabled.
+
+Required pre-experiment checks completed:
+
+```text
+git diff --check: passed
+ruff check: passed
+pytest: 50 passed in 15.68 s
+```
+
+A paired three-episode engineering smoke used seeds 10042–10044 and both diagnostic-disabled and diagnostic-enabled environments:
+
+| Engineering check | Result |
+|---|---:|
+| Episodes | 3 |
+| Policy decisions | 129 |
+| Slot observations | 645 |
+| Observations/actions/rewards/termination identical at every step | Passed |
+| Recreated episode metrics match the first three committed CSV rows | Passed |
+| History-ready predictions | 268 |
+| Smoke prediction coverage | 45.8904% |
+| Smoke labeled-prediction rate | 100% |
+
+The low three-episode coverage is useful engineering evidence that the full diagnostic is necessary, but it is not used as the 500-episode result and does not alter the frozen thresholds.
+
+### 42.6 Frozen command
+
+Run exactly once after pulling this implementation and rerunning the complete checks:
+
+```powershell
+python scripts/diagnose_intent_rollout.py --model models/ppo_intent_v1_seed42.zip --model-sha256 954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8 --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --intent-model models/intent_gru_seed42.pt --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 --intent-neighbors 5 --intent-device cpu --episodes 500 --seed 10042 --unsafe-ttc 2.0 --reference-csv results/ppo_intent_v1_holdout_seed10042.csv --reference-csv-sha256 72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498 --output results/ppo_intent_v1_online_diagnostics_seed10042.json
+```
+
+Do not rerun, retrain, tune thresholds, or change inputs after observing the result. Commit only the small diagnostic JSON; keep both model checkpoints local.
+
+### 42.7 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-036 | Freeze a non-interventional online diagnostic before any further training | Train longer immediately or tune the rejected M8 run | M8 had essentially zero paired task effect and several unresolved mechanisms | Retained |
+| D-037 | Require exact reproduction of the committed M8B episode metrics | Accept aggregate-only similarity | Prevent diagnostic instrumentation or device changes from silently changing the evaluated trajectories | Retained |
+| D-038 | Use decision-slot-weighted coverage and classification with explicit routing gates | Inspect ad hoc metrics and decide thresholds after the run | Preserve the diagnostic value of the holdout and separate coverage, shift, and control-use hypotheses | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Implemented and froze the M8C online-intent diagnostic | Identify the failure mechanism of rejected M8 without intervention or retraining | 50 tests passed; paired three-episode non-interference and reference-reproduction smoke passed | This implementation update |
+
+**Next action:** run only the frozen 500-episode diagnostic command, commit its JSON whether its status is `complete` or `failed`, and append the result before designing another experiment.

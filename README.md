@@ -170,6 +170,30 @@ python scripts/evaluate_policy.py --model models/ppo_intent_v1_seed42.zip \
   --output results/ppo_intent_v1_holdout_seed10042.csv
 ```
 
+PPO + intent V1 was rejected after that holdout: it produced 59.0% success and
+41.0% collision versus V3's 59.6% and 40.4%. Before any retraining, run the
+frozen non-interventional diagnostic on the same policy and seeds:
+
+```bash
+python scripts/diagnose_intent_rollout.py \
+  --model models/ppo_intent_v1_seed42.zip \
+  --model-sha256 954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8 \
+  --config configs/intersection_reward_v3.yaml \
+  --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 \
+  --intent-model models/intent_gru_seed42.pt \
+  --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 \
+  --intent-neighbors 5 --intent-device cpu --episodes 500 --seed 10042 \
+  --unsafe-ttc 2.0 \
+  --reference-csv results/ppo_intent_v1_holdout_seed10042.csv \
+  --reference-csv-sha256 72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498 \
+  --output results/ppo_intent_v1_online_diagnostics_seed10042.json
+```
+
+The diagnostic reads simulator intent labels only after inference for aggregate
+analysis; labels never enter the policy observation or action path. It also
+requires exact reproduction of the committed 500 episode rows. Commit only its
+small JSON output, not either model checkpoint.
+
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.
 

@@ -21,6 +21,7 @@ class IntentObservationWrapper(gym.Wrapper):
         history_length: int = 10,
         device: str = "cpu",
         expected_checkpoint_sha256: str | None = None,
+        collect_diagnostics: bool = False,
     ) -> None:
         super().__init__(env)
         if not isinstance(env.observation_space, gym.spaces.Box):
@@ -44,6 +45,8 @@ class IntentObservationWrapper(gym.Wrapper):
         )
         self.max_neighbors = max_neighbors
         self.history_length = history_length
+        self.collect_diagnostics = collect_diagnostics
+        self.last_intent_diagnostics: dict[str, Any] = {}
         self.histories: dict[int, deque[np.ndarray]] = defaultdict(
             lambda: deque(maxlen=self.history_length)
         )
@@ -69,10 +72,26 @@ class IntentObservationWrapper(gym.Wrapper):
     def _augment(self, observation: Any) -> np.ndarray:
         flat_observation = np.asarray(observation, dtype=np.float32).reshape(-1)
         probabilities = np.zeros((self.max_neighbors, 3), dtype=np.float32)
+        diagnostics: dict[str, Any] = {
+            "slot_count": self.max_neighbors,
+            "missing_slots": self.max_neighbors,
+            "obstacle_slots": 0,
+            "vehicle_slots": 0,
+            "warmup_vehicle_slots": 0,
+            "predicted_vehicle_slots": 0,
+            "labeled_predictions": 0,
+            "correct_predictions": 0,
+            "confidence_sum": 0.0,
+            "entropy_sum": 0.0,
+            "true_labels": [],
+            "predicted_labels": [],
+        }
         base = self.unwrapped
         ego = getattr(base, "vehicle", None)
         road = getattr(base, "road", None)
         if ego is None or road is None:
+            if self.collect_diagnostics:
+                self.last_intent_diagnostics = diagnostics
             return np.concatenate([flat_observation, probabilities.reshape(-1)])
 
         ego_position = np.asarray(ego.position, dtype=np.float32)
@@ -86,14 +105,18 @@ class IntentObservationWrapper(gym.Wrapper):
             sort=True,
             vehicles_only=not bool(observation_type.include_obstacles),
         )
+        diagnostics["missing_slots"] = self.max_neighbors - len(neighbors)
         road_vehicle_ids = {id(vehicle) for vehicle in road.vehicles}
         active_ids: set[int] = set()
         ready_rows: list[int] = []
         ready_histories: list[np.ndarray] = []
+        ready_vehicles: list[Any] = []
         for row, vehicle in enumerate(neighbors):
             key = id(vehicle)
             if key not in road_vehicle_ids:
+                diagnostics["obstacle_slots"] += 1
                 continue
+            diagnostics["vehicle_slots"] += 1
             active_ids.add(key)
             velocity = np.asarray(vehicle.velocity, dtype=np.float32)
             previous = self.previous_velocity.get(key, velocity)
@@ -115,7 +138,9 @@ class IntentObservationWrapper(gym.Wrapper):
             if len(self.histories[key]) == self.history_length:
                 ready_rows.append(row)
                 ready_histories.append(np.stack(self.histories[key]))
+                ready_vehicles.append(vehicle)
             else:
+                diagnostics["warmup_vehicle_slots"] += 1
                 probabilities[row] = 1.0 / 3.0
 
         if ready_histories:
@@ -125,9 +150,33 @@ class IntentObservationWrapper(gym.Wrapper):
             )
             if predicted.shape != (len(ready_rows), 3) or not np.isfinite(predicted).all():
                 raise RuntimeError("Intent predictor returned invalid probabilities")
+            if np.any((predicted < 0) | (predicted > 1)) or not np.allclose(
+                predicted.sum(axis=1), 1.0, atol=1e-5
+            ):
+                raise RuntimeError("Intent probabilities must be in [0, 1] and sum to one")
             probabilities[ready_rows] = predicted
+            diagnostics["predicted_vehicle_slots"] = len(ready_rows)
+            if self.collect_diagnostics:
+                label_names = list(self.predictor.label_names)
+                for vehicle, prediction in zip(ready_vehicles, predicted, strict=True):
+                    true_name = getattr(vehicle, "safeintent_driver_label", None)
+                    if true_name not in label_names:
+                        continue
+                    true_index = label_names.index(true_name)
+                    predicted_index = int(np.argmax(prediction))
+                    diagnostics["labeled_predictions"] += 1
+                    diagnostics["correct_predictions"] += int(
+                        true_index == predicted_index
+                    )
+                    diagnostics["confidence_sum"] += float(np.max(prediction))
+                    clipped = np.clip(prediction, 1e-12, 1.0)
+                    diagnostics["entropy_sum"] += float(-np.sum(clipped * np.log(clipped)))
+                    diagnostics["true_labels"].append(true_index)
+                    diagnostics["predicted_labels"].append(predicted_index)
 
         for stale in set(self.histories) - active_ids:
             self.histories.pop(stale, None)
             self.previous_velocity.pop(stale, None)
+        if self.collect_diagnostics:
+            self.last_intent_diagnostics = diagnostics
         return np.concatenate([flat_observation, probabilities.reshape(-1)]).astype(np.float32)
