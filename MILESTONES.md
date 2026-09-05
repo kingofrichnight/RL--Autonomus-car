@@ -3036,3 +3036,131 @@ The long run completed under the frozen protocol and produced a structurally val
 | 2026-09-05 | Completed and validated M8 PPO + intent training | Produce the controlled seed-42 policy checkpoint for the E2 comparison | Training metadata, file hashes, PPO spaces/hyperparameters, timestep count, and finite parameters verified | Training summary: `b11fc66`; documentation: this update |
 
 **Next action:** run only the frozen 500-episode paired holdout evaluation on seeds 10042–10541 and commit its CSV/summary JSON; keep both model checkpoints local.
+
+
+---
+
+## 41. Milestone M8B result — PPO + intent paired holdout
+
+**Experiment ID:** E-M8-PPO-INTENT-V1-S42-H10042
+
+**Status:** Evaluated; rejected as an improvement over PPO V3
+
+**Date recorded:** 2026-09-05
+
+**Training seed:** 42
+
+**Evaluation seeds:** 10042–10541
+
+**Configuration:** `configs/intersection_reward_v3.yaml`
+
+**Results commit:** [`dc20045`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/dc20045ea9a451aba8f9190d5d01067985731100)
+
+**Changed factor relative to V3:** the 15-value inferred-intent observation block defined in Section 39.4
+
+No reward, traffic, action, evaluation seed, episode count, safety shield, or success/collision rule changed.
+
+### 41.1 Pre-evaluation verification and command
+
+Immediately before authorizing the holdout evaluation, the complete checks passed:
+
+```text
+ruff check: passed
+pytest: 28 passed in 4.10 s
+```
+
+Evaluation command:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_intent_v1_seed42.zip --config configs/intersection_reward_v3.yaml --episodes 500 --seed 10042 --intent-model models/intent_gru_seed42.pt --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 --intent-neighbors 5 --intent-device cpu --output results/ppo_intent_v1_holdout_seed10042.csv
+```
+
+The committed summary confirms the fixed configuration and model fingerprints, seeds 10042–10541, five intent neighbors, CPU inference, unsafe-TTC threshold 2.0 seconds, and no safety shield.
+
+### 41.2 Artifact validation
+
+The CSV contains exactly 500 rows with the expected eight episode-metric columns. No episode is simultaneously marked as successful and collided. Every numeric summary value was independently recomputed from the CSV and matched exactly.
+
+SHA-256 checksums:
+
+```text
+ppo_intent_v1_holdout_seed10042.csv
+72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498
+
+ppo_intent_v1_holdout_seed10042.summary.json
+95ace2dc9cd3904e7b3e0119e56b3a039cdf7b57d0c7904614eacdcf896d6ccf
+```
+
+### 41.3 Verified result
+
+| Metric | V3 holdout | PPO + intent | Intent minus V3 |
+|---|---:|---:|---:|
+| Successful episodes | 298/500 | 295/500 | -3 |
+| Collision episodes | 202/500 | 205/500 | +3 |
+| Incomplete non-collision episodes | 0/500 | 0/500 | 0 |
+| Success rate | 59.6% | 59.0% | -0.6 pp |
+| Collision rate | 40.4% | 41.0% | +0.6 pp |
+| Incomplete rate | 0.0% | 0.0% | 0.0 pp |
+| Mean reward | 2.0889 | 2.0107 | -0.0782 |
+| Mean episode length | 38.106 | 38.356 | +0.250 decisions |
+| Mean travel time | 7.6212 s | 7.6712 s | +0.0500 s |
+| Mean minimum finite TTC | 0.6164 s | 0.6404 s | +0.0241 s |
+| Mean unsafe-TTC events/episode | 15.816 | 15.786 | -0.030 |
+| Unsafe-TTC events/decision | 0.4151 | 0.4116 | -0.84% relative |
+| Mean safety interventions | 0 | 0 | 0 |
+
+The intent-aware policy slightly improved TTC indicators, but it did not improve completion or collision outcomes.
+
+### 41.4 Paired outcome transitions
+
+Rows correspond to identical environment seeds.
+
+| V3 outcome | PPO + intent outcome | Episodes |
+|---|---|---:|
+| Success | Success | 272 |
+| Success | Collision | 26 |
+| Success | Incomplete | 0 |
+| Collision | Success | 23 |
+| Collision | Collision | 179 |
+| Collision | Incomplete | 0 |
+
+The intent-aware policy gained 23 successes from V3 collision episodes but lost 26 V3 successes. The exact two-sided McNemar result for success disagreement was:
+
+$$
+p=0.77545
+$$
+
+Collision disagreement is the inverse of the same 23/26 transitions and therefore has the same p-value. There is no paired evidence that the intent block changed success or collision probability.
+
+### 41.5 Predefined acceptance decision
+
+| Requirement | Threshold | Observed | Decision |
+|---|---:|---:|---|
+| Success | At least 62.6% | 59.0% | Failed |
+| Collision | At most 37.4% | 41.0% | Failed |
+| Incomplete | At most 2.0% | 0.0% | Passed |
+| Mean minimum TTC | At least 0.6164 s | 0.6404 s | Passed |
+| Favorable paired success change | Exact two-sided `p < 0.05` | Unfavorable net -3; `p=0.77545` | Failed |
+
+M8 failed three of the five predefined conditions.
+
+### 41.6 Interpretation and decision
+
+The GRU passed its held-out classification screen, but appending its probabilities for five visible slots did not improve the seed-42 PPO policy. The near-zero paired effect could reflect insufficient online prediction coverage, distribution shift from the random-ego collection policy to PPO trajectories, classifier uncertainty, limited use of the appended features by PPO, or a genuinely weak relationship between the current intent labels and the action decisions that determine collision.
+
+**Decision:** reject PPO + intent V1 as an improvement and retain the result as a negative ablation. PPO V3 remains the current best driving policy. Do not combine this policy with the already rejected 2.0-second shield, tune on the holdout, increase training steps, or change the neighbor/history representation without a new recorded experiment.
+
+Before any retraining, instrument the frozen M8 rollout to measure how often intent predictions are available, their confidence, and their online accuracy against hidden simulator labels used strictly for analysis. This diagnostic will distinguish classifier distribution/coverage failure from a control-learning failure without changing actions or retraining PPO.
+
+### 41.7 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-034 | Reject PPO + intent V1 and retain V3 | Promote intent V1 because mean TTC improved | Success fell to 59.0%, collision rose to 41.0%, paired `p=0.77545`, and three predefined gates failed | Retained |
+| D-035 | Diagnose online intent coverage and accuracy before another PPO run | Immediately retrain longer, tune on holdout, or combine two rejected components | M8 produced essentially zero paired task effect despite a passing offline classifier | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Evaluated and rejected PPO + intent V1 on the paired V3 holdout | Test whether inferred driver intent improves V3 under a single-factor comparison | 500-row CSV/summary validation, artifact hashes, paired transitions, exact McNemar test, and five frozen gates | Results: `dc20045`; documentation: this update |
+
+**Next action:** implement and freeze a non-interventional online-intent diagnostic using the existing V1 checkpoint and the same holdout trajectories; do not start another PPO training run yet.
