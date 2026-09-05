@@ -1,0 +1,23 @@
+{
+  "episodes": 500.0,
+  "mean_reward": 2.0107245688953985,
+  "mean_length": 38.356,
+  "success_rate": 0.59,
+  "collision_rate": 0.41,
+  "mean_travel_time": 7.6712,
+  "mean_min_ttc": 0.6404479104611077,
+  "mean_unsafe_ttc_events": 15.786,
+  "mean_safety_interventions": 0.0,
+  "model_path": "models\\ppo_intent_v1_seed42.zip",
+  "model_sha256": "954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8",
+  "config_path": "configs\\intersection_reward_v3.yaml",
+  "config_sha256": "433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69",
+  "first_seed": 10042,
+  "last_seed": 10541,
+  "safety_shield": false,
+  "unsafe_ttc_threshold": 2.0,
+  "intent_model_path": "models\\intent_gru_seed42.pt",
+  "intent_model_sha256": "10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05",
+  "intent_neighbors": 5,
+  "intent_device": "cpu"
+}
