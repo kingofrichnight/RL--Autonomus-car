@@ -1,0 +1,30 @@
+{
+  "algorithm": "PPO",
+  "config_path": "configs\\intersection_reward_v3.yaml",
+  "config_sha256": "433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69",
+  "training_seed": 42,
+  "internal_evaluation_seed_offset": 1000,
+  "timesteps_requested": 200000,
+  "timesteps_collected": 200704,
+  "learning_rate": 0.0003,
+  "n_steps": 1024,
+  "batch_size": 64,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "ent_coef": 0.01,
+  "policy_network": [
+    256,
+    256
+  ],
+  "observation_shape": [
+    120
+  ],
+  "safety_shield": false,
+  "ttc_threshold": 2.0,
+  "intent_model_path": "models\\intent_gru_seed42.pt",
+  "intent_model_sha256": "10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05",
+  "intent_neighbors": 5,
+  "intent_device": "cpu",
+  "model_path": "models\\ppo_intent_v1_seed42.zip",
+  "model_sha256": "954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8"
+}
