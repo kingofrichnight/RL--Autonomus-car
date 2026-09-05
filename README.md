@@ -194,6 +194,12 @@ analysis; labels never enter the policy observation or action path. It also
 requires exact reproduction of the committed 500 episode rows. Commit only its
 small JSON output, not either model checkpoint.
 
+The frozen 500-episode diagnostic completed with exact reference reproduction.
+The GRU remained effective online (64.83% accuracy and 64.05% macro F1), but only
+43.75% of visible-vehicle decision slots had the required history. The next step
+is therefore a non-interventional history-coverage feasibility study, not PPO or
+GRU retraining. PPO V3 remains the best driving policy.
+
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.
 

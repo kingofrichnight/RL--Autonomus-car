@@ -3309,3 +3309,108 @@ Do not rerun, retrain, tune thresholds, or change inputs after observing the res
 | 2026-09-05 | Implemented and froze the M8C online-intent diagnostic | Identify the failure mechanism of rejected M8 without intervention or retraining | 50 tests passed; paired three-episode non-interference and reference-reproduction smoke passed | This implementation update |
 
 **Next action:** run only the frozen 500-episode diagnostic command, commit its JSON whether its status is `complete` or `failed`, and append the result before designing another experiment.
+
+
+---
+
+## 43. Milestone M8C result — online intent is accurate but coverage-limited
+
+**Experiment ID:** E-M8C-INTENT-DIAGNOSTIC-V1-H10042
+
+**Status:** Completed; coverage gate failed and all online-classification gates passed
+
+**Date recorded:** 2026-09-05
+
+**Result commit:** [`cd1163e`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/cd1163ea4b8c847c34ddc3794f68817a0aab929b)
+
+**Result artifact:** `results/ppo_intent_v1_online_diagnostics_seed10042.json`
+
+**Artifact SHA-256:** `c39ffdc93c6f46ab75b4624b8b48ec04caab877ef310bbf14148e1d9504e4045`
+
+### 43.1 Integrity and reference reproduction
+
+The committed JSON reports `status: complete`, no error, all 500 prescribed episodes, and seeds 10042–10541. Its PPO, GRU, configuration, and reference-CSV SHA-256 values exactly match the frozen Section 42 protocol. CPU inference, five intent neighbors, no safety shield, and the 2.0-second unsafe-TTC reporting threshold are also unchanged.
+
+The diagnostic reproduced every committed M8B episode row within the predefined exact/`1e-12` comparison. Its driving summary is therefore unchanged: 59.0% success, 41.0% collision, 0% incomplete, mean reward 2.0107, and 19,178 total decisions.
+
+Independent count and confusion-matrix checks passed:
+
+```text
+5 * 19,178 decisions = 95,890 slot observations
+9,647 missing + 0 obstacle + 86,243 vehicle = 95,890 slots
+48,513 warmup + 37,730 predicted = 86,243 vehicle slots
+37,730 confusion-matrix samples = 37,730 labeled predictions
+24,461 diagonal predictions / 37,730 = 64.8317% accuracy
+```
+
+### 43.2 Observed online coverage and classifier behavior
+
+| Metric | Observed |
+|---|---:|
+| Policy decisions | 19,178 |
+| Slot observations | 95,890 |
+| Vehicle slots | 86,243 (89.94% of all slots) |
+| Warmup vehicle slots | 48,513 (56.25% of vehicle slots) |
+| History-ready predicted slots | 37,730 |
+| Prediction coverage | 43.7485% |
+| Labeled-prediction rate | 100.0% |
+| Mean confidence | 72.3280% |
+| Mean normalized entropy | 55.4071% |
+| Online accuracy | 64.8317% |
+| Online majority-class accuracy | 46.6393% |
+| Accuracy advantage over majority | +18.1924 pp |
+| Offline held-out accuracy | 63.3549% |
+| Online minus offline accuracy | +1.4768 pp |
+| Balanced accuracy / macro recall | 63.7375% |
+| Macro F1 | 64.0461% |
+
+Per-class performance on the correlated, decision-slot-weighted online samples:
+
+| True class | Support | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|
+| Cautious | 11,274 | 74.96% | 54.35% | 63.01% |
+| Normal | 17,597 | 63.96% | 71.06% | 67.32% |
+| Aggressive | 8,859 | 58.27% | 65.81% | 61.81% |
+
+All three classes were observed. The minimum class recall was cautious at 54.35%.
+
+### 43.3 Predefined gate decisions
+
+| Gate | Frozen rule | Observed | Decision |
+|---|---:|---:|---|
+| Episode reproduction | All 500 rows match | All matched | Passed |
+| Prediction coverage | At least 70% | 43.7485% | **Failed** |
+| Label availability | At least 99% | 100.0% | Passed |
+| Class support | All three classes | All three | Passed |
+| Accuracy over majority | At least +5 pp | +18.1924 pp | Passed |
+| Online macro F1 | At least 50% | 64.0461% | Passed |
+| Minimum class recall | At least 40% | 54.3463% | Passed |
+| Offline-to-online accuracy drop | Less than 5 pp | No drop; online was +1.4768 pp | Passed |
+
+Only the coverage gate failed.
+
+### 43.4 Interpretation and decision
+
+The frozen classifier does not show evidence of harmful online distribution shift on the history-ready slots. Its online accuracy slightly exceeded the offline held-out result, beat the online majority baseline by 18.19 percentage points, and passed macro-F1 and every class-recall requirement. Because observations from the same vehicles repeat across decisions, these results support mechanism diagnosis rather than an independent-sample significance claim.
+
+The dominant limitation is availability: 56.25% of visible-vehicle slots were still in warmup and received uniform probabilities, leaving only 43.75% with GRU predictions. This is consistent with the current wrapper retaining history only while a vehicle remains among the five selected neighbors; it purges history whenever the vehicle leaves that set. The V3 base observation contains more traffic rows than the five intent-output slots, so useful prior observations may be discarded before a vehicle enters the intent slots.
+
+Per the frozen routing rule, do not retrain PPO or the GRU yet. First run a non-interventional shadow diagnostic that keeps histories for every traffic slot already present in the base kinematics observation while leaving the actual M8 policy observation and action path untouched. It should compare counterfactual history-ready coverage and classifier quality with the current five-slot tracker on the same decisions. This tests whether decoupling history tracking from the five appended intent slots can exceed 70% coverage without using information outside the existing observation interface.
+
+Because seeds 10042–10541 have now informed design decisions, any later policy claiming improvement must use a newly frozen untouched holdout and a paired V3 evaluation on those new seeds.
+
+**Decision:** accept M8C as a valid coverage-limited diagnostic result. Retain PPO V3 as the best policy and retain PPO + intent V1 as rejected. Do not change history length, retrain either model, add the rejected shield, or promote online accuracy alone as a driving improvement.
+
+### 43.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-039 | Diagnose M8 as coverage-limited, not classifier-distribution-limited | Attribute the null driving effect to online GRU failure | Coverage was 43.75%, while every frozen classification and integrity gate passed | Retained |
+| D-040 | Run a shadow all-observed-slot history feasibility diagnostic before retraining | Immediately shorten history, retrain the GRU/PPO, or track simulator vehicles outside the observation interface | The base observation already exposes additional traffic slots whose histories can be retained without affecting actions | Retained |
+| D-041 | Reserve a new untouched holdout for any later policy claim | Continue tuning and testing new policies on seeds 10042–10541 | The current holdout has now directly informed representation design | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Completed and accepted the M8C online-intent diagnostic | Distinguish coverage, distribution-shift, and control-use explanations for rejected M8 | Exact 500-row reproduction, frozen hashes/settings, count identities, confusion matrix, and all predefined gates independently checked | Result: `cd1163e`; documentation: this update |
+
+**Next action:** implement and freeze the non-interventional shadow history-coverage diagnostic described above; do not start PPO or GRU training yet.
