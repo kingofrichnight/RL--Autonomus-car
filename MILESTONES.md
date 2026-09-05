@@ -2944,3 +2944,95 @@ The rejected 2.0-second safety shield is not enabled in M8. Combining safety and
 | 2026-09-04 | Hardened and froze the M8 PPO + intent experiment | Correct observation alignment, obstacle handling, inference overhead, checkpoint loading, fingerprinting, monitoring seeds, and artifact metadata before a long run | Ruff passed; 28 tests passed; deterministic real-environment smoke passed; 32-step PPO smoke passed after one recorded import-context failure | This implementation update |
 
 **Next action:** pull this implementation, rerun the complete test suite, and execute only the frozen M8 training command. Do not start holdout evaluation until the training summary is validated and appended.
+
+
+---
+
+## 40. Milestone M8A result — PPO + intent training
+
+**Experiment ID:** E-M8-PPO-INTENT-V1-S42-200K
+
+**Status:** Training completed and checkpoint validated; paired holdout evaluation pending
+
+**Date recorded:** 2026-09-05
+
+**Training-summary commit:** [`b11fc66`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/b11fc667cd524a21528caae45f63a4524b9f7867)
+
+**Changed factor relative to V3:** append the frozen GRU probabilities for five aligned visible traffic slots
+
+No safety shield, reward, traffic, action, PPO optimization, training-budget, or training-seed change was introduced.
+
+### 40.1 Pre-training verification and command
+
+The user reported completion of the prescribed pull, Ruff, pytest, and training sequence. The frozen M8 implementation had passed 28 tests and its real-environment and 32-step PPO engineering smokes before this long run.
+
+Executed command:
+
+```powershell
+python scripts/train_ppo.py --config configs/intersection_reward_v3.yaml --timesteps 200000 --seed 42 --intent-model models/intent_gru_seed42.pt --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 --intent-neighbors 5 --intent-device cpu --eval-seed-offset 1000 --summary-output results/ppo_intent_v1_seed42.training.json --output models/ppo_intent_v1_seed42
+```
+
+### 40.2 Training-summary validation
+
+| Frozen property | Expected | Recorded | Decision |
+|---|---:|---:|---|
+| Algorithm | PPO | PPO | Passed |
+| Configuration SHA-256 | `433e6972...fae69` | `433e6972...fae69` | Passed |
+| Training seed | 42 | 42 | Passed |
+| Internal-evaluation seed offset | 1,000 | 1,000 | Passed |
+| Requested timesteps | 200,000 | 200,000 | Passed |
+| Collected timesteps | 200,704 | 200,704 | Passed |
+| Learning rate | 0.0003 | 0.0003 | Passed |
+| Rollout steps | 1,024 | 1,024 | Passed |
+| Batch size | 64 | 64 | Passed |
+| Gamma | 0.99 | 0.99 | Passed |
+| GAE lambda | 0.95 | 0.95 | Passed |
+| Entropy coefficient | 0.01 | 0.01 | Passed |
+| Policy network | `[256, 256]` | `[256, 256]` | Passed |
+| Observation shape | `[120]` | `[120]` | Passed |
+| Safety shield | Disabled | Disabled | Passed |
+| Intent checkpoint SHA-256 | `10483649...abb05` | `10483649...abb05` | Passed |
+| Intent neighbors | 5 | 5 | Passed |
+| Intent device | CPU | CPU | Passed |
+
+The configuration and accepted intent-checkpoint hashes were independently recomputed from the local files and matched the training summary.
+
+Training-summary JSON SHA-256:
+
+```text
+408619b0274972b735f7bef40fc1779a086c08620e318367a83351e3f1c69263
+```
+
+### 40.3 Checkpoint validation
+
+| Property | Verified value |
+|---|---|
+| Local checkpoint | `models/ppo_intent_v1_seed42.zip` |
+| File size | 2,370,824 bytes |
+| SHA-256 | `954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8` |
+| Stored timesteps | 200,704 |
+| Observation space | 120 finite-or-unbounded float32 features; final 15 bounded to `[0,1]` |
+| Action space | Discrete, 3 actions |
+| Stored PPO settings | Exact match to Section 39.5 |
+| Policy parameters | All finite |
+| Git status | Ignored by `models/*.zip`; not versioned |
+
+The local checkpoint SHA-256 exactly matches `model_sha256` in the committed training summary.
+
+### 40.4 Interpretation and decision
+
+The long run completed under the frozen protocol and produced a structurally valid final PPO state. This validates execution and provenance only. It does not establish whether inferred intent improves success, collision, TTC, or waiting behavior.
+
+**Decision:** accept `ppo_intent_v1_seed42.zip` as the sole M8 checkpoint for the predefined paired holdout. Do not substitute the callback's best checkpoint, retrain, add the rejected shield, or change the GRU/neighbor interface. Pull this record, rerun the complete tests, and execute the Section 39.6 evaluation exactly once.
+
+### 40.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-033 | Accept the final 200,704-step PPO + intent checkpoint for paired holdout evaluation | Retrain, select the callback best model, or alter intent/safety settings | All frozen training-summary fields and independent checkpoint integrity checks passed | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Completed and validated M8 PPO + intent training | Produce the controlled seed-42 policy checkpoint for the E2 comparison | Training metadata, file hashes, PPO spaces/hyperparameters, timestep count, and finite parameters verified | Training summary: `b11fc66`; documentation: this update |
+
+**Next action:** run only the frozen 500-episode paired holdout evaluation on seeds 10042–10541 and commit its CSV/summary JSON; keep both model checkpoints local.
