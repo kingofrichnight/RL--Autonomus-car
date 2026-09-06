@@ -225,7 +225,32 @@ The 500-episode shadow diagnostic reproduced both references and improved
 coverage from 43.75% to 63.88%, but it failed the frozen 70% feasibility gate.
 Shadow accuracy (62.53%) and macro F1 (62.04%) still passed. Wider tracking alone
 is therefore insufficient; the next experiment must separately develop and
-screen a shorter-history intent model before any PPO retraining.
+screen a shorter-history intent model before any PPO retraining. First select the
+longest admissible window that reaches 70% shadow coverage:
+
+```bash
+python scripts/diagnose_intent_rollout.py \
+  --model models/ppo_intent_v1_seed42.zip \
+  --model-sha256 954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8 \
+  --config configs/intersection_reward_v3.yaml \
+  --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 \
+  --intent-model models/intent_gru_seed42.pt \
+  --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 \
+  --intent-neighbors 5 --shadow-history-neighbors 14 --intent-device cpu \
+  --episodes 500 --seed 10042 --unsafe-ttc 2.0 \
+  --reference-csv results/ppo_intent_v1_holdout_seed10042.csv \
+  --reference-csv-sha256 72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498 \
+  --reference-diagnostic-json results/ppo_intent_v1_online_diagnostics_seed10042.json \
+  --reference-diagnostic-json-sha256 c39ffdc93c6f46ab75b4624b8b48ec04caab877ef310bbf14148e1d9504e4045 \
+  --reference-shadow-diagnostic-json results/ppo_intent_v1_shadow_history_diagnostics_seed10042.json \
+  --reference-shadow-diagnostic-json-sha256 d22140fa855aab867978ebd439d222a7622d3c97ed94fcf549cc89b623f2a844 \
+  --history-coverage-lengths 4,5,6,7,8,9,10 \
+  --history-coverage-minimum 0.70 \
+  --output results/ppo_intent_v1_history_coverage_curve_seed10042.json
+```
+
+This remains a non-interventional replay. It does not train or evaluate a new
+classifier and must reproduce the earlier driving, intent, and shadow results.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.

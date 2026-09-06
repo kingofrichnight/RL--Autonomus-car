@@ -193,3 +193,82 @@ class HistoryCoverageComparison:
             ),
             "shadow_is_readiness_superset": self.current_only == 0,
         }
+
+
+@dataclass
+class HistoryLengthCoverageCurve:
+    """Count counterfactual readiness for predeclared shorter history windows."""
+
+    candidate_lengths: tuple[int, ...]
+    decisions: int = 0
+    vehicle_slots: int = 0
+    ready_counts: dict[int, int] = field(default_factory=dict)
+    observed_length_counts: dict[int, int] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        normalized = tuple(int(value) for value in self.candidate_lengths)
+        if (
+            not normalized
+            or normalized != tuple(sorted(set(normalized)))
+            or any(value <= 0 for value in normalized)
+        ):
+            raise ValueError("History coverage candidates must be unique positive lengths")
+        self.candidate_lengths = normalized
+        self.ready_counts = {value: 0 for value in normalized}
+
+    def update(self, shadow: dict[str, Any]) -> None:
+        lengths = list(shadow["history_lengths"])
+        vehicle_slots = int(shadow["vehicle_slots"])
+        if (
+            len(lengths) != vehicle_slots
+            or any(not isinstance(value, Integral) or value <= 0 for value in lengths)
+            or any(value > self.candidate_lengths[-1] for value in lengths)
+        ):
+            raise ValueError("Shadow history lengths are inconsistent with vehicle slots")
+        normalized = [int(value) for value in lengths]
+        additions = {
+            candidate: sum(length >= candidate for length in normalized)
+            for candidate in self.candidate_lengths
+        }
+
+        self.decisions += 1
+        self.vehicle_slots += vehicle_slots
+        for candidate, count in additions.items():
+            self.ready_counts[candidate] += count
+        for length in normalized:
+            self.observed_length_counts[length] = self.observed_length_counts.get(length, 0) + 1
+
+    def summarize(self, *, minimum_coverage: float) -> dict[str, Any]:
+        if not 0 <= minimum_coverage <= 1:
+            raise ValueError("Minimum coverage must be between zero and one")
+        coverage = {
+            str(candidate): {
+                "ready_vehicle_slots": self.ready_counts[candidate],
+                "warmup_vehicle_slots": self.vehicle_slots - self.ready_counts[candidate],
+                "coverage": (
+                    self.ready_counts[candidate] / self.vehicle_slots
+                    if self.vehicle_slots
+                    else None
+                ),
+            }
+            for candidate in self.candidate_lengths
+        }
+        eligible = [
+            candidate
+            for candidate in self.candidate_lengths
+            if self.vehicle_slots
+            and self.ready_counts[candidate] / self.vehicle_slots >= minimum_coverage
+        ]
+        return {
+            "decisions": self.decisions,
+            "vehicle_slots": self.vehicle_slots,
+            "candidate_lengths": list(self.candidate_lengths),
+            "minimum_coverage": minimum_coverage,
+            "coverage_by_history_length": coverage,
+            "observed_history_length_counts": {
+                str(length): self.observed_length_counts.get(length, 0)
+                for length in range(1, self.candidate_lengths[-1] + 1)
+            },
+            "selected_history_length": max(eligible) if eligible else None,
+            "selection_rule": "longest candidate meeting minimum coverage",
+        }

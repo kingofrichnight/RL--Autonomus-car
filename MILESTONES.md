@@ -3679,3 +3679,138 @@ A shorter-history model must pass the existing classifier standards and a predef
 | 2026-09-05 | Completed and rejected M8D as a sufficient coverage solution | Test wider history retention without changing M8 actions | Both references, artifact hashes, paired readiness counts, confusion matrix, and all frozen gates independently verified | Result: `7d49dc2`; documentation: this update |
 
 **Next action:** audit and freeze the shorter-history classifier development protocol; do not train PPO or a new GRU until that protocol and its gates are recorded.
+
+
+---
+
+## 46. Milestone M9A design — shorter-history coverage selection
+
+**Experiment ID:** E-M9A-HISTORY-CURVE-H10042
+
+**Status:** Implemented and frozen; 500-episode coverage curve pending
+
+**Date recorded:** 2026-09-05
+
+**Research role:** development-only selection of one shorter history length before any new classifier training
+
+**Policy intervention:** none
+
+### 46.1 Leakage-control decision
+
+Training multiple shorter-history GRUs and choosing among them by held-out test accuracy would reuse the intent test split for model selection. M9A instead selects a single history length using only a coverage curve on the already-designated development trajectories. The chosen GRU will later select its epoch on grouped validation episodes and receive one held-out intent test evaluation.
+
+The M8 policy trajectories at seeds 10042–10541 are no longer considered untouched because M8C and M8D informed representation design. M9A may use them for development-only coverage selection, but no later policy success/collision claim may use them as its final holdout.
+
+### 46.2 Frozen candidates and selection rule
+
+Candidate history lengths are:
+
+```text
+4, 5, 6, 7, 8, 9, 10 policy observations
+```
+
+At the frozen 5 Hz policy frequency, four observations span three transitions, or 0.6 seconds. Lengths 1–3 are excluded because they provide at most two temporal transitions and the first velocity-difference feature is initialized to zero. Length 10 retains the current two-second collection convention and anchors the curve to M8D.
+
+For each target vehicle slot, M9A records the current length of its 14-slot shadow history, capped at ten. For candidate $L$:
+
+$$
+coverage(L)=\frac{\#\{\text{vehicle target slots with shadow history length}\ge L\}}{N_{vehicle}}
+$$
+
+The selection is fixed before the run:
+
+$$
+L^*=\max\{L\in\{4,5,6,7,8,9,10\}: coverage(L)\ge0.70\}
+$$
+
+Choosing the longest passing window preserves the most temporal context while meeting the existing 70% availability requirement. If no candidate passes, M9A is inconclusive and no shorter-history GRU is authorized.
+
+This rule uses coverage only. Hidden labels, classifier accuracy, PPO outcomes, and the three-episode engineering smoke cannot change the selected length.
+
+### 46.3 Frozen reference chain and output
+
+| Input | SHA-256 |
+|---|---|
+| PPO + intent V1 checkpoint | `954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8` |
+| Intent GRU checkpoint | `10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05` |
+| V3 configuration | `433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69` |
+| M8B driving CSV | `72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498` |
+| M8C online diagnostic | `c39ffdc93c6f46ab75b4624b8b48ec04caab877ef310bbf14148e1d9504e4045` |
+| M8D shadow diagnostic | `d22140fa855aab867978ebd439d222a7622d3c97ed94fcf549cc89b623f2a844` |
+
+The output is `results/ppo_intent_v1_history_coverage_curve_seed10042.json`. It must report 500 episodes, seeds 10042–10541, five intent-output slots, 14 shadow-history slots, candidates 4–10, minimum coverage 0.70, CPU policy/intent inference, no shield, and the unchanged 2.0-second unsafe-TTC reporting threshold.
+
+Before accepting a curve, the runner must reproduce:
+
+1. all 500 M8B driving rows;
+2. the complete M8C `online_intent` block;
+3. the M8D `online_intent`, `shadow_online_intent`, and `coverage_comparison` blocks.
+
+Numeric reference comparison uses absolute tolerance `1e-12` and zero relative tolerance. Every input hash is checked, the output refuses overwrite, and a failed run preserves its partial JSON and raises.
+
+### 46.4 Dataset and future classifier boundary
+
+M9A does not read or transform `data/intent_trajectories_seed42.npz` and does not train a GRU. After $L^*$ is recorded, a separate implementation must:
+
+- verify the accepted dataset SHA-256 `56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0`;
+- derive each candidate input causally as the last $L^*$ chronological rows of its existing ten-step history;
+- preserve all 109,596 labels, episode IDs, and the exact seed-42 grouped train/validation/test episode assignment;
+- calculate normalization only from the projected training split;
+- use seed 42, 30 epochs, batch size 128, learning rate 0.001, the unchanged GRU architecture, and best-validation-epoch selection;
+- keep the held-out test metrics unavailable until the selected checkpoint and its validation result are frozen;
+- save projection length, source fingerprint, split indices, and hyperparameters in the checkpoint/summary;
+- keep the derived dataset and checkpoint local and commit only small JSON provenance/metrics.
+
+These requirements are recorded now but do not authorize training before the M9A curve result is validated and appended.
+
+### 46.5 Implementation and engineering verification
+
+The shadow snapshot now exposes validated per-target history lengths. A new accumulator checks their count and bounds, constructs the complete length histogram and monotone coverage curve, and applies the frozen longest-passing selection rule. The diagnostic runner additionally pins and reproduces the M8D JSON before accepting the curve.
+
+The first quick Ruff pass found only two overlong lines and import ordering in new tests. They were corrected before the complete gate or real-environment smoke.
+
+Final implementation checks:
+
+```text
+git diff --check: passed
+ruff check: passed
+pytest: 76 passed in 3.22 s
+```
+
+A chained three-episode real-environment smoke on seeds 10042–10044 reproduced the driving, M8C, and M8D blocks. Its curve was:
+
+| History length | Smoke coverage |
+|---:|---:|
+| 4 | 88.36% |
+| 5 | 84.76% |
+| 6 | 80.82% |
+| 7 | 76.88% |
+| 8 | 72.95% |
+| 9 | 69.01% |
+| 10 | 65.24% |
+
+The smoke selected length 8 and verified all 584 vehicle target slots were represented in the length histogram. This is engineering evidence only and cannot determine the 500-episode result.
+
+### 46.6 Frozen command
+
+After pulling the implementation and rerunning all tests, execute exactly once:
+
+```powershell
+python scripts/diagnose_intent_rollout.py --model models/ppo_intent_v1_seed42.zip --model-sha256 954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8 --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --intent-model models/intent_gru_seed42.pt --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 --intent-neighbors 5 --shadow-history-neighbors 14 --intent-device cpu --episodes 500 --seed 10042 --unsafe-ttc 2.0 --reference-csv results/ppo_intent_v1_holdout_seed10042.csv --reference-csv-sha256 72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498 --reference-diagnostic-json results/ppo_intent_v1_online_diagnostics_seed10042.json --reference-diagnostic-json-sha256 c39ffdc93c6f46ab75b4624b8b48ec04caab877ef310bbf14148e1d9504e4045 --reference-shadow-diagnostic-json results/ppo_intent_v1_shadow_history_diagnostics_seed10042.json --reference-shadow-diagnostic-json-sha256 d22140fa855aab867978ebd439d222a7622d3c97ed94fcf549cc89b623f2a844 --history-coverage-lengths 4,5,6,7,8,9,10 --history-coverage-minimum 0.70 --output results/ppo_intent_v1_history_coverage_curve_seed10042.json
+```
+
+Commit only the output JSON, whether complete or failed. Do not train a GRU or PPO, change candidates, or rerun after observing the curve.
+
+### 46.7 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-048 | Select one shorter history by a coverage-only curve before training | Train several GRUs and choose by held-out test performance | Prevent test-split model selection and reduce unnecessary training runs | Retained |
+| D-049 | Restrict candidates to lengths 4–10 and select the longest reaching 70% | Include single-snapshot histories or choose the shortest/highest-coverage window | Preserve meaningful temporal context while satisfying the established availability gate | Retained |
+| D-050 | Require the full M8B→M8C→M8D reference chain | Trust aggregate similarity or rerun without pinned prior diagnostics | Ensure the only new evidence is the history-length curve | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Implemented and froze the M9A history-length coverage selector | Choose one shorter temporal window without using intent test results | 76 tests passed; three-episode chained reference-reproduction smoke passed | This implementation update |
+
+**Next action:** run only the frozen M9A curve command and commit its JSON; do not train a new GRU yet.

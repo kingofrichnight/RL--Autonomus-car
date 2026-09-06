@@ -5,9 +5,10 @@ import pandas as pd
 import pytest
 
 from safeintent_rl.evaluation import EpisodeMetrics
-from safeintent_rl.intent.diagnostics import OnlineIntentDiagnostics
+from safeintent_rl.intent.diagnostics import HistoryCoverageComparison, OnlineIntentDiagnostics
 from scripts import diagnose_intent_rollout
 from scripts.diagnose_intent_rollout import (
+    _parse_history_lengths,
     _save_report,
     _verify_diagnostic_reference,
     _verify_reference,
@@ -59,6 +60,20 @@ def test_diagnostic_reference_accepts_nested_numeric_equivalence() -> None:
     observed = {"count": 3, "rate": 0.25 + 5e-13, "matrix": [[1, 2], [3, 4]]}
 
     _verify_diagnostic_reference(observed, reference)
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [("4,5,6,7", (4, 5, 6, 7)), ("4, 6", (4, 6))],
+)
+def test_parse_history_lengths(value, expected) -> None:
+    assert _parse_history_lengths(value) == expected
+
+
+@pytest.mark.parametrize("value", ["", "4,4", "6,4", "0,4", "four,5"])
+def test_parse_history_lengths_rejects_invalid_candidates(value) -> None:
+    with pytest.raises(Exception):
+        _parse_history_lengths(value)
 
 
 @pytest.mark.parametrize(
@@ -183,6 +198,7 @@ def test_shadow_run_reproduces_original_diagnostics_and_saves_comparison(
         "predicted_labels": [2],
         "vehicle_rows": [0],
         "predicted_rows": [0],
+        "history_lengths": [1],
     }
     labels = ["cautious", "normal", "aggressive"]
     current = OnlineIntentDiagnostics()
@@ -200,6 +216,31 @@ def test_shadow_run_reproduces_original_diagnostics_and_saves_comparison(
                 "intent_model_sha256": "a" * 64,
                 "reference_csv_sha256": "a" * 64,
                 "online_intent": current.summarize(labels),
+            }
+        ),
+        encoding="utf-8",
+    )
+    shadow_aggregate = OnlineIntentDiagnostics()
+    shadow_aggregate.update(shadow_snapshot)
+    comparison = HistoryCoverageComparison()
+    comparison.update(current_snapshot, shadow_snapshot)
+    reference_shadow_diagnostic = tmp_path / "reference_shadow.json"
+    reference_shadow_diagnostic.write_text(
+        json.dumps(
+            {
+                "status": "complete",
+                "episodes": 1,
+                "first_seed": 10042,
+                "last_seed": 10042,
+                "shadow_history_neighbors": 3,
+                "model_sha256": "a" * 64,
+                "config_sha256": "a" * 64,
+                "intent_model_sha256": "a" * 64,
+                "reference_csv_sha256": "a" * 64,
+                "reference_diagnostic_json_sha256": "a" * 64,
+                "online_intent": current.summarize(labels),
+                "shadow_online_intent": shadow_aggregate.summarize(labels),
+                "coverage_comparison": comparison.summarize(),
             }
         ),
         encoding="utf-8",
@@ -240,6 +281,10 @@ def test_shadow_run_reproduces_original_diagnostics_and_saves_comparison(
             "--reference-csv", str(reference_csv), "--reference-csv-sha256", "a" * 64,
             "--reference-diagnostic-json", str(reference_diagnostic),
             "--reference-diagnostic-json-sha256", "a" * 64,
+            "--reference-shadow-diagnostic-json", str(reference_shadow_diagnostic),
+            "--reference-shadow-diagnostic-json-sha256", "a" * 64,
+            "--history-coverage-lengths", "1,2",
+            "--history-coverage-minimum", "0.7",
             "--output", str(output),
         ],
     )
@@ -254,4 +299,6 @@ def test_shadow_run_reproduces_original_diagnostics_and_saves_comparison(
     assert report["shadow_online_intent"]["prediction_coverage"] == 1.0
     assert report["coverage_comparison"]["shadow_only"] == 1
     assert report["coverage_comparison"]["shadow_is_readiness_superset"] is True
+    assert report["shadow_diagnostic_reference_reproduced"] is True
+    assert report["history_coverage_curve"]["selected_history_length"] == 1
     assert report["shadow_history_neighbors"] == 3

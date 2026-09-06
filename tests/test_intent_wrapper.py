@@ -221,6 +221,7 @@ def test_shadow_history_uses_wider_observed_slots_without_changing_output(
     assert shadow.last_intent_diagnostics["predicted_vehicle_slots"] == 1
     assert shadow.last_shadow_intent_diagnostics["warmup_vehicle_slots"] == 0
     assert shadow.last_shadow_intent_diagnostics["predicted_vehicle_slots"] == 2
+    assert shadow.last_shadow_intent_diagnostics["history_lengths"] == [2, 2]
     assert len(shadow.shadow_histories) == 3
 
 

@@ -2,7 +2,11 @@ from dataclasses import asdict
 
 import pytest
 
-from safeintent_rl.intent.diagnostics import HistoryCoverageComparison, OnlineIntentDiagnostics
+from safeintent_rl.intent.diagnostics import (
+    HistoryCoverageComparison,
+    HistoryLengthCoverageCurve,
+    OnlineIntentDiagnostics,
+)
 
 
 def _labeled_snapshot() -> dict:
@@ -187,3 +191,34 @@ def test_history_coverage_comparison_rejects_inconsistent_rows(shadow) -> None:
         comparison.update(_coverage_snapshot([0, 1]), shadow)
 
     assert comparison.decisions == 0
+
+
+def test_history_length_curve_selects_longest_candidate_meeting_coverage() -> None:
+    curve = HistoryLengthCoverageCurve((4, 5, 6, 7))
+    curve.update({"vehicle_slots": 4, "history_lengths": [7, 6, 5, 3]})
+    curve.update({"vehicle_slots": 2, "history_lengths": [7, 4]})
+
+    result = curve.summarize(minimum_coverage=0.65)
+
+    assert result["vehicle_slots"] == 6
+    assert result["coverage_by_history_length"]["4"]["coverage"] == pytest.approx(5 / 6)
+    assert result["coverage_by_history_length"]["5"]["coverage"] == pytest.approx(4 / 6)
+    assert result["coverage_by_history_length"]["6"]["coverage"] == pytest.approx(3 / 6)
+    assert result["selected_history_length"] == 5
+    assert sum(result["observed_history_length_counts"].values()) == 6
+
+
+@pytest.mark.parametrize("candidates", [(), (0, 4), (4, 4), (5, 4)])
+def test_history_length_curve_rejects_invalid_candidates(candidates) -> None:
+    with pytest.raises(ValueError, match="unique positive"):
+        HistoryLengthCoverageCurve(candidates)
+
+
+def test_history_length_curve_rejects_invalid_snapshot_without_mutating() -> None:
+    curve = HistoryLengthCoverageCurve((4, 5, 6))
+
+    with pytest.raises(ValueError, match="inconsistent"):
+        curve.update({"vehicle_slots": 2, "history_lengths": [4, 7]})
+
+    assert curve.decisions == 0
+    assert curve.vehicle_slots == 0

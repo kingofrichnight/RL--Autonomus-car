@@ -14,7 +14,11 @@ from stable_baselines3 import PPO
 
 from safeintent_rl.envs import make_intersection_env
 from safeintent_rl.evaluation import EpisodeMetrics, detect_success, summarize_episodes
-from safeintent_rl.intent.diagnostics import HistoryCoverageComparison, OnlineIntentDiagnostics
+from safeintent_rl.intent.diagnostics import (
+    HistoryCoverageComparison,
+    HistoryLengthCoverageCurve,
+    OnlineIntentDiagnostics,
+)
 from safeintent_rl.intent.inference import file_sha256
 from safeintent_rl.intent.wrapper import IntentObservationWrapper
 from safeintent_rl.safety.ttc import minimum_ttc
@@ -99,6 +103,20 @@ def _save_report(output: Path, result: dict[str, Any]) -> None:
         json.dump(result, handle, indent=2)
 
 
+def _parse_history_lengths(value: str) -> tuple[int, ...]:
+    try:
+        lengths = tuple(int(item.strip()) for item in value.split(","))
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(
+            "history lengths must be comma-separated integers"
+        ) from error
+    if not lengths or lengths != tuple(sorted(set(lengths))) or any(item <= 0 for item in lengths):
+        raise argparse.ArgumentTypeError(
+            "history lengths must be unique positive integers in ascending order"
+        )
+    return lengths
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Measure online intent coverage and accuracy without changing PPO actions"
@@ -119,6 +137,10 @@ def main() -> None:
     parser.add_argument("--reference-csv-sha256", required=True)
     parser.add_argument("--reference-diagnostic-json")
     parser.add_argument("--reference-diagnostic-json-sha256")
+    parser.add_argument("--reference-shadow-diagnostic-json")
+    parser.add_argument("--reference-shadow-diagnostic-json-sha256")
+    parser.add_argument("--history-coverage-lengths", type=_parse_history_lengths)
+    parser.add_argument("--history-coverage-minimum", type=float, default=0.70)
     parser.add_argument(
         "--output",
         default="results/ppo_intent_v1_online_diagnostics_seed10042.json",
@@ -137,6 +159,23 @@ def main() -> None:
         parser.error(
             "shadow tracking and --reference-diagnostic-json-sha256 must be used together"
         )
+    curve_requested = args.history_coverage_lengths is not None
+    if curve_requested and not shadow_requested:
+        parser.error("history coverage analysis requires shadow history tracking")
+    if curve_requested != bool(args.reference_shadow_diagnostic_json):
+        parser.error(
+            "history coverage analysis and --reference-shadow-diagnostic-json "
+            "must be used together"
+        )
+    if curve_requested != bool(args.reference_shadow_diagnostic_json_sha256):
+        parser.error(
+            "history coverage analysis and --reference-shadow-diagnostic-json-sha256 "
+            "must be used together"
+        )
+    if not math.isfinite(args.history_coverage_minimum) or not (
+        0 <= args.history_coverage_minimum <= 1
+    ):
+        parser.error("--history-coverage-minimum must be between zero and one")
     if not math.isfinite(args.unsafe_ttc) or args.unsafe_ttc < 0:
         parser.error("--unsafe-ttc must be finite and non-negative")
     output = Path(args.output)
@@ -188,6 +227,46 @@ def main() -> None:
         ):
             raise ValueError("Reference diagnostic JSON does not match the frozen run")
         reference_online_intent = reference_diagnostic["online_intent"]
+    reference_shadow_diagnostic_sha256: str | None = None
+    reference_shadow_blocks: dict[str, Any] | None = None
+    if curve_requested:
+        reference_shadow_diagnostic_sha256 = _require_sha256(
+            args.reference_shadow_diagnostic_json,
+            args.reference_shadow_diagnostic_json_sha256,
+            "reference shadow diagnostic JSON",
+        )
+        with Path(args.reference_shadow_diagnostic_json).open(encoding="utf-8") as handle:
+            reference_shadow_diagnostic = json.load(handle)
+        required_blocks = ("online_intent", "shadow_online_intent", "coverage_comparison")
+        if (
+            reference_shadow_diagnostic.get("status") != "complete"
+            or reference_shadow_diagnostic.get("episodes") != args.episodes
+            or reference_shadow_diagnostic.get("first_seed") != args.seed
+            or reference_shadow_diagnostic.get("last_seed")
+            != args.seed + args.episodes - 1
+            or reference_shadow_diagnostic.get("shadow_history_neighbors")
+            != args.shadow_history_neighbors
+            or reference_shadow_diagnostic.get("model_sha256", "").lower()
+            != model_sha256.lower()
+            or reference_shadow_diagnostic.get("config_sha256", "").lower()
+            != config_sha256.lower()
+            or reference_shadow_diagnostic.get("intent_model_sha256", "").lower()
+            != intent_model_sha256.lower()
+            or reference_shadow_diagnostic.get("reference_csv_sha256", "").lower()
+            != reference_sha256.lower()
+            or reference_shadow_diagnostic.get(
+                "reference_diagnostic_json_sha256", ""
+            ).lower()
+            != reference_diagnostic_sha256.lower()
+            or any(
+                not isinstance(reference_shadow_diagnostic.get(key), dict)
+                for key in required_blocks
+            )
+        ):
+            raise ValueError("Reference shadow diagnostic JSON does not match the frozen run")
+        reference_shadow_blocks = {
+            key: reference_shadow_diagnostic[key] for key in required_blocks
+        }
 
     model = PPO.load(args.model, device="cpu")
     env = make_intersection_env(
@@ -205,6 +284,11 @@ def main() -> None:
     diagnostics = OnlineIntentDiagnostics()
     shadow_diagnostics = OnlineIntentDiagnostics() if shadow_requested else None
     coverage_comparison = HistoryCoverageComparison() if shadow_requested else None
+    coverage_curve = (
+        HistoryLengthCoverageCurve(args.history_coverage_lengths)
+        if curve_requested
+        else None
+    )
     episodes: list[EpisodeMetrics] = []
     failure: str | None = None
     try:
@@ -224,6 +308,8 @@ def main() -> None:
                         wrapper.last_intent_diagnostics,
                         wrapper.last_shadow_intent_diagnostics,
                     )
+                    if coverage_curve is not None:
+                        coverage_curve.update(wrapper.last_shadow_intent_diagnostics)
                 base = env.unwrapped
                 pre_step_ttc = minimum_ttc(base.vehicle, list(base.road.vehicles))
                 action, _ = model.predict(observation, deterministic=True)
@@ -263,9 +349,20 @@ def main() -> None:
         if shadow_diagnostics is not None
         else None
     )
+    comparison_summary = (
+        coverage_comparison.summarize() if coverage_comparison is not None else None
+    )
+    coverage_curve_summary = (
+        coverage_curve.summarize(minimum_coverage=args.history_coverage_minimum)
+        if coverage_curve is not None
+        else None
+    )
     driving_reference_reproduced = False
     online_intent_reference_reproduced = (
         False if reference_online_intent is not None else None
+    )
+    shadow_diagnostic_reference_reproduced = (
+        False if reference_shadow_blocks is not None else None
     )
     if failure is None:
         try:
@@ -280,11 +377,30 @@ def main() -> None:
                     raise RuntimeError("Shadow and policy diagnostic slot counts differ")
                 if coverage_comparison.decisions != diagnostics.decisions:
                     raise RuntimeError("Coverage comparison and diagnostic decisions differ")
+                if coverage_curve is not None and coverage_curve.decisions != diagnostics.decisions:
+                    raise RuntimeError("Coverage curve and diagnostic decisions differ")
             _verify_reference(episodes, args.reference_csv)
             driving_reference_reproduced = True
             if reference_online_intent is not None:
                 _verify_diagnostic_reference(online_summary, reference_online_intent)
                 online_intent_reference_reproduced = True
+            if reference_shadow_blocks is not None:
+                _verify_diagnostic_reference(
+                    online_summary,
+                    reference_shadow_blocks["online_intent"],
+                    path="shadow_reference.online_intent",
+                )
+                _verify_diagnostic_reference(
+                    shadow_summary,
+                    reference_shadow_blocks["shadow_online_intent"],
+                    path="shadow_reference.shadow_online_intent",
+                )
+                _verify_diagnostic_reference(
+                    comparison_summary,
+                    reference_shadow_blocks["coverage_comparison"],
+                    path="shadow_reference.coverage_comparison",
+                )
+                shadow_diagnostic_reference_reproduced = True
         except Exception as error:
             failure = f"{type(error).__name__}: {error}"
     result = {
@@ -296,15 +412,17 @@ def main() -> None:
         "last_seed": args.seed + args.episodes - 1,
         "driving_reference_reproduced": driving_reference_reproduced,
         "online_intent_reference_reproduced": online_intent_reference_reproduced,
+        "shadow_diagnostic_reference_reproduced": (
+            shadow_diagnostic_reference_reproduced
+        ),
         "driving_metrics": summarize_episodes(episodes) if episodes else None,
         "failed_episode_results": (
             [episode.as_dict() for episode in episodes] if failure is not None else None
         ),
         "online_intent": online_summary,
         "shadow_online_intent": shadow_summary,
-        "coverage_comparison": (
-            coverage_comparison.summarize() if coverage_comparison is not None else None
-        ),
+        "coverage_comparison": comparison_summary,
+        "history_coverage_curve": coverage_curve_summary,
         "model_path": str(Path(args.model)),
         "model_sha256": model_sha256,
         "config_path": str(Path(args.config)),
@@ -328,6 +446,14 @@ def main() -> None:
             else None
         ),
         "reference_diagnostic_json_sha256": reference_diagnostic_sha256,
+        "reference_shadow_diagnostic_json": (
+            str(Path(args.reference_shadow_diagnostic_json))
+            if args.reference_shadow_diagnostic_json is not None
+            else None
+        ),
+        "reference_shadow_diagnostic_json_sha256": (
+            reference_shadow_diagnostic_sha256
+        ),
     }
     _save_report(output, result)
     print(json.dumps(result["online_intent"], indent=2))

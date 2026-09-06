@@ -280,6 +280,7 @@ class IntentObservationWrapper(gym.Wrapper):
             "predicted_labels": [],
             "vehicle_rows": [],
             "predicted_rows": [],
+            "history_lengths": [],
         }
         ready_histories: list[np.ndarray] = []
         ready_vehicles: list[Any] = []
@@ -291,6 +292,7 @@ class IntentObservationWrapper(gym.Wrapper):
                 continue
             diagnostics["vehicle_slots"] += 1
             diagnostics["vehicle_rows"].append(row)
+            diagnostics["history_lengths"].append(len(self.shadow_histories[key]))
             if len(self.shadow_histories[key]) == self.history_length:
                 ready_rows.append(row)
                 ready_histories.append(np.stack(self.shadow_histories[key]))
