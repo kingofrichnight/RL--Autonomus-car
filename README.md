@@ -233,27 +233,34 @@ reached only 67.52%. This was a non-interventional development result; driving
 remained 59.0% success and 41.0% collision. The next step is to implement and
 freeze the leakage-safe eight-step GRU training/evaluation protocol.
 
-That protocol is now implemented. After pulling it and rerunning the full tests,
-train exactly one eight-step classifier with the held-out test split sealed:
+That protocol is now implemented. The single eight-step training run passed its
+validation gate: 60.98% accuracy, 59.95% macro F1, and 47.47% minimum class
+recall. Its local checkpoint SHA-256 is
+`74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05`,
+and independent inspection confirmed that held-out test metrics remain sealed.
+
+After pulling the result documentation and rerunning the full tests, perform the
+one permitted held-out intent evaluation:
 
 ```bash
-python scripts/train_intent.py \
+python scripts/evaluate_intent.py \
   --data data/intent_trajectories_seed42.npz \
   --data-sha256 56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0 \
-  --history-length 8 --epochs 30 --batch-size 128 --learning-rate 0.001 \
-  --seed 42 --device cpu --seal-test \
-  --minimum-validation-accuracy-advantage 0.05 \
-  --minimum-validation-macro-f1 0.50 \
-  --minimum-validation-class-recall 0.40 \
-  --output models/intent_gru_h8_seed42.pt \
-  --summary-output results/intent_gru_h8_seed42.training.json \
+  --model models/intent_gru_h8_seed42.pt \
+  --model-sha256 74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05 \
+  --expected-history-length 8 --require-sealed-test --device cpu \
+  --coverage-json results/ppo_intent_v1_history_coverage_curve_seed10042.json \
+  --coverage-json-sha256 b364e39e104197b32670c9305806c74c972be5fa9e5497888ecd340d664be101 \
+  --minimum-coverage 0.70 --minimum-accuracy-advantage 0.05 \
+  --minimum-macro-f1 0.50 --minimum-class-recall 0.40 \
+  --reference-accuracy 0.6335489543427746 \
+  --maximum-reference-accuracy-drop 0.05 \
+  --output results/intent_gru_h8_seed42.metrics.json \
   --refuse-overwrite
 ```
 
-Commit only `results/intent_gru_h8_seed42.training.json`; keep the `.pt`
-checkpoint local. Do not run `evaluate_intent.py` yet. The checkpoint and
-validation gate must be verified and frozen by hash before its one held-out test
-evaluation. Do not train PPO.
+Commit only `results/intent_gru_h8_seed42.metrics.json`, whether it passes or
+fails. Keep the `.pt` checkpoint local and do not train PPO yet.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.

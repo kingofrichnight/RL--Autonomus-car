@@ -4030,3 +4030,128 @@ Commit only `results/intent_gru_h8_seed42.training.json`, whether its validation
 | 2026-09-05 | Implemented and froze M9B sealed eight-step training and evaluation support | Train the M9A-selected representation without leaking held-out intent-test metrics | Dataset/split audit, Ruff, and 79 tests passed | This implementation update |
 
 **Next action:** run only the frozen M9B training command after the full local test gate; commit its JSON summary and keep its checkpoint local. Do not evaluate the test split yet.
+
+
+---
+
+## 49. Milestone M9B training result — validation gate passed with test sealed
+
+**Experiment ID:** E-M9B-GRU-H8-S42-DATA56433621
+
+**Status:** Training complete; validation gate passed; held-out test evaluation authorized once
+
+**Date recorded:** 2026-09-05
+
+**Result commit:** [`b7c1abb`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/b7c1abb70ac20989a2861cdc4afdef997a087a8d)
+
+**Training summary:** `results/intent_gru_h8_seed42.training.json`
+
+**Summary SHA-256:** `a368a1140b5539a7d992db827a9353128187b9eae01ad9ce106a84bc63b03caf`
+
+**Local checkpoint:** `models/intent_gru_h8_seed42.pt`
+
+**Checkpoint SHA-256:** `74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05`
+
+### 49.1 Integrity and leakage audit
+
+The committed result contains only the small training JSON; the `.pt` checkpoint remains local and ignored. The summary reports `status: complete` and exactly reproduces every frozen M9B input and setting:
+
+- dataset SHA-256 `56433621...02b0`;
+- 109,596 source samples with shape 10 × 6 and the unchanged three class counts;
+- causal suffix history length 8;
+- seed 42 episode-grouped split;
+- 30 epochs, batch size 128, learning rate 0.001, and CPU;
+- best-validation-accuracy checkpoint selection;
+- the three predefined validation thresholds.
+
+The recorded split is unchanged:
+
+| Split | Episodes | Samples | Index-array SHA-256 verification |
+|---|---:|---:|---|
+| Training | 210 | 76,761 | Matched `85dc4bb4...3d26` |
+| Validation | 45 | 16,912 | Matched `aaa8cd59...f5bf` |
+| Test | 45 | 15,923 | Matched `eec6da2e...a6b6` |
+
+Independent checkpoint inspection, without making test predictions, verified:
+
+- the local checkpoint SHA-256 exactly matches the committed summary;
+- `history_length=8`, `source_history_length=10`, and `history_projection=causal_suffix`;
+- feature mean and standard deviation exactly reproduce computation from `x[train_indices, -8:, :]` only;
+- all three checkpoint index arrays match the frozen summary hashes;
+- the 210/45/45 episode-ID sets are pairwise disjoint and cover episodes 0–299 exactly;
+- the validation confusion matrix contains exactly 16,912 samples and reproduces the reported validation accuracy;
+- `test_metrics_sealed=true`, `test_accuracy` is absent from the checkpoint, and the summary records `test_accuracy: null`.
+
+No held-out test label was predicted and no held-out classifier metric was observed during this audit.
+
+### 49.2 Validation result
+
+The best checkpoint occurred at epoch 25.
+
+| Metric | Observed |
+|---|---:|
+| Validation samples | 16,912 |
+| Accuracy | 60.9804% |
+| Majority-class accuracy | 46.3931% |
+| Accuracy advantage | +14.5873 pp |
+| Balanced accuracy / macro recall | 58.5882% |
+| Macro precision | 62.8823% |
+| Macro F1 | 59.9526% |
+
+Per-class validation metrics:
+
+| True class | Support | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|
+| Cautious | 5,483 | 59.02% | 61.52% | 60.24% |
+| Normal | 7,846 | 59.80% | 66.77% | 63.09% |
+| Aggressive | 3,583 | 69.83% | 47.47% | 56.52% |
+
+Validation gate decisions:
+
+| Gate | Requirement | Observed | Margin | Decision |
+|---|---:|---:|---:|---|
+| Accuracy over majority | At least +5 pp | +14.5873 pp | +9.5873 pp | Passed |
+| Macro F1 | At least 50% | 59.9526% | +9.9526 pp | Passed |
+| Minimum class recall | At least 40% | 47.4742% | +7.4742 pp | Passed |
+
+The shorter-history model loses 2.4834 percentage points of validation accuracy relative to the original ten-step model's 63.4638% on the same frozen validation partition. This is development context only; the predefined gates passed and the held-out test remains the final classifier screen.
+
+### 49.3 Interpretation and decision
+
+The eight-observation representation retains meaningful three-class performance on the validation episodes while raising frozen online availability from 63.8823% at length 10 to 71.2301% at length 8. Aggressive recall remains the weakest class, but its 47.47% validation recall clears the predefined 40% floor.
+
+M9B training is accepted as a development result. The checkpoint is now frozen by SHA-256 and exactly one evaluation on the existing held-out intent-test partition is authorized. The evaluator must bind both the new checkpoint and the M9A coverage artifact, enforce all Section 48 final gates, and refuse overwrite. The evaluation must be committed and documented whether it passes or fails.
+
+Do not retrain either classifier, inspect alternative epochs, change thresholds, or train PPO. A classifier pass will authorize a separate PPO experiment design only; PPO V3 remains the best driving policy.
+
+### 49.4 Frozen held-out evaluation command
+
+After pulling this documentation update, first run:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and `results/intent_gru_h8_seed42.metrics.json` does not exist, run exactly once:
+
+```powershell
+python scripts/evaluate_intent.py --data data/intent_trajectories_seed42.npz --data-sha256 56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0 --model models/intent_gru_h8_seed42.pt --model-sha256 74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05 --expected-history-length 8 --require-sealed-test --device cpu --coverage-json results/ppo_intent_v1_history_coverage_curve_seed10042.json --coverage-json-sha256 b364e39e104197b32670c9305806c74c972be5fa9e5497888ecd340d664be101 --minimum-coverage 0.70 --minimum-accuracy-advantage 0.05 --minimum-macro-f1 0.50 --minimum-class-recall 0.40 --reference-accuracy 0.6335489543427746 --maximum-reference-accuracy-drop 0.05 --output results/intent_gru_h8_seed42.metrics.json --refuse-overwrite
+```
+
+Commit only `results/intent_gru_h8_seed42.metrics.json`, whether accepted or rejected. Keep the checkpoint local. Do not rerun the evaluator after seeing its result and do not train PPO.
+
+### 49.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-060 | Accept the M9B validation result | Reject before test or retrain for higher validation accuracy | All three frozen validation gates passed with at least 7.47 pp margin | Retained |
+| D-061 | Freeze checkpoint SHA-256 `74a72cf2...fc05` | Inspect alternative epochs or repeat training | Epoch 25 was selected by the predefined validation rule and provenance checks passed | Retained |
+| D-062 | Authorize exactly one held-out intent-test evaluation | Skip final screening or reuse validation as final evidence | Test metrics remained sealed through training and audit | Retained |
+| D-063 | Continue to prohibit PPO training | Treat validation and coverage as proof of driving improvement | No eight-step classifier test or policy experiment has occurred | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Completed and accepted M9B training for one held-out classifier evaluation | Apply the frozen validation gates while preserving test integrity | Summary/checkpoint hash, split, normalization, validation confusion matrix, and sealed-test state independently verified | Result: `b7c1abb`; documentation: this update |
+
+**Next action:** run the frozen held-out intent evaluation exactly once after the full local test gate; commit its JSON result and keep the checkpoint local. Do not train PPO.
