@@ -1,0 +1,196 @@
+{
+  "status": "complete",
+  "error": null,
+  "episodes": 500,
+  "episodes_completed": 500,
+  "first_seed": 10042,
+  "last_seed": 10541,
+  "driving_reference_reproduced": true,
+  "online_intent_reference_reproduced": true,
+  "driving_metrics": {
+    "episodes": 500.0,
+    "mean_reward": 2.0107245688953985,
+    "mean_length": 38.356,
+    "success_rate": 0.59,
+    "collision_rate": 0.41,
+    "mean_travel_time": 7.6712,
+    "mean_min_ttc": 0.6404479104611077,
+    "mean_unsafe_ttc_events": 15.786,
+    "mean_safety_interventions": 0.0
+  },
+  "failed_episode_results": null,
+  "online_intent": {
+    "decisions": 19178,
+    "slot_observations": 95890,
+    "missing_slots": 9647,
+    "obstacle_slots": 0,
+    "vehicle_slots": 86243,
+    "warmup_vehicle_slots": 48513,
+    "predicted_vehicle_slots": 37730,
+    "labeled_predictions": 37730,
+    "vehicle_slot_rate": 0.8993951402648869,
+    "prediction_coverage": 0.4374847813735607,
+    "labeled_prediction_rate": 1.0,
+    "mean_confidence": 0.7232802955716604,
+    "mean_entropy": 0.608709020886276,
+    "mean_normalized_entropy": 0.5540708284123032,
+    "classification_available": true,
+    "all_classes_observed": true,
+    "classification": {
+      "samples": 37730,
+      "accuracy": 0.6483169891333157,
+      "majority_class_accuracy": 0.4663927908825868,
+      "balanced_accuracy": 0.637375440481243,
+      "macro_precision": 0.6572710052196135,
+      "macro_recall": 0.637375440481243,
+      "macro_f1": 0.6404611725221165,
+      "label_names": [
+        "cautious",
+        "normal",
+        "aggressive"
+      ],
+      "per_class": {
+        "cautious": {
+          "precision": 0.7495718130658184,
+          "recall": 0.5434628348412276,
+          "f1": 0.6300904977375565,
+          "support": 11274,
+          "predicted": 8174
+        },
+        "normal": {
+          "precision": 0.6395907928388747,
+          "recall": 0.7105756663067568,
+          "f1": 0.673217218079522,
+          "support": 17597,
+          "predicted": 19550
+        },
+        "aggressive": {
+          "precision": 0.5826504097541475,
+          "recall": 0.6580878202957444,
+          "f1": 0.6180758017492711,
+          "support": 8859,
+          "predicted": 10006
+        }
+      },
+      "confusion_matrix": [
+        [
+          6127,
+          4286,
+          861
+        ],
+        [
+          1778,
+          12504,
+          3315
+        ],
+        [
+          269,
+          2760,
+          5830
+        ]
+      ]
+    }
+  },
+  "shadow_online_intent": {
+    "decisions": 19178,
+    "slot_observations": 95890,
+    "missing_slots": 9647,
+    "obstacle_slots": 0,
+    "vehicle_slots": 86243,
+    "warmup_vehicle_slots": 31149,
+    "predicted_vehicle_slots": 55094,
+    "labeled_predictions": 55094,
+    "vehicle_slot_rate": 0.8993951402648869,
+    "prediction_coverage": 0.6388228609858191,
+    "labeled_prediction_rate": 1.0,
+    "mean_confidence": 0.7087266378673481,
+    "mean_entropy": 0.6312020330812428,
+    "mean_normalized_entropy": 0.5745448504371578,
+    "classification_available": true,
+    "all_classes_observed": true,
+    "classification": {
+      "samples": 55094,
+      "accuracy": 0.6253494028387846,
+      "majority_class_accuracy": 0.4530620394235307,
+      "balanced_accuracy": 0.6171895457359856,
+      "macro_precision": 0.6412151794934732,
+      "macro_recall": 0.6171895457359856,
+      "macro_f1": 0.6204195249892046,
+      "label_names": [
+        "cautious",
+        "normal",
+        "aggressive"
+      ],
+      "per_class": {
+        "cautious": {
+          "precision": 0.7570197149440984,
+          "recall": 0.5241697198912658,
+          "f1": 0.6194350361395301,
+          "support": 16922,
+          "predicted": 11717
+        },
+        "normal": {
+          "precision": 0.6046264855687606,
+          "recall": 0.6848283321982293,
+          "f1": 0.642233201209776,
+          "support": 24961,
+          "predicted": 28272
+        },
+        "aggressive": {
+          "precision": 0.5619993379675604,
+          "recall": 0.6425705851184619,
+          "f1": 0.5995903376183077,
+          "support": 13211,
+          "predicted": 15105
+        }
+      },
+      "confusion_matrix": [
+        [
+          8870,
+          6850,
+          1202
+        ],
+        [
+          2453,
+          17094,
+          5414
+        ],
+        [
+          394,
+          4328,
+          8489
+        ]
+      ]
+    }
+  },
+  "coverage_comparison": {
+    "decisions": 19178,
+    "vehicle_slots": 86243,
+    "both_ready": 37730,
+    "current_only": 0,
+    "shadow_only": 17364,
+    "neither_ready": 31149,
+    "current_coverage": 0.4374847813735607,
+    "shadow_coverage": 0.6388228609858191,
+    "absolute_coverage_gain": 0.20133807961225839,
+    "current_warmup_recovery": 0.35792467998268507,
+    "shadow_is_readiness_superset": true
+  },
+  "model_path": "models\\ppo_intent_v1_seed42.zip",
+  "model_sha256": "954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8",
+  "config_path": "configs\\intersection_reward_v3.yaml",
+  "config_sha256": "433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69",
+  "intent_model_path": "models\\intent_gru_seed42.pt",
+  "intent_model_sha256": "10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05",
+  "intent_neighbors": 5,
+  "shadow_history_neighbors": 14,
+  "intent_device": "cpu",
+  "policy_device": "cpu",
+  "safety_shield": false,
+  "unsafe_ttc_threshold": 2.0,
+  "measurement_unit": "pre-action visible slot; classification requires ready history and label",
+  "reference_csv": "results\\ppo_intent_v1_holdout_seed10042.csv",
+  "reference_csv_sha256": "72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498",
+  "reference_diagnostic_json": "results\\ppo_intent_v1_online_diagnostics_seed10042.json",
+  "reference_diagnostic_json_sha256": "c39ffdc93c6f46ab75b4624b8b48ec04caab877ef310bbf14148e1d9504e4045"
+}
