@@ -1,0 +1,97 @@
+{
+  "samples": 15923,
+  "accuracy": 0.6017710230484206,
+  "majority_class_accuracy": 0.476543364943792,
+  "balanced_accuracy": 0.575218115628962,
+  "macro_precision": 0.608163911661808,
+  "macro_recall": 0.575218115628962,
+  "macro_f1": 0.5845771556291681,
+  "label_names": [
+    "cautious",
+    "normal",
+    "aggressive"
+  ],
+  "per_class": {
+    "cautious": {
+      "precision": 0.585783795218955,
+      "recall": 0.607103705327779,
+      "f1": 0.5962532299741602,
+      "support": 4561,
+      "predicted": 4727
+    },
+    "normal": {
+      "precision": 0.5991865194654271,
+      "recall": 0.6794939377965208,
+      "f1": 0.6368183783116161,
+      "support": 7588,
+      "predicted": 8605
+    },
+    "aggressive": {
+      "precision": 0.6395214203010421,
+      "recall": 0.4390567037625861,
+      "f1": 0.5206598586017283,
+      "support": 3774,
+      "predicted": 2591
+    }
+  },
+  "confusion_matrix": [
+    [
+      2769,
+      1678,
+      114
+    ],
+    [
+      1612,
+      5156,
+      820
+    ],
+    [
+      346,
+      1771,
+      1657
+    ]
+  ],
+  "data_path": "data\\intent_trajectories_seed42.npz",
+  "model_path": "models\\intent_gru_h8_seed42.pt",
+  "model_sha256": "74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05",
+  "dataset_sha256": "56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0",
+  "source_history_length": 10,
+  "history_length": 8,
+  "history_projection": "causal_suffix",
+  "split_mode": "episode",
+  "training_seed": 42,
+  "best_epoch": 25,
+  "validation_accuracy": 0.6098036896877956,
+  "checkpoint_test_accuracy": null,
+  "test_metrics_were_sealed": true,
+  "evaluation_device": "cpu",
+  "coverage_evidence": {
+    "path": "results\\ppo_intent_v1_history_coverage_curve_seed10042.json",
+    "sha256": "b364e39e104197b32670c9305806c74c972be5fa9e5497888ecd340d664be101",
+    "history_length": 8,
+    "coverage": 0.7123012882204932
+  },
+  "acceptance_gate": {
+    "requirements": {
+      "all_classes_observed": true,
+      "minimum_accuracy_advantage": 0.05,
+      "minimum_macro_f1": 0.5,
+      "minimum_class_recall": 0.4,
+      "reference_accuracy": 0.6335489543427746,
+      "maximum_reference_accuracy_drop": 0.05,
+      "minimum_accuracy_from_reference": 0.5835489543427745,
+      "minimum_coverage": 0.7
+    },
+    "observed": {
+      "all_classes_observed": true,
+      "accuracy_advantage": 0.12522765810462855,
+      "macro_f1": 0.5845771556291681,
+      "minimum_class_recall": 0.4390567037625861,
+      "coverage": 0.7123012882204932
+    },
+    "passed": true
+  },
+  "train_samples": 76761,
+  "validation_samples": 16912,
+  "test_samples": 15923
+}
