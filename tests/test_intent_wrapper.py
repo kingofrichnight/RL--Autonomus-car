@@ -82,6 +82,12 @@ class _Predictor:
         return values[: len(histories)]
 
 
+class _CheckpointLengthPredictor(_Predictor):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.history_length = 2
+
+
 def test_wrapper_aligns_visible_neighbors_and_batches_inference(monkeypatch) -> None:
     _Predictor.instances.clear()
     monkeypatch.setattr(wrapper_module, "IntentPredictor", _Predictor)
@@ -118,6 +124,21 @@ def test_wrapper_rejects_observation_order_that_cannot_be_aligned(monkeypatch) -
     monkeypatch.setattr(wrapper_module, "IntentPredictor", _Predictor)
     with pytest.raises(ValueError, match="sorted"):
         IntentObservationWrapper(_KinematicsEnv(order="shuffled"), "unused.pt")
+
+
+def test_wrapper_uses_and_enforces_checkpoint_history_length(monkeypatch) -> None:
+    monkeypatch.setattr(wrapper_module, "IntentPredictor", _CheckpointLengthPredictor)
+
+    inferred = IntentObservationWrapper(_KinematicsEnv(), "unused.pt", max_neighbors=2)
+
+    assert inferred.history_length == 2
+    with pytest.raises(ValueError, match="checkpoint expects history length 2"):
+        IntentObservationWrapper(
+            _KinematicsEnv(),
+            "unused.pt",
+            max_neighbors=2,
+            history_length=3,
+        )
 
 
 def test_wrapper_preserves_an_obstacle_slot_without_assigning_intent(monkeypatch) -> None:
@@ -225,6 +246,58 @@ def test_shadow_history_uses_wider_observed_slots_without_changing_output(
     assert len(shadow.shadow_histories) == 3
 
 
+def test_production_history_retention_recovers_a_promoted_vehicle(monkeypatch) -> None:
+    _Predictor.instances.clear()
+    monkeypatch.setattr(wrapper_module, "IntentPredictor", _Predictor)
+    narrow_env = _KinematicsEnv()
+    wide_env = _KinematicsEnv()
+    for env in (narrow_env, wide_env):
+        third = _Vehicle((9.0, 3.0), (1.5, -0.5))
+        third.safeintent_driver_label = "normal"
+        env.road.ordered_neighbors.append(third)
+        env.road.vehicles.append(third)
+    narrow = IntentObservationWrapper(
+        narrow_env,
+        "unused.pt",
+        max_neighbors=2,
+        history_length=2,
+        collect_diagnostics=True,
+    )
+    wide = IntentObservationWrapper(
+        wide_env,
+        "unused.pt",
+        max_neighbors=2,
+        history_length=2,
+        history_tracking_neighbors=3,
+        collect_diagnostics=True,
+    )
+
+    narrow.reset(seed=42)
+    wide.reset(seed=42)
+    narrow_env.road.ordered_neighbors = [
+        narrow_env.road.ordered_neighbors[2],
+        narrow_env.road.ordered_neighbors[0],
+        narrow_env.road.ordered_neighbors[1],
+    ]
+    wide_env.road.ordered_neighbors = [
+        wide_env.road.ordered_neighbors[2],
+        wide_env.road.ordered_neighbors[0],
+        wide_env.road.ordered_neighbors[1],
+    ]
+
+    narrow_observation = narrow._augment(np.zeros((15, 7), dtype=np.float32))
+    wide_observation = wide._augment(np.zeros((15, 7), dtype=np.float32))
+
+    assert narrow.last_intent_diagnostics["warmup_vehicle_slots"] == 1
+    assert narrow.last_intent_diagnostics["predicted_vehicle_slots"] == 1
+    assert wide.last_intent_diagnostics["warmup_vehicle_slots"] == 0
+    assert wide.last_intent_diagnostics["predicted_vehicle_slots"] == 2
+    assert len(narrow.histories) == 2
+    assert len(wide.histories) == 3
+    np.testing.assert_allclose(narrow_observation[-6:-3], [1 / 3, 1 / 3, 1 / 3])
+    np.testing.assert_allclose(wide_observation[-6:-3], [0.1, 0.2, 0.7])
+
+
 @pytest.mark.parametrize("shadow_neighbors", [1, 15])
 def test_shadow_history_requires_valid_observed_slot_count(
     monkeypatch,
@@ -249,4 +322,19 @@ def test_shadow_history_requires_diagnostics(monkeypatch) -> None:
             "unused.pt",
             max_neighbors=2,
             shadow_history_neighbors=3,
+        )
+
+
+@pytest.mark.parametrize("tracking_neighbors", [1, 15])
+def test_production_history_requires_valid_observed_slot_count(
+    monkeypatch,
+    tracking_neighbors,
+) -> None:
+    monkeypatch.setattr(wrapper_module, "IntentPredictor", _Predictor)
+    with pytest.raises(ValueError, match="history_tracking_neighbors"):
+        IntentObservationWrapper(
+            _KinematicsEnv(),
+            "unused.pt",
+            max_neighbors=2,
+            history_tracking_neighbors=tracking_neighbors,
         )

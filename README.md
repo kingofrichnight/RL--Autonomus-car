@@ -245,11 +245,29 @@ accuracy is 3.18 percentage points below the original ten-step GRU, within the
 predefined five-point limit. The eight-step checkpoint is accepted for one
 controlled PPO experiment.
 
-Do not train PPO yet. The next implementation must make the production intent
-wrapper use the checkpoint's eight-observation requirement while retaining
-histories for all 14 observable traffic rows and emitting probabilities for the
-same five policy slots. The PPO protocol and a new untouched policy holdout must
-be frozen before training.
+Production eight-step inference with 14-slot history retention is now
+implemented and preserves the same five intent outputs and 120-value policy
+observation. After pulling the implementation and rerunning all tests, train the
+single controlled PPO + intent V2 policy:
+
+```bash
+python -m scripts.train_ppo \
+  --config configs/intersection_reward_v3.yaml \
+  --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 \
+  --timesteps 200000 --seed 42 --learning-rate 0.0003 \
+  --n-steps 1024 --batch-size 64 \
+  --intent-model models/intent_gru_h8_seed42.pt \
+  --intent-model-sha256 74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05 \
+  --intent-neighbors 5 --intent-history-length 8 \
+  --intent-history-tracking-neighbors 14 --intent-device cpu \
+  --eval-seed-offset 1000 \
+  --summary-output results/ppo_intent_v2_seed42.training.json \
+  --output models/ppo_intent_v2_seed42 --refuse-overwrite
+```
+
+Commit only `results/ppo_intent_v2_seed42.training.json` and keep the PPO ZIP
+local. Do not evaluate either policy on the newly reserved seeds 20042–20541
+until the training summary and checkpoint are validated.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.

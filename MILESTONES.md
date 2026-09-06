@@ -4250,3 +4250,138 @@ Seeds 10042–10541 are development evidence and may not be used for the final P
 | 2026-09-05 | Completed and accepted M9C held-out evaluation | Screen the M9A-selected classifier exactly once against predefined gates | Commit scope, artifact/checkpoint hashes, confusion matrix, aggregate metrics, coverage, and all gates independently verified | Result: `c8319cb`; documentation: this update |
 
 **Next action:** implement and freeze production eight-step inference with 14-slot history retention, then define the controlled PPO + intent training command and a new untouched paired holdout before any PPO run.
+
+
+---
+
+## 51. Milestone M10 design — PPO + intent V2 with accepted availability
+
+**Experiment ID:** E-M10-PPO-INTENT-V2-H8T14-S42-200K
+
+**Status:** Implemented and frozen; PPO training pending
+
+**Date recorded:** 2026-09-06
+
+**Research role:** test whether the accepted eight-observation classifier and 14-slot retention improve driving outcomes under the unchanged V3 reward and PPO protocol
+
+### 51.1 Controlled intervention
+
+PPO + intent V2 appends exactly the same three probabilities for each of the nearest five traffic slots as rejected PPO + intent V1. The base V3 observation, five output slots, probability order, warmup values, missing/obstacle values, action space, reward, traffic, and augmented observation dimension remain unchanged.
+
+The representation changes from V1 are limited to the jointly accepted M9 design:
+
+| Property | PPO + intent V1 | PPO + intent V2 |
+|---|---:|---:|
+| Intent checkpoint | Original ten-step GRU | Accepted eight-step GRU |
+| Intent checkpoint SHA-256 | `10483649...bb05` | `74a72cf2...fc05` |
+| Required history | 10 observations | 8 observations |
+| Retained traffic histories | Nearest 5 slots | All 14 observable traffic slots |
+| Policy-facing intent slots | 5 | 5 |
+| Augmented observation size | 120 | 120 |
+| Safety shield | Disabled | Disabled |
+
+At each step, the production wrapper queries the same sorted nearest-five list used for policy alignment and a sorted 14-slot list used only to update causal histories. It verifies that the first five tracked objects align with the policy-facing list. Histories outside the nearest five are never appended to the policy observation; they become eligible only if that vehicle later moves into a policy-facing slot. Vehicles leaving all 14 observable traffic slots are purged.
+
+The wrapper now reads a checkpoint's stored history length. An explicit length must match that metadata; legacy checkpoints without the field retain the previous ten-observation default. Wider production tracking defaults to the output count unless explicitly enabled, preserving every prior experiment.
+
+### 51.2 Frozen PPO training protocol
+
+| Setting | Fixed value |
+|---|---:|
+| Environment/reward configuration | `configs/intersection_reward_v3.yaml` |
+| Configuration SHA-256 | `433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69` |
+| Training seed | 42 |
+| Requested / expected collected timesteps | 200,000 / 200,704 |
+| Learning rate | 0.0003 |
+| PPO rollout steps | 1,024 |
+| Batch size | 64 |
+| Gamma / GAE lambda | 0.99 / 0.95 |
+| Entropy coefficient | 0.01 |
+| Policy network | `[256, 256]` |
+| Intent checkpoint | `models/intent_gru_h8_seed42.pt` |
+| Intent checkpoint SHA-256 | `74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05` |
+| Intent output / tracking slots | 5 / 14 |
+| Intent history / device | 8 / CPU |
+| Augmented observation shape | `[120]` |
+| Internal-evaluation seed offset | 1,000 |
+| Internal evaluation | 20 episodes every 10,000 calls |
+| Safety shield | Disabled |
+| Final checkpoint | `models/ppo_intent_v2_seed42.zip` |
+| Training summary | `results/ppo_intent_v2_seed42.training.json` |
+
+All PPO values exactly match M8. The experiment checkpoint is the final post-training state; the callback's best model is diagnostic and cannot be substituted after observing internal evaluation. Model, configuration, and intent hashes are verified before environment creation. Checkpoint and summary outputs refuse overwrite.
+
+Frozen command:
+
+```powershell
+python -m scripts.train_ppo --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --timesteps 200000 --seed 42 --learning-rate 0.0003 --n-steps 1024 --batch-size 64 --intent-model models/intent_gru_h8_seed42.pt --intent-model-sha256 74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05 --intent-neighbors 5 --intent-history-length 8 --intent-history-tracking-neighbors 14 --intent-device cpu --eval-seed-offset 1000 --summary-output results/ppo_intent_v2_seed42.training.json --output models/ppo_intent_v2_seed42 --refuse-overwrite
+```
+
+After training, stop. Commit only the JSON summary whether the run succeeds or fails; keep all `.zip` checkpoints local. Do not begin policy evaluation until the final checkpoint hash, collected timesteps, spaces, finite parameters, and every summary field are validated and appended.
+
+### 51.3 Newly frozen paired holdout
+
+Seeds 10042–10541 informed M8C, M8D, M9A, and the selected representation. They are excluded from final M10 policy claims. M10 reserves the previously unused contiguous block **20042–20541** for exactly 500 paired episodes of both policies.
+
+The comparator is the accepted V3 checkpoint:
+
+| V3 property | Frozen value |
+|---|---|
+| Checkpoint | `models/ppo_reward_v3_seed42.zip` |
+| SHA-256 | `f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c` |
+| File size | 2,278,271 bytes |
+| Stored timesteps | 200,704 |
+| Stored observation | Native `Box(15, 7)`; 105 scalar features |
+| Action space | Discrete, 3 actions |
+
+The V3 hash and metadata were independently verified before reserving the holdout. Neither V3 nor V2 may be evaluated on seeds 20042–20541 until the V2 final checkpoint is frozen. At that point, exact hash-pinned commands for both policies will be appended. Both evaluations will use V3 configuration `433e6972...fae69`, deterministic actions, no shield, 2.0-second unsafe-TTC reporting, and the unchanged success/collision definitions.
+
+M10 passes the driving-policy screen only if all predefined conditions hold relative to the newly measured paired V3 baseline:
+
+1. V2 success is at least 3.0 percentage points higher than V3;
+2. V2 collision is at least 3.0 percentage points lower than V3;
+3. V2 incomplete non-collision episodes are at most 2.0%;
+4. V2 mean minimum TTC is at least the paired V3 value;
+5. the paired success change is favorable with an exact two-sided McNemar test at `p < 0.05`.
+
+These are the same minimum effect, completion, TTC, and significance rules frozen for M8, now applied to an untouched paired baseline rather than reused holdout outcomes. Reward magnitude remains descriptive, not an acceptance gate. A failed or mixed result is retained and PPO + intent V2 is rejected as an improvement.
+
+### 51.4 Implementation and engineering verification
+
+The environment factory, PPO trainer, and evaluator now carry explicit intent history length and production tracking count. Training/evaluation summaries record both. PPO and configuration fingerprints can be required explicitly, and both scripts support overwrite refusal. Existing defaults reproduce five-slot tracking and the legacy ten-step fallback.
+
+Final automated checks:
+
+```text
+git diff --check: passed
+ruff check: passed
+pytest: 83 passed in 10.51 s
+```
+
+Engineering-only verification used seed 42, never the reserved holdout:
+
+- an actual legacy checkpoint instantiated with history length 10 and five tracking slots;
+- the accepted checkpoint instantiated with history length 8 and 14 tracking slots;
+- both produced the expected policy input shape, and a 32-step in-memory PPO rollout completed;
+- a 32-step module-form trainer smoke saved a structurally valid summary with configuration/intent hashes, `[120]` observation shape, and 8/14/5 metadata;
+- a one-episode evaluator smoke recorded the correct model/configuration hashes and 8/14/5 metadata.
+
+The first direct-file trainer smoke failed before environment creation because that invocation resolved the older editable installation in the user's separate checkout, which did not yet contain the new environment argument. It produced no policy result. Repeating the engineering smoke as `python -m scripts.train_ppo` bound the current repository source and passed; module form is therefore frozen for M10.
+
+An initial read-only V3 metadata assertion incorrectly expected a flattened stored observation shape `(105,)`. Inspection showed the valid native stored `Box(15, 7)` shape, which the PPO feature extractor flattens to 105 scalars. The checkpoint otherwise matched all expected metadata; no file or protocol changed.
+
+### 51.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-068 | Use eight-step inference with 14 retained histories and five policy outputs | Five-slot retention or 14 policy outputs | Realize M9A coverage while preserving the controlled 120-value observation | Retained |
+| D-069 | Train PPO + intent V2 under the unchanged M8 PPO/V3 reward protocol | Change reward, budget, seed, architecture, or add the rejected shield | Isolate the accepted intent-availability representation | Retained |
+| D-070 | Reserve seeds 20042–20541 for both V3 and V2 | Reuse development seeds 10042–10541 | Prevent representation-design feedback from contaminating the final policy claim | Retained |
+| D-071 | Reuse M8's predefined 3 pp, completion, TTC, and McNemar gates | Set thresholds after seeing the new baseline or V2 result | Preserve comparable decision standards | Retained |
+| D-072 | Use module-form entry points for M10 | Direct script execution from a checkout with a stale editable installation | Ensure the invoked package is the pulled repository source | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-06 | Implemented and froze M10 PPO + intent V2 training and untouched paired holdout | Test the accepted classifier/coverage representation without changing reward, PPO, shield, or policy input size | 83 tests, real-checkpoint environment smoke, 32-step PPO/trainer smoke, one-episode evaluator smoke, and V3 checkpoint audit passed; two engineering setup assumptions failed and were recorded | This implementation update |
+
+**Next action:** pull this implementation, rerun Ruff and all tests, run only the frozen M10 training command, commit its JSON summary, and keep the final PPO checkpoint local. Do not evaluate seeds 20042–20541 yet.

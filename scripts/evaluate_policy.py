@@ -10,30 +10,53 @@ from stable_baselines3 import PPO
 
 from safeintent_rl.envs import make_intersection_env
 from safeintent_rl.evaluation import EpisodeMetrics, detect_success, summarize_episodes
-from safeintent_rl.intent.inference import file_sha256
+from safeintent_rl.intent.inference import file_sha256, load_intent_checkpoint
 from safeintent_rl.safety.ttc import minimum_ttc
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate a trained PPO policy")
     parser.add_argument("--model", required=True)
+    parser.add_argument("--model-sha256", default=None)
     parser.add_argument("--config", default=None, help="Environment YAML configuration")
+    parser.add_argument("--config-sha256", default=None)
     parser.add_argument("--episodes", type=int, default=100)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--safety-shield", action="store_true")
     parser.add_argument("--unsafe-ttc", type=float, default=2.0)
     parser.add_argument("--intent-model", default=None)
     parser.add_argument("--intent-neighbors", type=int, default=5)
+    parser.add_argument("--intent-history-length", type=int, default=None)
+    parser.add_argument("--intent-history-tracking-neighbors", type=int, default=None)
     parser.add_argument("--intent-device", default="cpu")
     parser.add_argument("--intent-model-sha256", default=None)
     parser.add_argument("--output", default="results/evaluation.csv")
+    parser.add_argument("--refuse-overwrite", action="store_true")
     args = parser.parse_args()
 
     if args.intent_model_sha256 is not None and args.intent_model is None:
         parser.error("--intent-model-sha256 requires --intent-model")
+    if args.config_sha256 is not None and args.config is None:
+        parser.error("--config-sha256 requires --config")
+    if (
+        args.intent_model is None
+        and (
+            args.intent_history_length is not None
+            or args.intent_history_tracking_neighbors is not None
+        )
+    ):
+        parser.error("intent history settings require --intent-model")
 
     model_sha256 = file_sha256(args.model)
+    if args.model_sha256 is not None and model_sha256.lower() != args.model_sha256.lower():
+        raise ValueError("PPO checkpoint fingerprint does not match --model-sha256")
     config_sha256 = file_sha256(args.config) if args.config is not None else None
+    if (
+        args.config_sha256 is not None
+        and config_sha256 is not None
+        and config_sha256.lower() != args.config_sha256.lower()
+    ):
+        raise ValueError("Configuration fingerprint does not match --config-sha256")
     intent_model_sha256 = (
         file_sha256(args.intent_model) if args.intent_model is not None else None
     )
@@ -43,6 +66,30 @@ def main() -> None:
         and intent_model_sha256.lower() != args.intent_model_sha256.lower()
     ):
         raise ValueError("Intent checkpoint fingerprint does not match the requested model")
+    intent_history_length = None
+    intent_history_tracking_neighbors = None
+    if args.intent_model is not None:
+        checkpoint = load_intent_checkpoint(args.intent_model, map_location="cpu")
+        checkpoint_history_length = int(checkpoint.get("history_length", 10))
+        intent_history_length = (
+            checkpoint_history_length
+            if args.intent_history_length is None
+            else args.intent_history_length
+        )
+        if intent_history_length != checkpoint_history_length:
+            raise ValueError("Intent history length does not match the checkpoint")
+        intent_history_tracking_neighbors = (
+            args.intent_neighbors
+            if args.intent_history_tracking_neighbors is None
+            else args.intent_history_tracking_neighbors
+        )
+
+    output = Path(args.output)
+    summary_path = output.with_suffix(".summary.json")
+    if args.refuse_overwrite and output.exists():
+        raise FileExistsError(f"Refusing to overwrite episode results: {output}")
+    if args.refuse_overwrite and summary_path.exists():
+        raise FileExistsError(f"Refusing to overwrite evaluation summary: {summary_path}")
 
     model = PPO.load(args.model)
     env = make_intersection_env(
@@ -51,6 +98,8 @@ def main() -> None:
         safety_shield=args.safety_shield,
         intent_model=args.intent_model,
         intent_neighbors=args.intent_neighbors,
+        intent_history_length=intent_history_length,
+        intent_history_tracking_neighbors=intent_history_tracking_neighbors,
         intent_device=args.intent_device,
         intent_model_sha256=intent_model_sha256,
     )
@@ -97,7 +146,6 @@ def main() -> None:
     finally:
         env.close()
 
-    output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame([item.as_dict() for item in episodes]).to_csv(output, index=False)
     summary = summarize_episodes(episodes)
@@ -116,11 +164,12 @@ def main() -> None:
             ),
             "intent_model_sha256": intent_model_sha256,
             "intent_neighbors": args.intent_neighbors if args.intent_model is not None else 0,
+            "intent_history_length": intent_history_length,
+            "intent_history_tracking_neighbors": intent_history_tracking_neighbors,
             "intent_device": args.intent_device if args.intent_model is not None else None,
         }
     )
-    summary_path = output.with_suffix(".summary.json")
-    summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
     print(f"Saved episode results to {output}")
 
