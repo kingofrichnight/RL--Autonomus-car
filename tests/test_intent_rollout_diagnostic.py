@@ -5,8 +5,13 @@ import pandas as pd
 import pytest
 
 from safeintent_rl.evaluation import EpisodeMetrics
+from safeintent_rl.intent.diagnostics import OnlineIntentDiagnostics
 from scripts import diagnose_intent_rollout
-from scripts.diagnose_intent_rollout import _save_report, _verify_reference
+from scripts.diagnose_intent_rollout import (
+    _save_report,
+    _verify_diagnostic_reference,
+    _verify_reference,
+)
 
 
 def _episode(reward: float = 1.5) -> EpisodeMetrics:
@@ -47,6 +52,28 @@ def test_save_report_refuses_to_overwrite_existing_evidence(tmp_path) -> None:
         _save_report(output, {"status": "complete"})
 
     assert output.read_bytes() == original
+
+
+def test_diagnostic_reference_accepts_nested_numeric_equivalence() -> None:
+    reference = {"count": 3, "rate": 0.25, "matrix": [[1, 2], [3, 4]]}
+    observed = {"count": 3, "rate": 0.25 + 5e-13, "matrix": [[1, 2], [3, 4]]}
+
+    _verify_diagnostic_reference(observed, reference)
+
+
+@pytest.mark.parametrize(
+    ("observed", "match"),
+    [
+        ({"count": 4}, "structure"),
+        ({"count": 3, "rate": 0.3, "matrix": [[1, 2], [3, 4]]}, "value"),
+        ({"count": 3, "rate": 0.25, "matrix": [[1, 2]]}, "sequence"),
+    ],
+)
+def test_diagnostic_reference_rejects_changed_evidence(observed, match) -> None:
+    reference = {"count": 3, "rate": 0.25, "matrix": [[1, 2], [3, 4]]}
+
+    with pytest.raises(RuntimeError, match=match):
+        _verify_diagnostic_reference(observed, reference)
 
 
 def test_reference_failure_saves_diagnostics_and_raises(tmp_path, monkeypatch) -> None:
@@ -118,3 +145,113 @@ def test_reference_failure_saves_diagnostics_and_raises(tmp_path, monkeypatch) -
     assert report["online_intent"]["decisions"] == 1
     assert report["online_intent"]["prediction_coverage"] == 0.0
     assert report["online_intent"]["classification"] is None
+
+
+def test_shadow_run_reproduces_original_diagnostics_and_saves_comparison(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    reference_csv = tmp_path / "reference.csv"
+    expected = _episode().as_dict()
+    expected.update(length=1, travel_time=0.2, unsafe_ttc_events=1)
+    pd.DataFrame([expected]).to_csv(reference_csv, index=False)
+    current_snapshot = {
+        "slot_count": 2,
+        "missing_slots": 1,
+        "obstacle_slots": 0,
+        "vehicle_slots": 1,
+        "warmup_vehicle_slots": 1,
+        "predicted_vehicle_slots": 0,
+        "labeled_predictions": 0,
+        "correct_predictions": 0,
+        "confidence_sum": 0.0,
+        "entropy_sum": 0.0,
+        "true_labels": [],
+        "predicted_labels": [],
+        "vehicle_rows": [0],
+        "predicted_rows": [],
+    }
+    shadow_snapshot = {
+        **current_snapshot,
+        "warmup_vehicle_slots": 0,
+        "predicted_vehicle_slots": 1,
+        "labeled_predictions": 1,
+        "correct_predictions": 1,
+        "confidence_sum": 0.8,
+        "entropy_sum": 0.5,
+        "true_labels": [2],
+        "predicted_labels": [2],
+        "vehicle_rows": [0],
+        "predicted_rows": [0],
+    }
+    labels = ["cautious", "normal", "aggressive"]
+    current = OnlineIntentDiagnostics()
+    current.update(current_snapshot)
+    reference_diagnostic = tmp_path / "reference.json"
+    reference_diagnostic.write_text(
+        json.dumps(
+            {
+                "status": "complete",
+                "episodes": 1,
+                "first_seed": 10042,
+                "last_seed": 10042,
+                "model_sha256": "a" * 64,
+                "config_sha256": "a" * 64,
+                "intent_model_sha256": "a" * 64,
+                "reference_csv_sha256": "a" * 64,
+                "online_intent": current.summarize(labels),
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "shadow.json"
+    base = SimpleNamespace(
+        vehicle=SimpleNamespace(crashed=False),
+        road=SimpleNamespace(vehicles=[]),
+        config={"policy_frequency": 5},
+    )
+    env = SimpleNamespace(
+        unwrapped=base,
+        last_intent_diagnostics=current_snapshot,
+        last_shadow_intent_diagnostics=shadow_snapshot,
+        predictor=SimpleNamespace(label_names=labels),
+        reset=lambda **kwargs: ([0.0], {}),
+        step=lambda action: ([0.0], 1.5, True, False, {"min_ttc": 0.8}),
+        close=lambda: None,
+    )
+    model = SimpleNamespace(predict=lambda observation, deterministic: (0, None))
+    monkeypatch.setattr(
+        diagnose_intent_rollout, "PPO", SimpleNamespace(load=lambda *args, **kwargs: model)
+    )
+    monkeypatch.setattr(diagnose_intent_rollout, "make_intersection_env", lambda **kwargs: env)
+    monkeypatch.setattr(diagnose_intent_rollout, "_intent_wrapper", lambda value: value)
+    monkeypatch.setattr(diagnose_intent_rollout, "_require_sha256", lambda *args: "a" * 64)
+    monkeypatch.setattr(diagnose_intent_rollout, "minimum_ttc", lambda *args: 0.8)
+    monkeypatch.setattr(diagnose_intent_rollout, "detect_success", lambda *args: True)
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "diagnose_intent_rollout.py",
+            "--model", "unused.zip", "--model-sha256", "a" * 64,
+            "--config", "unused.yaml", "--config-sha256", "a" * 64,
+            "--intent-model", "unused.pt", "--intent-model-sha256", "a" * 64,
+            "--episodes", "1", "--intent-neighbors", "2",
+            "--shadow-history-neighbors", "3",
+            "--reference-csv", str(reference_csv), "--reference-csv-sha256", "a" * 64,
+            "--reference-diagnostic-json", str(reference_diagnostic),
+            "--reference-diagnostic-json-sha256", "a" * 64,
+            "--output", str(output),
+        ],
+    )
+
+    diagnose_intent_rollout.main()
+
+    report = json.loads(output.read_text(encoding="utf-8"))
+    assert report["status"] == "complete"
+    assert report["driving_reference_reproduced"] is True
+    assert report["online_intent_reference_reproduced"] is True
+    assert report["online_intent"]["prediction_coverage"] == 0.0
+    assert report["shadow_online_intent"]["prediction_coverage"] == 1.0
+    assert report["coverage_comparison"]["shadow_only"] == 1
+    assert report["coverage_comparison"]["shadow_is_readiness_superset"] is True
+    assert report["shadow_history_neighbors"] == 3

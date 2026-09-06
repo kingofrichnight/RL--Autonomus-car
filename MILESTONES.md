@@ -3414,3 +3414,151 @@ Because seeds 10042–10541 have now informed design decisions, any later policy
 | 2026-09-05 | Completed and accepted the M8C online-intent diagnostic | Distinguish coverage, distribution-shift, and control-use explanations for rejected M8 | Exact 500-row reproduction, frozen hashes/settings, count identities, confusion matrix, and all predefined gates independently checked | Result: `cd1163e`; documentation: this update |
 
 **Next action:** implement and freeze the non-interventional shadow history-coverage diagnostic described above; do not start PPO or GRU training yet.
+
+
+---
+
+## 44. Milestone M8D design — all-observed-slot shadow history feasibility
+
+**Experiment ID:** E-M8D-SHADOW-HISTORY14-H10042
+
+**Status:** Implemented and frozen; 500-episode diagnostic pending
+
+**Date recorded:** 2026-09-05
+
+**Primary diagnostic factor:** retain GRU histories for all 14 non-ego traffic slots already exposed by the V3 kinematics observation, while continuing to append the unchanged original M8 probabilities for only the first five slots
+
+**Policy intervention:** none
+
+### 44.1 Question and implementation boundary
+
+M8C found 43.7485% prediction coverage but passing online classifier quality. The current wrapper uses `intent_neighbors=5` for both output and history retention, even though the frozen base observation has 15 rows: one ego row and 14 sorted traffic rows. When a vehicle leaves the first five, its history is deleted; if it later returns, its ten-step warmup restarts.
+
+M8D asks whether decoupling **history tracking** from the five **intent output slots** can provide at least 70% prediction coverage. A separate shadow store tracks the same six intent features for up to 14 sorted traffic rows inside the existing perception/observation interface. At every pre-action decision it measures whether each of the original five target slots would be history-ready under that store.
+
+The actual M8 store, probabilities appended to the 120-value PPO observation, deterministic PPO action, reward, environment state, and random-number flow remain unchanged. Shadow probabilities and hidden labels are written only to diagnostics and never enter the policy. Vehicles outside the 14 existing traffic rows are not tracked, so this is not an oracle or expanded sensor-range experiment.
+
+### 44.2 Paired readiness accounting
+
+Each visible-vehicle target slot is assigned to exactly one category:
+
+| Category | Meaning |
+|---|---|
+| `both_ready` | Current five-slot and shadow 14-slot histories are ready |
+| `current_only` | Current history is ready but shadow is not |
+| `shadow_only` | Shadow history recovers a slot still in current warmup |
+| `neither_ready` | Neither history is ready |
+
+The implementation validates:
+
+$$
+N_{vehicle}=N_{both}+N_{current\ only}+N_{shadow\ only}+N_{neither}
+$$
+
+and reports:
+
+$$
+coverage_{current}=\frac{N_{both}+N_{current\ only}}{N_{vehicle}}
+$$
+
+$$
+coverage_{shadow}=\frac{N_{both}+N_{shadow\ only}}{N_{vehicle}}
+$$
+
+$$
+recovery_{warmup}=\frac{N_{shadow\ only}}{N_{shadow\ only}+N_{neither}}
+$$
+
+The shadow must be a readiness superset: `current_only` must equal zero. Slot identities, vehicle rows, predicted rows, and current/shadow count identities are checked before accumulation.
+
+### 44.3 Frozen protocol and provenance
+
+| Property | Frozen value |
+|---|---|
+| PPO checkpoint and SHA-256 | `models/ppo_intent_v1_seed42.zip`; `954a1d4e...71e8` |
+| Intent checkpoint and SHA-256 | `models/intent_gru_seed42.pt`; `10483649...bb05` |
+| Configuration and SHA-256 | `configs/intersection_reward_v3.yaml`; `433e6972...ae69` |
+| Driving reference and SHA-256 | `results/ppo_intent_v1_holdout_seed10042.csv`; `72fe15fb...b498` |
+| Intent reference and SHA-256 | `results/ppo_intent_v1_online_diagnostics_seed10042.json`; `c39ffdc9...4045` |
+| Episodes and seeds | 500; 10042–10541 |
+| Policy/intent device | CPU / CPU |
+| Policy mode | Deterministic |
+| Intent output slots | 5, unchanged |
+| Shadow history slots | 14 |
+| History length and features | 10; unchanged six-feature sequence |
+| Safety shield | Disabled |
+| Unsafe-TTC reporting threshold | 2.0 seconds |
+| Output | `results/ppo_intent_v1_shadow_history_diagnostics_seed10042.json` |
+
+The runner verifies every input hash, refuses to overwrite existing evidence, exactly reproduces all 500 driving rows, and reproduces the complete original `online_intent` block with numeric absolute tolerance `1e-12` and zero relative tolerance. A failure preserves its partial JSON and raises.
+
+### 44.4 Frozen feasibility gates and routing
+
+| Gate | Required result |
+|---|---|
+| Driving reference | All 500 M8B episode rows reproduced |
+| Original diagnostic reference | Complete M8C `online_intent` block reproduced |
+| Paired readiness | `current_only = 0` and every vehicle slot accounted for |
+| Shadow prediction coverage | At least 70% |
+| Shadow labeled-prediction rate | At least 99% |
+| Shadow class support | All three true classes observed |
+| Shadow accuracy advantage | At least 5 pp over its own majority-class accuracy |
+| Shadow macro F1 | At least 50% |
+| Shadow minimum class recall | At least 40% |
+| Shadow accuracy versus offline | Less than a 5 pp drop from the frozen 63.3549% offline accuracy |
+
+If every gate passes, wider history retention is feasible and the next step is to design a new PPO + intent experiment using 14-slot history tracking, the same five probability outputs, and a newly frozen untouched holdout with paired V3 evaluation. Passing M8D does not authorize training by itself.
+
+If coverage remains below 70%, wider retention is insufficient; do not retrain PPO. The next development experiment should study a separately trained shorter-history classifier without reusing these seeds for a final policy claim. If coverage passes but classifier quality fails, do not train PPO; investigate the newly covered temporal population and on-policy intent data first.
+
+### 44.5 Engineering verification
+
+The complete implementation gate passed:
+
+```text
+git diff --check: passed
+ruff check: passed
+pytest: 63 passed in 3.84 s
+```
+
+The first Ruff attempt reported only an unsorted test import block. It was corrected before any real-environment smoke or experiment, and the subsequent complete gate passed.
+
+A real three-episode engineering replay on seeds 10042–10044 produced:
+
+| Check | Result |
+|---|---:|
+| Driving reference reproduced | Passed |
+| Original diagnostic block reproduced | Passed |
+| Policy decisions | 129 |
+| Vehicle target slots | 584 |
+| Current prediction coverage | 45.8904% |
+| Shadow prediction coverage | 65.2397% |
+| Absolute smoke coverage gain | +19.3493 pp |
+| Current-ready/shadow-not-ready slots | 0 |
+| Current warmup slots recovered by shadow | 113/316 (35.7595%) |
+
+The smoke shows correct non-interference, paired accounting, and a plausible coverage gain. Its three episodes are not M8D research evidence and do not change the frozen 70% gate.
+
+### 44.6 Frozen command
+
+After pulling this implementation and rerunning the complete checks, execute exactly once:
+
+```powershell
+python scripts/diagnose_intent_rollout.py --model models/ppo_intent_v1_seed42.zip --model-sha256 954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8 --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --intent-model models/intent_gru_seed42.pt --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 --intent-neighbors 5 --shadow-history-neighbors 14 --intent-device cpu --episodes 500 --seed 10042 --unsafe-ttc 2.0 --reference-csv results/ppo_intent_v1_holdout_seed10042.csv --reference-csv-sha256 72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498 --reference-diagnostic-json results/ppo_intent_v1_online_diagnostics_seed10042.json --reference-diagnostic-json-sha256 c39ffdc93c6f46ab75b4624b8b48ec04caab877ef310bbf14148e1d9504e4045 --output results/ppo_intent_v1_shadow_history_diagnostics_seed10042.json
+```
+
+Commit only the small JSON whether the run completes or fails. Do not commit either checkpoint, rerun after seeing the result, retrain, or change any threshold.
+
+### 44.7 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-042 | Test 14-slot history retention only as a non-interventional shadow | Apply new probabilities directly to rejected M8 or immediately retrain | Isolate coverage feasibility while preserving every original action and result | Retained |
+| D-043 | Require both driving and complete M8C diagnostic reproduction | Compare only aggregate coverage | Detect any policy-path, seed, or diagnostic drift before interpreting the shadow | Retained |
+| D-044 | Require at least 70% coverage plus the existing classifier-quality gates | Select a threshold after seeing the 500-episode result | Preserve the predefined mechanism test | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Implemented and froze the M8D shadow history feasibility diagnostic | Test whether histories from all already-observed traffic rows resolve the M8 coverage bottleneck without intervention | 63 tests passed; paired three-episode real-environment smoke reproduced driving and original intent diagnostics | This implementation update |
+
+**Next action:** run only the frozen M8D command and commit its JSON; do not start training.

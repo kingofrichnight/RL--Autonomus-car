@@ -197,8 +197,29 @@ small JSON output, not either model checkpoint.
 The frozen 500-episode diagnostic completed with exact reference reproduction.
 The GRU remained effective online (64.83% accuracy and 64.05% macro F1), but only
 43.75% of visible-vehicle decision slots had the required history. The next step
-is therefore a non-interventional history-coverage feasibility study, not PPO or
-GRU retraining. PPO V3 remains the best driving policy.
+is therefore this frozen non-interventional history-coverage feasibility study:
+
+```bash
+python scripts/diagnose_intent_rollout.py \
+  --model models/ppo_intent_v1_seed42.zip \
+  --model-sha256 954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8 \
+  --config configs/intersection_reward_v3.yaml \
+  --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 \
+  --intent-model models/intent_gru_seed42.pt \
+  --intent-model-sha256 10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05 \
+  --intent-neighbors 5 --shadow-history-neighbors 14 --intent-device cpu \
+  --episodes 500 --seed 10042 --unsafe-ttc 2.0 \
+  --reference-csv results/ppo_intent_v1_holdout_seed10042.csv \
+  --reference-csv-sha256 72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498 \
+  --reference-diagnostic-json results/ppo_intent_v1_online_diagnostics_seed10042.json \
+  --reference-diagnostic-json-sha256 c39ffdc93c6f46ab75b4624b8b48ec04caab877ef310bbf14148e1d9504e4045 \
+  --output results/ppo_intent_v1_shadow_history_diagnostics_seed10042.json
+```
+
+The shadow store tracks all 14 traffic rows already available in the base
+observation but only measures counterfactual readiness for the same five output
+slots. It never changes the probabilities received by PPO. Do not retrain PPO or
+the GRU yet. PPO V3 remains the best driving policy.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.

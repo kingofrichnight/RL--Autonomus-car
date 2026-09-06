@@ -120,3 +120,76 @@ class OnlineIntentDiagnostics:
             "all_classes_observed": set(self.true_labels) == set(range(len(label_names))),
             "classification": metrics,
         }
+
+
+@dataclass
+class HistoryCoverageComparison:
+    """Compare readiness of the policy tracker and a non-interventional shadow."""
+
+    decisions: int = 0
+    vehicle_slots: int = 0
+    both_ready: int = 0
+    current_only: int = 0
+    shadow_only: int = 0
+    neither_ready: int = 0
+
+    def update(self, current: dict[str, Any], shadow: dict[str, Any]) -> None:
+        identity_keys = ("slot_count", "missing_slots", "obstacle_slots", "vehicle_slots")
+        if any(current[key] != shadow[key] for key in identity_keys):
+            raise ValueError("Current and shadow diagnostic slots do not match")
+        slot_count = int(current["slot_count"])
+        vehicle_rows = {int(value) for value in current["vehicle_rows"]}
+        shadow_vehicle_rows = {int(value) for value in shadow["vehicle_rows"]}
+        current_ready = {int(value) for value in current["predicted_rows"]}
+        shadow_ready = {int(value) for value in shadow["predicted_rows"]}
+        if (
+            vehicle_rows != shadow_vehicle_rows
+            or len(vehicle_rows) != int(current["vehicle_slots"])
+            or any(not 0 <= value < slot_count for value in vehicle_rows)
+            or not current_ready <= vehicle_rows
+            or not shadow_ready <= vehicle_rows
+            or len(current_ready) != int(current["predicted_vehicle_slots"])
+            or len(shadow_ready) != int(shadow["predicted_vehicle_slots"])
+        ):
+            raise ValueError("Current and shadow readiness rows are inconsistent")
+
+        both = current_ready & shadow_ready
+        current_only = current_ready - shadow_ready
+        shadow_only = shadow_ready - current_ready
+        neither = vehicle_rows - (current_ready | shadow_ready)
+        self.decisions += 1
+        self.vehicle_slots += len(vehicle_rows)
+        self.both_ready += len(both)
+        self.current_only += len(current_only)
+        self.shadow_only += len(shadow_only)
+        self.neither_ready += len(neither)
+
+    def summarize(self) -> dict[str, Any]:
+        accounted = self.both_ready + self.current_only + self.shadow_only + self.neither_ready
+        if accounted != self.vehicle_slots:
+            raise ValueError("Coverage comparison counts do not cover every vehicle slot")
+
+        def ratio(numerator: int, denominator: int) -> float | None:
+            return numerator / denominator if denominator else None
+
+        current_ready = self.both_ready + self.current_only
+        shadow_ready = self.both_ready + self.shadow_only
+        return {
+            "decisions": self.decisions,
+            "vehicle_slots": self.vehicle_slots,
+            "both_ready": self.both_ready,
+            "current_only": self.current_only,
+            "shadow_only": self.shadow_only,
+            "neither_ready": self.neither_ready,
+            "current_coverage": ratio(current_ready, self.vehicle_slots),
+            "shadow_coverage": ratio(shadow_ready, self.vehicle_slots),
+            "absolute_coverage_gain": ratio(
+                shadow_ready - current_ready,
+                self.vehicle_slots,
+            ),
+            "current_warmup_recovery": ratio(
+                self.shadow_only,
+                self.shadow_only + self.neither_ready,
+            ),
+            "shadow_is_readiness_superset": self.current_only == 0,
+        }

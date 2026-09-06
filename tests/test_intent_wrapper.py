@@ -168,3 +168,84 @@ def test_diagnostics_do_not_change_augmented_observation(monkeypatch) -> None:
     assert snapshot["labeled_predictions"] == 2
     assert snapshot["true_labels"] == [0, 2]
     assert snapshot["predicted_labels"] == [2, 0]
+
+
+def test_shadow_history_uses_wider_observed_slots_without_changing_output(
+    monkeypatch,
+) -> None:
+    _Predictor.instances.clear()
+    monkeypatch.setattr(wrapper_module, "IntentPredictor", _Predictor)
+    plain_env = _KinematicsEnv()
+    shadow_env = _KinematicsEnv()
+    for env in (plain_env, shadow_env):
+        third = _Vehicle((9.0, 3.0), (1.5, -0.5))
+        third.safeintent_driver_label = "normal"
+        env.road.ordered_neighbors.append(third)
+        env.road.vehicles.append(third)
+    plain = IntentObservationWrapper(
+        plain_env,
+        "unused.pt",
+        max_neighbors=2,
+        history_length=2,
+        collect_diagnostics=True,
+    )
+    shadow = IntentObservationWrapper(
+        shadow_env,
+        "unused.pt",
+        max_neighbors=2,
+        history_length=2,
+        collect_diagnostics=True,
+        shadow_history_neighbors=3,
+    )
+
+    plain_initial, _ = plain.reset(seed=42)
+    shadow_initial, _ = shadow.reset(seed=42)
+    np.testing.assert_array_equal(plain_initial, shadow_initial)
+
+    plain_env.road.ordered_neighbors = [
+        plain_env.road.ordered_neighbors[2],
+        plain_env.road.ordered_neighbors[0],
+        plain_env.road.ordered_neighbors[1],
+    ]
+    shadow_env.road.ordered_neighbors = [
+        shadow_env.road.ordered_neighbors[2],
+        shadow_env.road.ordered_neighbors[0],
+        shadow_env.road.ordered_neighbors[1],
+    ]
+    base_observation = np.zeros((15, 7), dtype=np.float32)
+    plain_next = plain._augment(base_observation)
+    shadow_next = shadow._augment(base_observation)
+
+    np.testing.assert_array_equal(plain_next, shadow_next)
+    assert shadow.last_intent_diagnostics["warmup_vehicle_slots"] == 1
+    assert shadow.last_intent_diagnostics["predicted_vehicle_slots"] == 1
+    assert shadow.last_shadow_intent_diagnostics["warmup_vehicle_slots"] == 0
+    assert shadow.last_shadow_intent_diagnostics["predicted_vehicle_slots"] == 2
+    assert len(shadow.shadow_histories) == 3
+
+
+@pytest.mark.parametrize("shadow_neighbors", [1, 15])
+def test_shadow_history_requires_valid_observed_slot_count(
+    monkeypatch,
+    shadow_neighbors,
+) -> None:
+    monkeypatch.setattr(wrapper_module, "IntentPredictor", _Predictor)
+    with pytest.raises(ValueError, match="shadow_history_neighbors"):
+        IntentObservationWrapper(
+            _KinematicsEnv(),
+            "unused.pt",
+            max_neighbors=2,
+            collect_diagnostics=True,
+            shadow_history_neighbors=shadow_neighbors,
+        )
+
+
+def test_shadow_history_requires_diagnostics(monkeypatch) -> None:
+    monkeypatch.setattr(wrapper_module, "IntentPredictor", _Predictor)
+    with pytest.raises(ValueError, match="requires diagnostics"):
+        IntentObservationWrapper(
+            _KinematicsEnv(),
+            "unused.pt",
+            max_neighbors=2,
+            shadow_history_neighbors=3,
+        )
