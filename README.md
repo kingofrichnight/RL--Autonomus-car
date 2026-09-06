@@ -221,6 +221,12 @@ observation but only measures counterfactual readiness for the same five output
 slots. It never changes the probabilities received by PPO. Do not retrain PPO or
 the GRU yet. PPO V3 remains the best driving policy.
 
+The 500-episode shadow diagnostic reproduced both references and improved
+coverage from 43.75% to 63.88%, but it failed the frozen 70% feasibility gate.
+Shadow accuracy (62.53%) and macro F1 (62.04%) still passed. Wider tracking alone
+is therefore insufficient; the next experiment must separately develop and
+screen a shorter-history intent model before any PPO retraining.
+
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.
 

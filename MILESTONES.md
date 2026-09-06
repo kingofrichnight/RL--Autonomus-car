@@ -3562,3 +3562,120 @@ Commit only the small JSON whether the run completes or fails. Do not commit eit
 | 2026-09-05 | Implemented and froze the M8D shadow history feasibility diagnostic | Test whether histories from all already-observed traffic rows resolve the M8 coverage bottleneck without intervention | 63 tests passed; paired three-episode real-environment smoke reproduced driving and original intent diagnostics | This implementation update |
 
 **Next action:** run only the frozen M8D command and commit its JSON; do not start training.
+
+
+---
+
+## 45. Milestone M8D result — wider tracking improves but does not solve coverage
+
+**Experiment ID:** E-M8D-SHADOW-HISTORY14-H10042
+
+**Status:** Completed; shadow coverage feasibility rejected
+
+**Date recorded:** 2026-09-05
+
+**Result commit:** [`7d49dc2`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/7d49dc245614b356fc900a245890ebea503bbdb5)
+
+**Result artifact:** `results/ppo_intent_v1_shadow_history_diagnostics_seed10042.json`
+
+**Artifact SHA-256:** `d22140fa855aab867978ebd439d222a7622d3c97ed94fcf549cc89b623f2a844`
+
+### 45.1 Integrity validation
+
+The committed result reports `status: complete`, no error, 500 completed episodes, seeds 10042–10541, 14 shadow-history slots, five unchanged intent-output slots, CPU inference, no shield, and all frozen input fingerprints. Both mandatory reference checks passed:
+
+- all 500 M8B driving rows reproduced;
+- the complete M8C `online_intent` block reproduced.
+
+The driving outcome consequently remains the rejected M8 result: 59.0% success, 41.0% collision, and 0% incomplete. M8D did not evaluate a changed driving policy.
+
+Independent paired-count checks:
+
+```text
+37,730 both ready
+     0 current only
+17,364 shadow only
+31,149 neither ready
+------
+86,243 vehicle target slots
+
+37,730 + 17,364 = 55,094 shadow predictions
+34,453 confusion-matrix diagonal / 55,094 = 62.5349% accuracy
+```
+
+### 45.2 Coverage comparison
+
+| Metric | Current five-slot history | Shadow 14-slot history | Change |
+|---|---:|---:|---:|
+| History-ready predictions | 37,730 | 55,094 | +17,364 |
+| Warmup vehicle slots | 48,513 | 31,149 | -17,364 |
+| Prediction coverage | 43.7485% | 63.8823% | +20.1338 pp |
+| Labeled-prediction rate | 100% | 100% | 0 pp |
+
+The shadow was a strict readiness superset: `current_only=0`. It recovered 17,364 of the current tracker's 48,513 warmup slots, or 35.7925%. However, 31,149 visible-vehicle target slots still lacked ten observations even when histories were retained across all 14 traffic rows already present in the base observation.
+
+### 45.3 Shadow classifier behavior
+
+| Metric | Observed |
+|---|---:|
+| Samples | 55,094 |
+| Accuracy | 62.5349% |
+| Majority-class accuracy | 45.3062% |
+| Accuracy advantage over majority | +17.2287 pp |
+| Offline held-out accuracy | 63.3549% |
+| Shadow online minus offline accuracy | -0.8200 pp |
+| Balanced accuracy / macro recall | 61.7190% |
+| Macro F1 | 62.0420% |
+| Mean confidence | 70.8727% |
+| Mean normalized entropy | 57.4545% |
+
+Per-class shadow metrics:
+
+| True class | Support | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|
+| Cautious | 16,922 | 75.70% | 52.42% | 61.94% |
+| Normal | 24,961 | 60.46% | 68.48% | 64.22% |
+| Aggressive | 13,211 | 56.20% | 64.26% | 59.96% |
+
+All three classes were observed; cautious recall was the minimum at 52.42%.
+
+### 45.4 Frozen gate decisions
+
+| Gate | Requirement | Observed | Decision |
+|---|---:|---:|---|
+| Driving reference | All 500 rows | Reproduced | Passed |
+| Original intent reference | Complete M8C block | Reproduced | Passed |
+| Readiness superset | `current_only=0` | 0 | Passed |
+| Shadow prediction coverage | At least 70% | 63.8823% | **Failed** |
+| Label availability | At least 99% | 100% | Passed |
+| Class support | All three | All three | Passed |
+| Accuracy over majority | At least +5 pp | +17.2287 pp | Passed |
+| Macro F1 | At least 50% | 62.0420% | Passed |
+| Minimum class recall | At least 40% | 52.4170% | Passed |
+| Accuracy drop from offline | Less than 5 pp | 0.8200 pp | Passed |
+
+Only the 70% shadow-coverage gate failed, by 6.1177 percentage points.
+
+### 45.5 Interpretation and decision
+
+Retaining histories for all already-observed traffic rows materially improves availability and preserves useful classifier quality, so the five-slot purge behavior was a real contributor. It is not the complete cause: more than one third of vehicle target slots remain below the ten-step requirement even with wider tracking. This is consistent with vehicles entering the observable set late relative to the short 38.356-decision mean episode, but M8D does not by itself identify an optimal shorter history.
+
+Per the predefined Section 44 routing, do not retrain PPO. Wider 14-slot retention alone failed its feasibility gate. The next controlled development experiment should derive shorter fixed-length histories from the accepted, episode-split intent dataset; select the length using training/validation data and a separately frozen coverage analysis; and evaluate the chosen classifier once on the existing held-out intent test split. No current policy holdout result may be used as a final claim.
+
+A shorter-history model must pass the existing classifier standards and a predefined coverage target before a new PPO + intent experiment is authorized. Any eventual driving-policy comparison must evaluate both V3 and the new policy on a newly frozen untouched holdout, because seeds 10042–10541 have informed representation design.
+
+**Decision:** accept M8D as a valid negative feasibility result. Retain its +20.13 pp coverage improvement as evidence, reject 14-slot retention alone as sufficient, keep PPO V3 as the best policy, and keep PPO + intent V1 rejected.
+
+### 45.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-045 | Reject wider 14-slot tracking alone as the next PPO representation | Retrain PPO despite missing the frozen coverage gate | Coverage improved to 63.88% but remained below 70% | Retained |
+| D-046 | Develop a shorter-history intent model before any new PPO run | Increase PPO budget, change reward, or accept uniform warmup values | Online classifier quality passed while ten-step availability remained the sole failed gate | Retained |
+| D-047 | Select shorter history using grouped development evidence and reserve a new policy holdout | Choose a length directly from future final-policy outcomes | Prevent further test-guided policy selection | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Completed and rejected M8D as a sufficient coverage solution | Test wider history retention without changing M8 actions | Both references, artifact hashes, paired readiness counts, confusion matrix, and all frozen gates independently verified | Result: `7d49dc2`; documentation: this update |
+
+**Next action:** audit and freeze the shorter-history classifier development protocol; do not train PPO or a new GRU until that protocol and its gates are recorded.
