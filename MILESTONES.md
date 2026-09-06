@@ -4155,3 +4155,98 @@ Commit only `results/intent_gru_h8_seed42.metrics.json`, whether accepted or rej
 | 2026-09-05 | Completed and accepted M9B training for one held-out classifier evaluation | Apply the frozen validation gates while preserving test integrity | Summary/checkpoint hash, split, normalization, validation confusion matrix, and sealed-test state independently verified | Result: `b7c1abb`; documentation: this update |
 
 **Next action:** run the frozen held-out intent evaluation exactly once after the full local test gate; commit its JSON result and keep the checkpoint local. Do not train PPO.
+
+
+---
+
+## 50. Milestone M9C result — eight-observation intent classifier accepted
+
+**Experiment ID:** E-M9C-GRU-H8-EVAL-S42-DATA56433621
+
+**Status:** Complete; all frozen classifier gates passed
+
+**Date recorded:** 2026-09-05
+
+**Result commit:** [`c8319cb`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/c8319cbb33adf66f5b198ddf2a5fb0f238ee64f6)
+
+**Result artifact:** `results/intent_gru_h8_seed42.metrics.json`
+
+**Artifact SHA-256:** `33c33367cd40250d9e1b42600bcbf9bf87a4052e5c6cf7f4fa377b2f42636b1f`
+
+**Evaluated checkpoint SHA-256:** `74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05`
+
+### 50.1 Integrity validation
+
+The result commit contains only the small metrics JSON. The evaluator reports the exact accepted dataset and checkpoint hashes, source history length 10, causal-suffix history length 8, episode-grouped seed-42 split, best epoch 25, CPU evaluation, 15,923 test samples, and the pinned M9A coverage artifact `b364e39e...e101`.
+
+The checkpoint test metric was null before evaluation and `test_metrics_were_sealed=true`. This was the first and only prediction pass over the held-out intent-test partition for the M9B checkpoint.
+
+Independent confusion-matrix checks:
+
+```text
+4,561 cautious + 7,588 normal + 3,774 aggressive = 15,923 samples
+2,769 + 5,156 + 1,657 = 9,582 correct
+9,582 / 15,923 = 60.1771% accuracy
+```
+
+All row supports, column prediction counts, per-class precision/recall/F1 values, aggregate metrics, coverage evidence, and gate decisions recomputed exactly from the committed artifact.
+
+### 50.2 Held-out classifier result
+
+| Metric | Observed |
+|---|---:|
+| Samples | 15,923 |
+| Accuracy | 60.1771% |
+| Majority-class accuracy | 47.6543% |
+| Accuracy advantage | +12.5228 pp |
+| Balanced accuracy / macro recall | 57.5218% |
+| Macro precision | 60.8164% |
+| Macro F1 | 58.4577% |
+
+Per-class held-out metrics:
+
+| True class | Support | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|
+| Cautious | 4,561 | 58.58% | 60.71% | 59.63% |
+| Normal | 7,588 | 59.92% | 67.95% | 63.68% |
+| Aggressive | 3,774 | 63.95% | 43.91% | 52.07% |
+
+### 50.3 Frozen gate decisions
+
+| Gate | Requirement | Observed | Margin | Decision |
+|---|---:|---:|---:|---|
+| M9A coverage | At least 70% | 71.2301% | +1.2301 pp | Passed |
+| Class support | All three | All three | — | Passed |
+| Accuracy over majority | At least +5 pp | +12.5228 pp | +7.5228 pp | Passed |
+| Macro F1 | At least 50% | 58.4577% | +8.4577 pp | Passed |
+| Minimum class recall | At least 40% | 43.9057% | +3.9057 pp | Passed |
+| Accuracy versus original GRU | At least 58.3549% | 60.1771% | +1.8222 pp | Passed |
+
+The eight-step classifier's accuracy is 3.1778 percentage points below the original ten-step GRU's 63.3549%, its macro F1 is 3.3712 points lower, and its minimum class recall is 7.1807 points lower. In exchange, the frozen 14-slot history analysis raises prediction coverage by 7.3478 points, from 63.8823% at ten observations to 71.2301% at eight. This is the predefined, accepted availability-versus-classification tradeoff; no threshold was changed after results were observed.
+
+### 50.4 Interpretation and decision
+
+The eight-observation GRU remains materially better than the held-out majority baseline and retains useful performance for all three behaviors. Aggressive recall is still the limiting classifier metric, but it clears the frozen 40% floor. Combined with the independently selected 71.23% availability, every Section 48 classifier gate passed.
+
+Accept `models/intent_gru_h8_seed42.pt` at SHA-256 `74a72cf2...fc05` as the sole classifier input for the next controlled PPO + intent experiment. The checkpoint remains local and must not be retrained or committed.
+
+This acceptance is not a driving-policy result. To realize the measured coverage, the production observation wrapper must retain histories across all 14 observable traffic rows while continuing to output three probabilities for only the nearest five traffic slots. It must use the checkpoint's eight-observation requirement and preserve the existing observation dimension, reward, policy hyperparameters, seed, and training budget.
+
+Seeds 10042–10541 are development evidence and may not be used for the final PPO comparison. A new paired holdout for both V3 and the future PPO + intent policy must be frozen before PPO training. Until that design and implementation are recorded, do not train PPO. PPO V3 remains the best driving policy.
+
+**Decision:** accept the eight-observation intent classifier, freeze its checkpoint hash, authorize implementation of one controlled PPO + intent experiment, and retain PPO V3 as current best.
+
+### 50.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-064 | Accept the eight-observation classifier | Reject it for lower accuracy or relax a failed gate | All six frozen availability and classifier gates passed without modification | Retained |
+| D-065 | Freeze checkpoint SHA-256 `74a72cf2...fc05` for one PPO experiment | Retrain, tune, or select another epoch | The one-time held-out test is now consumed and cannot support further classifier selection | Retained |
+| D-066 | Combine eight-observation inference with 14-slot history retention and five output slots | Use five-slot retention or expand the policy observation | M9A measured 71.23% only with 14-slot retention; five outputs preserve the controlled PPO input shape | Retained |
+| D-067 | Reserve a new paired policy holdout | Reuse seeds 10042–10541 | Those seeds informed history-length and tracker design | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Completed and accepted M9C held-out evaluation | Screen the M9A-selected classifier exactly once against predefined gates | Commit scope, artifact/checkpoint hashes, confusion matrix, aggregate metrics, coverage, and all gates independently verified | Result: `c8319cb`; documentation: this update |
+
+**Next action:** implement and freeze production eight-step inference with 14-slot history retention, then define the controlled PPO + intent training command and a new untouched paired holdout before any PPO run.

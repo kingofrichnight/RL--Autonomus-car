@@ -239,28 +239,17 @@ recall. Its local checkpoint SHA-256 is
 `74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05`,
 and independent inspection confirmed that held-out test metrics remain sealed.
 
-After pulling the result documentation and rerunning the full tests, perform the
-one permitted held-out intent evaluation:
+The one permitted held-out evaluation also passed: 60.18% accuracy, 58.46%
+macro F1, 43.91% minimum class recall, and 71.23% frozen online coverage. Its
+accuracy is 3.18 percentage points below the original ten-step GRU, within the
+predefined five-point limit. The eight-step checkpoint is accepted for one
+controlled PPO experiment.
 
-```bash
-python scripts/evaluate_intent.py \
-  --data data/intent_trajectories_seed42.npz \
-  --data-sha256 56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0 \
-  --model models/intent_gru_h8_seed42.pt \
-  --model-sha256 74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05 \
-  --expected-history-length 8 --require-sealed-test --device cpu \
-  --coverage-json results/ppo_intent_v1_history_coverage_curve_seed10042.json \
-  --coverage-json-sha256 b364e39e104197b32670c9305806c74c972be5fa9e5497888ecd340d664be101 \
-  --minimum-coverage 0.70 --minimum-accuracy-advantage 0.05 \
-  --minimum-macro-f1 0.50 --minimum-class-recall 0.40 \
-  --reference-accuracy 0.6335489543427746 \
-  --maximum-reference-accuracy-drop 0.05 \
-  --output results/intent_gru_h8_seed42.metrics.json \
-  --refuse-overwrite
-```
-
-Commit only `results/intent_gru_h8_seed42.metrics.json`, whether it passes or
-fails. Keep the `.pt` checkpoint local and do not train PPO yet.
+Do not train PPO yet. The next implementation must make the production intent
+wrapper use the checkpoint's eight-observation requirement while retaining
+histories for all 14 observable traffic rows and emitting probabilities for the
+same five policy slots. The PPO protocol and a new untouched policy holdout must
+be frozen before training.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.
