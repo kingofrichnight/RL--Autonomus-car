@@ -63,6 +63,15 @@ def load_intent_checkpoint(
         raise ValueError("Intent checkpoint label order does not match the project classes")
     if not isinstance(checkpoint["model_state"], dict):
         raise ValueError("Intent checkpoint model_state must be a dictionary")
+    if "history_length" in checkpoint:
+        history_length = int(checkpoint["history_length"])
+        source_history_length = int(checkpoint.get("source_history_length", history_length))
+        if history_length <= 0 or source_history_length < history_length:
+            raise ValueError("Intent checkpoint history lengths are invalid")
+        if checkpoint.get("history_projection", "causal_suffix") != "causal_suffix":
+            raise ValueError("Intent checkpoint history projection is unsupported")
+    if checkpoint.get("test_metrics_sealed", False) and "test_accuracy" in checkpoint:
+        raise ValueError("Sealed intent checkpoint must not contain test accuracy")
     return checkpoint
 
 
@@ -89,12 +98,22 @@ class IntentPredictor:
         self.mean = np.asarray(checkpoint["mean"], dtype=np.float32)
         self.std = np.asarray(checkpoint["std"], dtype=np.float32)
         self.label_names = list(checkpoint["label_names"])
+        self.history_length = (
+            int(checkpoint["history_length"]) if "history_length" in checkpoint else None
+        )
 
     @torch.no_grad()
     def predict_proba(self, histories: np.ndarray) -> np.ndarray:
         array = np.asarray(histories, dtype=np.float32)
         if array.ndim == 2:
             array = array[None, ...]
+        if array.ndim != 3 or array.shape[-1] != self.mean.shape[-1]:
+            raise ValueError("histories must have shape [samples, timesteps, 6]")
+        if self.history_length is not None and array.shape[1] != self.history_length:
+            raise ValueError(
+                f"Checkpoint expects history length {self.history_length}, "
+                f"got {array.shape[1]}"
+            )
         normalized = (array - self.mean) / self.std
         logits = self.model(torch.from_numpy(normalized).to(self.device))
         return torch.softmax(logits, dim=1).cpu().numpy()

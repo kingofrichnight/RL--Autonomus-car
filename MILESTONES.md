@@ -3892,3 +3892,141 @@ Do not train PPO. If the eight-step classifier later passes its predefined offli
 | 2026-09-05 | Completed M9A and selected history length 8 | Apply the frozen longest-window-at-70% rule before one classifier training run | All references reproduced; histogram, candidate arithmetic, monotonicity, and selection independently verified | Result: `837c7b5`; documentation: this update |
 
 **Next action:** implement and freeze a leakage-safe eight-step GRU training and one-time evaluation protocol; do not train the GRU or PPO before that implementation is reviewed and recorded.
+
+
+---
+
+## 48. Milestone M9B design — sealed eight-observation GRU training
+
+**Experiment ID:** E-M9B-GRU-H8-S42-DATA56433621
+
+**Status:** Implemented and frozen; one local training run pending
+
+**Date recorded:** 2026-09-05
+
+**Research role:** train exactly one M9A-selected classifier while preserving a one-time held-out intent test
+
+**Policy intervention:** none
+
+### 48.1 Frozen inputs and single permitted projection
+
+M9A selected history length 8 using coverage only. M9B therefore trains exactly one classifier using the accepted M7 archive; it does not compare history lengths, recollect trajectories, relabel examples, or change the grouped split.
+
+| Item | Frozen value |
+|---|---|
+| Source dataset | `data/intent_trajectories_seed42.npz` |
+| Dataset SHA-256 | `56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0` |
+| Source shape | 109,596 × 10 × 6 |
+| Label counts | 32,631 cautious; 49,213 normal; 27,752 aggressive |
+| Projection | Causal suffix `x[:, -8:, :]` |
+| Projected shape | 109,596 × 8 × 6 |
+| Split seed and mode | 42; episode-grouped 70/15/15 |
+
+The eight rows remain in their original chronological order. Labels and episode IDs are unchanged. No derived dataset is written, which avoids a second mutable data artifact.
+
+The unchanged split implementation produces these frozen partitions:
+
+| Split | Episodes | Samples | Index-array SHA-256 |
+|---|---:|---:|---|
+| Training | 210 | 76,761 | `85dc4bb43fcf7cc98f38bc8e1bc5affdb1d8d103f884e85ed7013bfe84a43d26` |
+| Validation | 45 | 16,912 | `aaa8cd596d5cce5c323d2efb23f44c5207370492dbab152787705942daeff5bf` |
+| Test | 45 | 15,923 | `eec6da2ec3820cd9a887b909e769349eb65295888c1860c66cd799e1ea08a6b6` |
+
+The three partitions cover all 109,596 samples exactly once and contain disjoint episode IDs. Feature mean and standard deviation are recomputed after projection using only the 76,761 training samples.
+
+### 48.2 Frozen optimization and checkpoint selection
+
+| Setting | Value |
+|---|---:|
+| Input features | 6 |
+| GRU hidden size / layers | 64 / 1 |
+| Classifier head | LayerNorm → Linear(64,32) → ReLU → Linear(32,3) |
+| Loss / optimizer | Cross entropy / Adam |
+| Epochs | 30 |
+| Batch size | 128 |
+| Learning rate | 0.001 |
+| Seed | 42 |
+| Device | CPU |
+| Selection | Highest validation accuracy; earliest epoch wins ties |
+
+The architecture, loss, optimizer, epoch budget, batch size, learning rate, and seed match the accepted original GRU. CPU is explicit for this run so device selection cannot change silently. The output paths are `models/intent_gru_h8_seed42.pt` and `results/intent_gru_h8_seed42.training.json`; both refuse overwrite.
+
+After the best epoch is selected, M9B computes complete metrics on validation episodes only. The checkpoint and summary must pass all three development gates before the held-out evaluator is authorized:
+
+| Validation gate | Requirement |
+|---|---:|
+| Accuracy advantage over validation majority class | At least +5 pp |
+| Macro F1 | At least 50% |
+| Minimum per-class recall | At least 40% |
+
+A failed validation gate is retained as a negative result and ends M9B without evaluating the test split.
+
+### 48.3 Held-out test remains sealed
+
+With `--seal-test`, training stores the deterministic test indices for provenance but never constructs a test loader, predicts test labels, calculates test accuracy, or writes test metrics. The checkpoint contains `test_metrics_sealed: true` and omits `test_accuracy`; the JSON summary contains `test_accuracy: null`.
+
+The summary also records the dataset and checkpoint SHA-256 values, source and projected history lengths, projection rule, all hyperparameters, split sample counts, split-index fingerprints, split episode IDs, best epoch, complete validation metrics, and validation-gate decision. The checkpoint remains local and ignored by Git; only the small summary is committed.
+
+If the validation gate passes and the checkpoint/summary are verified, exactly one held-out test evaluation will be frozen using the generated checkpoint hash. Its acceptance rules are fixed now, before training:
+
+| Final classifier gate | Requirement |
+|---|---:|
+| M9A coverage | At least 70% |
+| All classes observed | All three |
+| Accuracy advantage over test majority class | At least +5 pp |
+| Macro F1 | At least 50% |
+| Minimum per-class recall | At least 40% |
+| Accuracy drop from original GRU | No more than 5 pp below 63.3548954% |
+
+The last requirement gives a minimum accepted accuracy of 58.3548954%. The evaluator binds the M9A coverage JSON and the new checkpoint by SHA-256, requires a sealed checkpoint, applies the causal suffix recorded in that checkpoint, refuses output overwrite, and records every gate. These rules cannot be relaxed after seeing training or test results.
+
+Passing the classifier gates would authorize design of a new PPO + intent experiment; it would not establish a driving improvement. PPO V3 remains the best policy, and a later policy comparison must use newly frozen untouched seeds.
+
+### 48.4 Implementation and verification
+
+The training pipeline now supports explicit causal history projection, source-dataset fingerprint enforcement, CPU selection, overwrite refusal, a test-sealed development mode, checkpoint fingerprinting, compact provenance summaries, and validation classification gates. Checkpoint loading validates history metadata and rejects the contradictory combination of a sealed test with stored test accuracy.
+
+The intent evaluator remains backward-compatible with the original checkpoint and can now evaluate projected histories from a sealed checkpoint. It supports dataset/model/coverage hashes, expected history length, CPU selection, overwrite refusal, the frozen classifier gates, and recording whether test metrics were sealed before evaluation.
+
+Unit tests verify causal suffix selection, training-only normalization after projection, source-hash rejection, test-metric omission, summary/checkpoint provenance, history-length enforcement during inference, sealed-checkpoint evaluation, coverage binding, and overwrite refusal. Final checks:
+
+```text
+git diff --check: passed
+ruff check: passed
+pytest: 79 passed in 3.49 s
+```
+
+The accepted source archive was inspected without training. Its shape, class counts, 300 episode IDs, split sample counts, and all three split-index hashes match the frozen values above.
+
+### 48.5 Frozen local training command
+
+After pulling this implementation, first run:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and neither output path exists, run exactly once:
+
+```powershell
+python scripts/train_intent.py --data data/intent_trajectories_seed42.npz --data-sha256 56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0 --history-length 8 --epochs 30 --batch-size 128 --learning-rate 0.001 --seed 42 --device cpu --seal-test --minimum-validation-accuracy-advantage 0.05 --minimum-validation-macro-f1 0.50 --minimum-validation-class-recall 0.40 --output models/intent_gru_h8_seed42.pt --summary-output results/intent_gru_h8_seed42.training.json --refuse-overwrite
+```
+
+Commit only `results/intent_gru_h8_seed42.training.json`, whether its validation gate passes or fails. Keep `models/intent_gru_h8_seed42.pt` local. Do not run `evaluate_intent.py`, train PPO, change the command, or rerun after observing validation results.
+
+### 48.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-055 | Train exactly one eight-observation GRU from causal suffixes | Recollect data or compare multiple lengths | M9A selected length 8 without classifier/test feedback | Retained |
+| D-056 | Keep test predictions and metrics sealed during training | Preserve the legacy train-and-test-in-one command | Protect the sole held-out intent evaluation from development feedback | Retained |
+| D-057 | Require validation accuracy advantage, macro F1, and minimum recall gates before test evaluation | Advance on validation accuracy alone | Detect majority-class or per-class failure before consuming the test split | Retained |
+| D-058 | Freeze final classifier gates before M9B training | Set thresholds after observing validation or test results | Prevent result-dependent acceptance criteria | Retained |
+| D-059 | Keep the new checkpoint local and commit only its summary | Commit the `.pt` file | Follow the artifact policy while retaining a fingerprinted research record | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Implemented and froze M9B sealed eight-step training and evaluation support | Train the M9A-selected representation without leaking held-out intent-test metrics | Dataset/split audit, Ruff, and 79 tests passed | This implementation update |
+
+**Next action:** run only the frozen M9B training command after the full local test gate; commit its JSON summary and keep its checkpoint local. Do not evaluate the test split yet.

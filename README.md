@@ -231,8 +231,29 @@ M8C, and M8D reference chain. Under the frozen rule, an eight-observation histor
 was the longest candidate to pass: it reached 71.23% coverage, while length nine
 reached only 67.52%. This was a non-interventional development result; driving
 remained 59.0% success and 41.0% collision. The next step is to implement and
-freeze the leakage-safe eight-step GRU training/evaluation protocol. Do not train
-a new GRU or PPO until that implementation and its acceptance gates are recorded.
+freeze the leakage-safe eight-step GRU training/evaluation protocol.
+
+That protocol is now implemented. After pulling it and rerunning the full tests,
+train exactly one eight-step classifier with the held-out test split sealed:
+
+```bash
+python scripts/train_intent.py \
+  --data data/intent_trajectories_seed42.npz \
+  --data-sha256 56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0 \
+  --history-length 8 --epochs 30 --batch-size 128 --learning-rate 0.001 \
+  --seed 42 --device cpu --seal-test \
+  --minimum-validation-accuracy-advantage 0.05 \
+  --minimum-validation-macro-f1 0.50 \
+  --minimum-validation-class-recall 0.40 \
+  --output models/intent_gru_h8_seed42.pt \
+  --summary-output results/intent_gru_h8_seed42.training.json \
+  --refuse-overwrite
+```
+
+Commit only `results/intent_gru_h8_seed42.training.json`; keep the `.pt`
+checkpoint local. Do not run `evaluate_intent.py` yet. The checkpoint and
+validation gate must be verified and frozen by hash before its one held-out test
+evaluation. Do not train PPO.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.
