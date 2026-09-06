@@ -3814,3 +3814,81 @@ Commit only the output JSON, whether complete or failed. Do not train a GRU or P
 | 2026-09-05 | Implemented and froze the M9A history-length coverage selector | Choose one shorter temporal window without using intent test results | 76 tests passed; three-episode chained reference-reproduction smoke passed | This implementation update |
 
 **Next action:** run only the frozen M9A curve command and commit its JSON; do not train a new GRU yet.
+
+
+---
+
+## 47. Milestone M9A result — eight-observation history selected
+
+**Experiment ID:** E-M9A-HISTORY-CURVE-H10042
+
+**Status:** Complete; history length 8 selected
+
+**Date recorded:** 2026-09-05
+
+**Result commit:** [`837c7b5`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/837c7b53412239adb5748c8bc73363af49f9a156)
+
+**Result artifact:** `results/ppo_intent_v1_history_coverage_curve_seed10042.json`
+
+**Artifact SHA-256:** `b364e39e104197b32670c9305806c74c972be5fa9e5497888ecd340d664be101`
+
+### 47.1 Integrity validation
+
+The committed result reports `status: complete`, no error, 500 completed episodes, and the exact frozen seed interval 10042–10541. It used the pinned PPO + intent V1 checkpoint, original ten-step intent GRU, V3 configuration, five policy-facing intent slots, 14-slot shadow tracker, CPU inference, no safety shield, and the unchanged 2.0-second unsafe-TTC reporting threshold.
+
+All three mandatory reference checks passed:
+
+- all 500 M8B driving rows reproduced;
+- the complete M8C online-intent result reproduced;
+- the M8D current-intent, shadow-intent, and coverage-comparison blocks reproduced.
+
+Consequently, M9A did not change or reevaluate a driving policy. The reproduced outcome remains 59.0% success, 41.0% collision, and 0% incomplete for the already-rejected PPO + intent V1 policy.
+
+Independent validation accounted for all observations:
+
+```text
+3,899 + 3,721 + 3,604 + 3,520 + 3,425
++ 3,364 + 3,279 + 3,202 + 3,135 + 55,094
+= 86,243 vehicle target slots
+```
+
+For every candidate, independently summing histogram bins at or above that length exactly reproduced the reported ready count and coverage. Coverage was monotone decreasing as history length increased.
+
+### 47.2 Frozen coverage curve
+
+| History length | Ready slots | Warmup slots | Coverage | 70% gate |
+|---:|---:|---:|---:|---|
+| 4 | 75,019 | 11,224 | 86.9856% | Passed |
+| 5 | 71,499 | 14,744 | 82.9041% | Passed |
+| 6 | 68,074 | 18,169 | 78.9328% | Passed |
+| 7 | 64,710 | 21,533 | 75.0322% | Passed |
+| **8** | **61,431** | **24,812** | **71.2301%** | **Passed; selected** |
+| 9 | 58,229 | 28,014 | 67.5174% | Failed |
+| 10 | 55,094 | 31,149 | 63.8823% | Failed |
+
+Eligible lengths were 4, 5, 6, 7, and 8. The independently recomputed longest passing candidate is 8, matching the artifact. Length 8 cleared the frozen gate by 1.2301 percentage points; length 9 missed it by 2.4826 percentage points. Relative to the original ten-observation requirement, length 8 makes 6,337 additional visible-vehicle slots ready, a 7.3478-point absolute coverage gain.
+
+### 47.3 Interpretation and decision
+
+The full run confirms the engineering-smoke indication without using classifier labels, accuracy, or driving outcomes to select the window. Eight observations are sufficient to cross the existing availability gate while preserving more temporal context than every other passing candidate. This result selects an input representation only; it is not evidence that an eight-step classifier will satisfy the frozen quality gates or improve PPO.
+
+Exactly one shorter-history classifier is now authorized for development: use the causal suffix `x[:, -8:, :]` of every accepted ten-step trajectory. Preserve all 109,596 samples, labels, episode IDs, and the seed-42 grouped episode split. Recompute normalization from the projected training split only, choose the checkpoint epoch using validation episodes only, and keep held-out test metrics unavailable until the checkpoint and validation selection are frozen.
+
+Do not train PPO. If the eight-step classifier later passes its predefined offline and coverage gates, a separate PPO experiment must use a newly frozen policy holdout; seeds 10042–10541 are development evidence and cannot support the final driving comparison.
+
+**Decision:** accept M9A, freeze history length 8 for the next classifier experiment, keep PPO V3 as the best driving policy, and keep PPO + intent V1 rejected.
+
+### 47.4 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-051 | Freeze an eight-observation input for the next intent classifier | Select a shorter passing length for higher availability or retain ten observations | Eight was the longest candidate meeting the predefined 70% gate | Retained |
+| D-052 | Derive inputs causally as `x[:, -8:, :]` while preserving samples and grouped splits | Recollect data, change labels, or resplit episodes | Isolate history length as the only representation change and prevent split leakage | Retained |
+| D-053 | Keep test evaluation sealed until validation selects and freezes the checkpoint | Inspect test metrics during training or compare multiple lengths on test | Preserve one valid held-out classifier evaluation after development selection | Retained |
+| D-054 | Do not retrain PPO from the M9A result alone | Treat coverage feasibility as classifier or driving-policy evidence | M9A did not train an eight-step GRU or intervene on actions | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-05 | Completed M9A and selected history length 8 | Apply the frozen longest-window-at-70% rule before one classifier training run | All references reproduced; histogram, candidate arithmetic, monotonicity, and selection independently verified | Result: `837c7b5`; documentation: this update |
+
+**Next action:** implement and freeze a leakage-safe eight-step GRU training and one-time evaluation protocol; do not train the GRU or PPO before that implementation is reviewed and recorded.
