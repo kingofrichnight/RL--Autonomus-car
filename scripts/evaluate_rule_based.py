@@ -10,7 +10,12 @@ import pandas as pd
 
 from safeintent_rl.agents import RuleBasedAgent
 from safeintent_rl.envs import make_intersection_env
-from safeintent_rl.evaluation import EpisodeMetrics, detect_success, summarize_episodes
+from safeintent_rl.evaluation import (
+    EpisodeMetrics,
+    detect_collision,
+    detect_success,
+    summarize_episodes,
+)
 from safeintent_rl.safety.ttc import minimum_ttc
 
 
@@ -56,7 +61,7 @@ def main() -> None:
                 final_info = info
 
             base = env.unwrapped
-            collision = bool(final_info.get("crashed", getattr(base.vehicle, "crashed", False)))
+            collision = detect_collision(env, final_info)
             success = detect_success(env, final_info)
             policy_frequency = float(getattr(base, "config", {}).get("policy_frequency", 1))
             episodes.append(

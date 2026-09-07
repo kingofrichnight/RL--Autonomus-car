@@ -21,8 +21,18 @@ class EpisodeMetrics:
         return asdict(self)
 
 
+def detect_collision(env: Any, final_info: dict[str, Any]) -> bool:
+    """Detect a terminal collision across HighwayEnv versions."""
+    base = getattr(env, "unwrapped", env)
+    vehicle = getattr(base, "vehicle", None)
+    return bool(final_info.get("crashed", getattr(vehicle, "crashed", False)))
+
+
 def detect_success(env: Any, final_info: dict[str, Any]) -> bool:
-    """Detect arrival across HighwayEnv versions and other Gymnasium environments."""
+    """Detect a collision-free arrival across supported environment versions."""
+    if detect_collision(env, final_info):
+        return False
+
     for key in ("is_success", "arrived"):
         if key in final_info:
             return bool(final_info[key])

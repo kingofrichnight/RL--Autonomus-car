@@ -251,34 +251,19 @@ observation. The controlled PPO + intent V2 training run completed at 200,704
 steps and passed its checkpoint audit. The final policy SHA-256 is
 `4fc855e064c366b0d0b94b807066b235a46f8cf3c7bfb06edceb6a56fa9b1773`.
 
-After pulling the training record and rerunning all tests, evaluate both frozen
-policies on the new paired holdout. Run both commands without retraining or
-changing settings between them:
+The paired M10 holdout is complete. On seeds 20042–20541, V3 recorded 60.8%
+success and 39.4% collision; PPO + intent V2 recorded 61.8% success and 38.2%
+collision. The changes were only +1.0 and -1.2 percentage points, and the exact
+paired McNemar test was not significant (`p = 0.6029`). Intent V2 failed three
+of the five precommitted gates and is rejected as an improvement. V3 remains
+the current best accepted driving policy.
 
-```bash
-python -m scripts.evaluate_policy \
-  --model models/ppo_reward_v3_seed42.zip \
-  --model-sha256 f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c \
-  --config configs/intersection_reward_v3.yaml \
-  --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 \
-  --episodes 500 --seed 20042 --unsafe-ttc 2.0 \
-  --output results/ppo_reward_v3_holdout_seed20042.csv --refuse-overwrite
-
-python -m scripts.evaluate_policy \
-  --model models/ppo_intent_v2_seed42.zip \
-  --model-sha256 4fc855e064c366b0d0b94b807066b235a46f8cf3c7bfb06edceb6a56fa9b1773 \
-  --config configs/intersection_reward_v3.yaml \
-  --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 \
-  --episodes 500 --seed 20042 --unsafe-ttc 2.0 \
-  --intent-model models/intent_gru_h8_seed42.pt \
-  --intent-model-sha256 74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05 \
-  --intent-neighbors 5 --intent-history-length 8 \
-  --intent-history-tracking-neighbors 14 --intent-device cpu \
-  --output results/ppo_intent_v2_holdout_seed20042.csv --refuse-overwrite
-```
-
-Commit both CSV files and both generated `.summary.json` files. Keep all model
-checkpoints local and do not rerun either holdout after observing the results.
+One V3 terminal row (seed 20122) reported both arrival and collision. The raw
+result is preserved in full, and a collision-first outcome rule now prevents
+future evaluations from counting a crashed arrival as a success. See
+`MILESTONES.md` for the raw and collision-first sensitivity analyses. Do not
+rerun M10 or compare later evaluations that use the revised outcome rule
+directly against the earlier summaries.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.

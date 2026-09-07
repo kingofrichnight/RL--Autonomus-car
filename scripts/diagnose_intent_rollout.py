@@ -13,7 +13,12 @@ import pandas as pd
 from stable_baselines3 import PPO
 
 from safeintent_rl.envs import make_intersection_env
-from safeintent_rl.evaluation import EpisodeMetrics, detect_success, summarize_episodes
+from safeintent_rl.evaluation import (
+    EpisodeMetrics,
+    detect_collision,
+    detect_success,
+    summarize_episodes,
+)
 from safeintent_rl.intent.diagnostics import (
     HistoryCoverageComparison,
     HistoryLengthCoverageCurve,
@@ -322,7 +327,7 @@ def main() -> None:
                 final_info = info
 
             base = env.unwrapped
-            collision = bool(final_info.get("crashed", getattr(base.vehicle, "crashed", False)))
+            collision = detect_collision(env, final_info)
             policy_frequency = float(base.config.get("policy_frequency", 1))
             episodes.append(
                 EpisodeMetrics(

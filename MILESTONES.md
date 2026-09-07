@@ -4497,3 +4497,121 @@ Commit all four files together. Keep all `.zip` and `.pt` files local. Do not re
 | 2026-09-06 | Completed and validated M10A training | Freeze the final PPO + intent V2 checkpoint before touching the reserved holdout | Commit scope, four hashes, all summary fields, checkpoint spaces/hyperparameters/timesteps, probability bounds, and parameter finiteness verified | Result: `0d71ab0`; documentation: this update |
 
 **Next action:** run both frozen 500-episode evaluations on seeds 20042–20541 after the full test gate; commit both CSVs and both summaries. Do not retrain or run only one policy.
+
+
+---
+
+## 53. Milestone M10B result — paired PPO V3 versus PPO + intent V2
+
+**Experiment ID:** E-M10-PPO-INTENT-V2-H8T14-S42-200K
+
+**Status:** Complete; PPO + intent V2 rejected as an improvement
+
+**Date recorded:** 2026-09-07
+
+**Result commit:** [`f652795`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/f652795453f320a63037b768e58d871b75347fac)
+
+### 53.1 Result-artifact and protocol audit
+
+The result commit is one commit directly after the frozen M10A documentation and contains exactly the four required files: both 500-row episode CSVs and both summaries. No checkpoint, configuration, source, or unrelated result changed.
+
+| Artifact | SHA-256 |
+|---|---|
+| `results/ppo_reward_v3_holdout_seed20042.csv` | `f57d357da61ac309b8542e54ab8e74c5bcf456ee98c5ef459e25d83d40523f65` |
+| `results/ppo_reward_v3_holdout_seed20042.summary.json` | `505bcae5d8d2c1ebd7fab0429d0d984e55adbe267f357d7f4bacd833ad59abd2` |
+| `results/ppo_intent_v2_holdout_seed20042.csv` | `a54ddbdd564e9af28de7c2d2fe631c113bf3ce570d79a43d037ef69aa5f27c17` |
+| `results/ppo_intent_v2_holdout_seed20042.summary.json` | `89450da5c36edce191ab181662c743c010722e5843eec07d96ae1623d42e0430` |
+
+Both summaries record 500 episodes, seeds 20042–20541, deterministic policy evaluation, configuration SHA-256 `433e6972...fae69`, no safety shield, and a 2.0-second unsafe-TTC reporting threshold. V3 records the frozen checkpoint SHA-256 `f46964bf...706c` and no intent model. V2 records the frozen PPO SHA-256 `4fc855e0...b1773`, intent SHA-256 `74a72cf...fc05`, five policy-facing neighbors, 14 tracked histories, history length eight, and CPU inference. The artifacts therefore match the frozen paired protocol without a silent model or configuration change.
+
+The pre-evaluation Ruff and pytest gate was user-reported as completed after the frozen commands were supplied; the result artifacts do not themselves encode the test output. The four output paths were newly added together and were not selectively omitted after either result became visible.
+
+### 53.2 Raw aggregate result
+
+| Metric | Paired V3 | PPO + intent V2 | V2 minus V3 |
+|---|---:|---:|---:|
+| Episodes | 500 | 500 | 0 |
+| Mean reward | 2.284797 | 2.339301 | +0.054504 |
+| Mean episode length | 38.314 | 39.678 | +1.364 |
+| Success rate | 60.8% | 61.8% | +1.0 pp |
+| Collision rate | 39.4% | 38.2% | -1.2 pp |
+| Incomplete non-collision rate | 0.0% | 0.0% | 0.0 pp |
+| Mean travel time | 7.6628 s | 7.9356 s | +0.2728 s |
+| Mean minimum TTC | 0.584723 s | 0.604596 s | +0.019873 s |
+| Mean unsafe-TTC events | 16.548 | 16.896 | +0.348 |
+| Mean safety interventions | 0.0 | 0.0 | 0.0 |
+
+V2 has small favorable raw changes in success, collision, reward, and mean minimum TTC, but also slightly longer travel time and more unsafe-TTC events. Reward was descriptive and cannot rescue a failed driving-policy gate.
+
+### 53.3 Paired success test
+
+Pairing the rows by their common seed gives:
+
+| V3 success | V2 success | Episodes |
+|---:|---:|---:|
+| True | True | 277 |
+| True | False | 27 |
+| False | True | 32 |
+| False | False | 164 |
+
+There are 59 discordant pairs. The exact two-sided McNemar probability is
+
+$$
+p = 2\sum_{k=0}^{27}{59 \choose k}(0.5)^{59}=0.602923.
+$$
+
+The observed five-episode net gain is compatible with chance and does not satisfy `p < 0.05`.
+
+### 53.4 Terminal-outcome anomaly and sensitivity analysis
+
+The raw V3 CSV contains one internally overlapping terminal outcome: zero-based episode index 80, seed 20122, records `success=True` and `collision=True` with reward 8.975, length 45, travel time 9.0 seconds, minimum TTC 0.435576 seconds, and 31 unsafe-TTC events. V3 therefore has 304 success flags and 197 collision flags across 500 rows, totaling 501 flags. It has no row with neither flag. V2 has 309 success-only rows, 191 collision-only rows, no overlap, and no row with neither flag.
+
+This was possible because the evaluator independently queried route arrival and crash state. The committed files and summaries are preserved unchanged. M10 is evaluated first under its frozen raw definitions; the anomaly was discovered only after the result and cannot justify selectively rewriting or rerunning the holdout.
+
+A safety-first sensitivity analysis classifies the overlapping V3 row as collision, not success. Under that rule V3 success becomes 303/500 = 60.6%, so V2's success change becomes +1.2 percentage points. The paired discordances become 27 V2 regressions and 33 V2 gains, with exact two-sided McNemar `p = 0.518958`. Collision and incomplete rates are unchanged. Thus the M10 rejection is robust to the terminal-outcome correction.
+
+### 53.5 Precommitted gate decision
+
+| Gate | Required | Observed | Decision |
+|---|---:|---:|---|
+| Success improvement | at least +3.0 pp | +1.0 pp raw; +1.2 pp sensitivity | Failed |
+| Collision reduction | at least -3.0 pp | -1.2 pp | Failed |
+| V2 incomplete non-collision rate | at most 2.0% | 0.0% | Passed |
+| Mean minimum TTC | V2 at least V3 | 0.604596 >= 0.584723 s | Passed |
+| Favorable exact paired test | `p < 0.05` | `p = 0.602923`; sensitivity `p = 0.518958` | Failed |
+
+Only two of five gates pass. **PPO + intent V2 is rejected as an improvement.** The eight-step classifier and wider history retention solved the predefined availability problem, but this single controlled PPO run did not convert that representation improvement into a sufficiently large or statistically supported driving improvement. The rejected V2 checkpoint remains research evidence and must not replace V3. PPO V3 remains the current best accepted policy.
+
+### 53.6 Outcome-integrity correction for future work
+
+After sealing the M10 decision, terminal outcome detection was centralized. `detect_collision` now applies the same HighwayEnv-compatible crash lookup to policy evaluation, rule-based evaluation, and intent-rollout diagnostics. `detect_success` first checks collision and returns false for a crashed arrival. A regression test covers an environment that reports both explicit success and crash. This implements the safety-first rule prospectively; it does not alter or reinterpret stored M10 artifacts.
+
+Because this correction changes the success definition in the one overlapping edge case, every future paired experiment must establish its own comparator under the corrected code on newly reserved seeds. A later result must not be compared directly against a pre-correction aggregate as if outcome definitions were identical.
+
+Verification after the correction:
+
+```text
+ruff check: passed
+pytest attempt 1: 73 passed, 11 setup errors; sandbox denied access to the shared Windows pytest temp directory
+pytest attempt 2: 73 passed, 11 setup errors; sandbox also denied access to a newly requested workspace temp directory
+pytest outside the restricted temp sandbox: 84 passed in 3.97 s
+```
+
+Both failed attempts stopped at temporary-fixture setup and produced no experiment result. The unrestricted rerun exercised the complete suite and passed.
+
+### 53.7 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-076 | Reject PPO + intent V2 as an improvement and retain V3 | Promote V2 based on favorable raw direction | V2 failed success-effect, collision-effect, and paired-significance gates | Retained |
+| D-077 | Preserve the four raw M10 artifacts and do not rerun the consumed holdout | Rewrite the overlapping row or rerun after observing results | Append-only evidence and the rejection are robust under collision-first sensitivity | Retained |
+| D-078 | Give collision precedence over arrival in all future success classification | Continue allowing simultaneous success and collision flags | Seed 20122 exposed an unsafe ambiguity; a crashed arrival is not a successful autonomous-driving outcome | Retained |
+| D-079 | Treat seeds 20042–20541 as consumed development evidence | Reuse them for tuning or another final claim | Both policies and the anomaly have now been inspected | Retained |
+| D-080 | Authorize no new training or evaluation yet | Immediately change reward, PPO settings, intent representation, or shield | M10 needs a separately frozen post-result diagnostic/design step before another intervention | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Completed and rejected M10B PPO + intent V2 | Apply all five gates to the untouched paired holdout | Four-file commit scope, artifact hashes, metadata, 1,000 episode rows, aggregate metrics, discordant counts, exact McNemar test, and collision-first sensitivity independently verified | Result: `f652795`; documentation: this update |
+| 2026-09-07 | Centralized collision detection and made success collision-free prospectively | Prevent a crashed arrival from being counted as a policy success | Ruff passed; full suite passed with 84 tests after two recorded sandbox temp-directory failures | This implementation update |
+
+**Next action:** design and append a non-interventional post-M10 diagnostic or a new controlled intervention before running any more training or evaluation. Do not tune on or reuse seeds 20042–20541, do not rerun M10, and do not combine the rejected shield or V2 policy without a newly frozen protocol.

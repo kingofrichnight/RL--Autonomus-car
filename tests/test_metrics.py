@@ -1,6 +1,11 @@
 import pytest
 
-from safeintent_rl.evaluation.metrics import EpisodeMetrics, detect_success, summarize_episodes
+from safeintent_rl.evaluation.metrics import (
+    EpisodeMetrics,
+    detect_collision,
+    detect_success,
+    summarize_episodes,
+)
 
 
 def test_episode_summary() -> None:
@@ -36,3 +41,9 @@ def test_detect_success_uses_highway_env_arrival_method() -> None:
 
 def test_detect_success_prefers_explicit_info() -> None:
     assert detect_success(_IntersectionEnv(False), {"is_success": True}) is True
+
+
+def test_collision_takes_precedence_over_arrival() -> None:
+    env = _IntersectionEnv(True)
+    assert detect_collision(env, {"crashed": True}) is True
+    assert detect_success(env, {"is_success": True, "crashed": True}) is False
