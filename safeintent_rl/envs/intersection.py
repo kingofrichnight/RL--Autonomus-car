@@ -12,6 +12,7 @@ from safeintent_rl.envs.driver_behavior import DriverBehaviorWrapper
 from safeintent_rl.envs.reward import RouteProgressRewardWrapper
 from safeintent_rl.intent.wrapper import IntentObservationWrapper
 from safeintent_rl.safety.shield import CPAAccelerationShield, TTCSafetyShield
+from safeintent_rl.sensors import KinematicRiskFusionWrapper
 
 FALLBACK_INTERSECTION_IDS = ("intersection-v2", "intersection-v1", "intersection-v0")
 
@@ -40,6 +41,13 @@ def make_intersection_env(
     cpa_horizon: float = 3.0,
     cpa_max_range: float = 60.0,
     cpa_override_action: str = "IDLE",
+    risk_fusion: bool = False,
+    fusion_neighbors: int = 14,
+    fusion_range_scale: float = 200.0,
+    fusion_relative_speed_scale: float = 20.0,
+    fusion_ttc_scale: float = 10.0,
+    fusion_cpa_horizon: float = 5.0,
+    fusion_cpa_distance_scale: float = 20.0,
     intent_model: str | Path | None = None,
     intent_neighbors: int = 5,
     intent_device: str = "cpu",
@@ -67,6 +75,16 @@ def make_intersection_env(
         if wrapper_type != "RouteProgressReward":
             raise ValueError(f"Unsupported reward wrapper: {wrapper_type}")
         env = RouteProgressRewardWrapper(env, **wrapper_config)
+    if risk_fusion:
+        env = KinematicRiskFusionWrapper(
+            env,
+            max_neighbors=fusion_neighbors,
+            range_scale=fusion_range_scale,
+            relative_speed_scale=fusion_relative_speed_scale,
+            ttc_scale=fusion_ttc_scale,
+            cpa_horizon=fusion_cpa_horizon,
+            cpa_distance_scale=fusion_cpa_distance_scale,
+        )
     if intent_model is not None:
         env = IntentObservationWrapper(
             env,

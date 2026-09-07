@@ -43,6 +43,13 @@ def main() -> None:
     )
     parser.add_argument("--reference-csv", default=None)
     parser.add_argument("--reference-csv-sha256", default=None)
+    parser.add_argument("--risk-fusion", action="store_true")
+    parser.add_argument("--fusion-neighbors", type=int, default=14)
+    parser.add_argument("--fusion-range-scale", type=float, default=200.0)
+    parser.add_argument("--fusion-relative-speed-scale", type=float, default=20.0)
+    parser.add_argument("--fusion-ttc-scale", type=float, default=10.0)
+    parser.add_argument("--fusion-cpa-horizon", type=float, default=5.0)
+    parser.add_argument("--fusion-cpa-distance-scale", type=float, default=20.0)
     parser.add_argument("--intent-model", default=None)
     parser.add_argument("--intent-neighbors", type=int, default=5)
     parser.add_argument("--intent-history-length", type=int, default=None)
@@ -132,6 +139,13 @@ def main() -> None:
         cpa_horizon=args.cpa_horizon,
         cpa_max_range=args.cpa_max_range,
         cpa_override_action=args.cpa_override_action,
+        risk_fusion=args.risk_fusion,
+        fusion_neighbors=args.fusion_neighbors,
+        fusion_range_scale=args.fusion_range_scale,
+        fusion_relative_speed_scale=args.fusion_relative_speed_scale,
+        fusion_ttc_scale=args.fusion_ttc_scale,
+        fusion_cpa_horizon=args.fusion_cpa_horizon,
+        fusion_cpa_distance_scale=args.fusion_cpa_distance_scale,
         intent_model=args.intent_model,
         intent_neighbors=args.intent_neighbors,
         intent_history_length=intent_history_length,
@@ -221,6 +235,20 @@ def main() -> None:
                 str(Path(args.reference_csv)) if args.reference_csv is not None else None
             ),
             "reference_csv_sha256": reference_csv_sha256,
+            "risk_fusion": args.risk_fusion,
+            "fusion_neighbors": args.fusion_neighbors if args.risk_fusion else 0,
+            "fusion_features_per_neighbor": 5 if args.risk_fusion else 0,
+            "fusion_range_scale": args.fusion_range_scale if args.risk_fusion else None,
+            "fusion_relative_speed_scale": (
+                args.fusion_relative_speed_scale if args.risk_fusion else None
+            ),
+            "fusion_ttc_scale": args.fusion_ttc_scale if args.risk_fusion else None,
+            "fusion_cpa_horizon": (
+                args.fusion_cpa_horizon if args.risk_fusion else None
+            ),
+            "fusion_cpa_distance_scale": (
+                args.fusion_cpa_distance_scale if args.risk_fusion else None
+            ),
             "intent_model_path": (
                 str(Path(args.intent_model)) if args.intent_model is not None else None
             ),

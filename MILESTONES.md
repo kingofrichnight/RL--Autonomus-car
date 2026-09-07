@@ -5584,3 +5584,172 @@ seed schedule, budget, checkpoint rule, and gates are recorded.
 | 2026-09-07 | Completed and rejected M13 selective-braking development screen | Test whether stronger action potency could turn M12A association into improved outcomes | Two-file scope and hashes, reference binding, 500 rows, metadata, aggregate arithmetic, 75 paired transitions, exact tests, and all gates independently verified | Result: `fd77a6d`; documentation: this update |
 
 **Next action:** design and implement a multi-environment, multi-seed PPO V3 training protocol with fixed reward/observation/action settings and prospective development gates. Do not train or evaluate another shield.
+
+
+---
+
+## 62. Milestone M14A design and implementation — physics-informed sensor fusion
+
+**Experiment ID:** E-M14A-PPO-V3-KINEMATIC-RISK-FUSION-S42
+
+**Status:** Implemented, verified, and frozen; controlled training pending
+
+**Date recorded:** 2026-09-07
+
+### 62.1 Revised direction and terminology
+
+After M13, the user proposed improving sensors and using sensor fusion. This is
+a stronger direction than another hand-written shield, but the simulator scope
+must be stated accurately. HighwayEnv currently exposes exact normalized
+kinematics rather than raw, noisy camera, LiDAR, or radar measurements. M14A is
+therefore **feature-level kinematic risk fusion**, not a claim of real-world
+multimodal perception.
+
+The new observation combines three information groups:
+
+1. the complete existing 15-by-7 kinematics observation;
+2. radar-like range and radial closing speed for each observed traffic slot;
+3. derived radial-TTC and constant-velocity closest-approach time/distance.
+
+Unlike the rejected shields, these features never override an action. PPO can
+learn when and how to use them jointly with the native state.
+
+### 62.2 Frozen observation contract
+
+The native 105 values remain first and in their original order. For each of the
+14 sorted non-ego traffic slots, append this five-value block:
+
+| Index | Feature | Normalization |
+|---:|---|---|
+| 0 | Euclidean range | `clip(range / 200 m, 0, 1)` |
+| 1 | Radial closing speed | `clip(closing_speed / 20 m/s, -1, 1)` |
+| 2 | Radial TTC | `clip(TTC / 10 s, 0, 1)`; receding/nonfinite = 1 |
+| 3 | CPA time | `clip(t_CPA / 5 s, 0, 1)`; invalid/outside horizon = 1 |
+| 4 | CPA miss distance | `clip(d_CPA / 20 m, 0, 1)`; invalid = 1 |
+
+The relative geometry uses the same formulas recorded in Section 56, but the
+network receives continuous normalized values rather than a threshold decision.
+A missing traffic slot uses `[1, 0, 1, 1, 1]`, representing far/no closing/no
+finite conflict; the corresponding native presence bit remains zero.
+
+The fused observation dimension is fixed at
+
+$$
+15\times7 + 14\times5 = 175.
+$$
+
+Slot order exactly follows HighwayEnv's existing sorted kinematics query.
+Observation values after the native block are float32 and bounded by the
+declared space. The fusion wrapper requires sorted slots and refuses invalid
+neighbor counts or nonfinite/nonpositive scales.
+
+No sensor noise, occlusion, missed detection, calibration error, or learned
+perception is modeled. Those require a separately scoped CARLA or synthetic
+sensor experiment and cannot be inferred from M14A.
+
+### 62.3 Controlled training protocol
+
+To isolate the observation change, the first fusion policy retains the original
+V3 training protocol rather than simultaneously increasing data or changing
+PPO:
+
+| Property | V3 reference | Fusion V1 |
+|---|---:|---:|
+| Configuration SHA-256 | `433e6972...fae69` | same |
+| Reward / traffic / action | V3 | same |
+| Training seed | 42 | 42 |
+| Total requested steps | 200,000 | 200,000 |
+| Environments | 1 | 1 |
+| Learning rate | 0.0003 | 0.0003 |
+| PPO `n_steps` / batch | 1024 / 64 | 1024 / 64 |
+| Gamma / GAE / entropy | 0.99 / 0.95 / 0.01 | same |
+| Network | `[256, 256]` | same |
+| Observation | 105 kinematics | 175 fused |
+| Intent / shield | none / none | none / none |
+
+Internal monitoring uses offset 70,000, 50 episodes every 10,000 total steps,
+and is descriptive. Only the final checkpoint is eligible; the callback-best
+and periodic checkpoints must not be substituted after inspecting evaluation
+curves. The different internal monitoring size/offset does not update PPO or
+select the final artifact.
+
+The trainer also now supports explicit independent environment seed streams and
+converts total-timestep callback intervals to vector-step calls. M14A fixes
+`n_envs=1`; the optional multi-environment path is infrastructure only and is
+not part of this controlled fusion comparison.
+
+Expected outputs:
+
+```text
+models/ppo_fusion_v1_seed42.zip
+results/ppo_fusion_v1_seed42.training.json
+```
+
+The ZIP stays local and ignored. Commit only the small training JSON, whether
+training succeeds or fails. Training completion is an integrity gate, not an
+improvement result. Before a driving evaluation is authorized, the summary and
+local ZIP must show 200,704 collected steps, observation shape `[175]`, the
+frozen configuration and all fusion parameters, seed 42, one environment, no
+intent, no shield, and matching model fingerprint.
+
+### 62.4 Implementation verification
+
+Unit tests cover feature values on an analytic crossing trajectory, native
+observation preservation, missing-slot sentinels, observation-space bounds,
+sorted-slot and neighbor-count requirements, invalid scaling, deterministic
+training seed offsets, and vector callback-frequency accounting.
+
+The complete gate passed:
+
+```text
+ruff check: passed
+pytest: 114 passed in 3.81 s
+```
+
+Two real-environment checks used only engineering seed 7:
+
+- native and fused environments matched exactly for the first 105 reset values
+  and through ten identical `IDLE` steps, including reward, termination, and
+  ego position; the added 70 values were finite and within `[0,1]` in that run;
+- a 32-step PPO smoke produced a valid `[175]` model and summary with fusion
+  enabled and 14 neighbors.
+
+All temporary smoke models, summaries, callback outputs, and logs were deleted.
+No research result, reserved seed, or existing artifact was touched.
+
+### 62.5 Frozen training command
+
+After pulling the implementation, run:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and neither output exists, run exactly:
+
+```powershell
+python -m scripts.train_ppo --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --timesteps 200000 --seed 42 --learning-rate 0.0003 --n-steps 1024 --batch-size 64 --n-envs 1 --env-seed-stride 1000 --eval-seed-offset 70000 --eval-episodes 50 --evaluation-freq 10000 --checkpoint-freq 25000 --risk-fusion --fusion-neighbors 14 --fusion-range-scale 200.0 --fusion-relative-speed-scale 20.0 --fusion-ttc-scale 10.0 --fusion-cpa-horizon 5.0 --fusion-cpa-distance-scale 20.0 --summary-output results/ppo_fusion_v1_seed42.training.json --output models/ppo_fusion_v1_seed42 --refuse-overwrite
+```
+
+After it finishes, stop and commit only
+`results/ppo_fusion_v1_seed42.training.json`. Do not evaluate the policy, use a
+different checkpoint, increase training, run a shield, add intent, or commit
+the ZIP. A paired development evaluation will be frozen only after validating
+the completed checkpoint.
+
+### 62.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-114 | Replace manual shielding with learned kinematic-risk fusion | Tune another CPA/TTC override | Every tested shield failed while fused features leave control authority with PPO | Retained |
+| D-115 | Describe M14A as feature-level fusion, not raw sensor fusion | Claim camera/LiDAR/radar fusion | HighwayEnv supplies simulator kinematics without a perception stack | Retained |
+| D-116 | Preserve all 105 native values and append 70 normalized risk values | Replace kinematics or use threshold flags | Retain full state while making interaction geometry explicit and learnable | Retained |
+| D-117 | Hold V3 training seed, budget, reward, PPO, and action settings fixed | Combine fusion with more training or multiple environments immediately | Isolate the observation representation as the causal change | Retained |
+| D-118 | Accept only the final 200K checkpoint for later screening | Select callback-best from noisy internal reward | M11 showed the original reward-selected checkpoint did not generalize | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Implemented and froze M14A physics-informed feature fusion and reproducible trainer controls | Give PPO continuous interaction-risk features without another hand-written override | Ruff, 114 tests, ten-step paired non-interference check, and 32-step `[175]` PPO smoke passed; all temporary artifacts removed | This implementation update |
+
+**Next action:** pull this implementation, pass the complete test gate, run only the frozen M14A training command, and commit its JSON summary while keeping the model local.

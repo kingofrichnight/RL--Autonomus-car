@@ -300,6 +300,14 @@ shields are rejected; higher mean minimum TTC did not imply fewer collisions.
 Future work should improve the learned base policy rather than tune another CPA
 or TTC override on consumed outcomes.
 
+M14 adds physics-informed feature-level sensor fusion for the next learned
+policy. It preserves all 105 normalized kinematic values and appends radar-like
+range/range-rate plus radial-TTC and closest-approach features for the 14
+traffic slots, producing a 175-value observation. These are deterministic
+features from HighwayEnv state, not real camera/LiDAR measurements. The first
+controlled training keeps V3 reward, traffic, actions, PPO hyperparameters,
+seed, and 200K budget fixed so only the observation changes.
+
 Record a trained episode:
 
 ```bash
