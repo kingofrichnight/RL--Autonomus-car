@@ -5872,3 +5872,177 @@ checkpoint, use new seeds, change fusion scales, or start another training run.
 | 2026-09-07 | Completed and accepted M14A training for one paired development evaluation | Validate the controlled 175-feature fusion policy before spending a holdout | Single-summary commit, summary/ZIP hashes, all training fields, checkpoint spaces/timesteps/hyperparameters/finiteness, and seed-7 inference independently verified | Result: `1d27c6c`; documentation: this update |
 
 **Next action:** pass the complete test gate, run only the frozen M14B command, and commit its two small outputs. Do not run a new holdout or another training job.
+
+
+---
+
+## 64. Milestone M14B result and M14C design — promising fusion with excess stalls
+
+**Experiment IDs:** E-M14B-FUSION-V1-DEV-S40042 and E-M14C-FUSION-V2-MULTIENV-S42
+
+**Status:** Fusion V1 failed one development gate and is rejected as-is; Fusion V2 training frozen
+
+**Date recorded:** 2026-09-07
+
+### 64.1 Artifact and protocol verification
+
+Commit `380d517` adds exactly the two required development artifacts:
+
+| Artifact | SHA-256 |
+|---|---|
+| `results/ppo_fusion_v1_development_seed40042.csv` | `1c54c4d36525bd84daf82c2773729aee3e4429c68db83d5ec67563b86605d632` |
+| `results/ppo_fusion_v1_development_seed40042.summary.json` | `ef286f04a0a7bca4d40059c2bd7baadbe6f33ac541cc8c0a926579a2a783b7da` |
+
+The CSV contains exactly 500 exclusive collision-first outcomes for consumed
+seeds 40042–40541. Its arithmetic matches the summary. The summary records the
+frozen Fusion V1 model SHA-256 `690d90d7...644e3`, configuration SHA-256
+`433e6972...fae69`, exact V3 reference CSV SHA-256
+`aab91174...a47fb4`, all five fixed fusion scales, 14 slots, five features per
+slot, no intent, and no shield. No protocol drift was found.
+
+The user reported completing Ruff and pytest before evaluation. The result
+files do not independently encode the console output.
+
+### 64.2 Aggregate result
+
+| Metric | V3 development reference | Fusion V1 | Fusion minus V3 |
+|---|---:|---:|---:|
+| Success | 294/500 = 58.8% | 315/500 = 63.0% | +4.2 pp |
+| Collision | 206/500 = 41.2% | 174/500 = 34.8% | -6.4 pp |
+| Incomplete | 0/500 = 0.0% | 11/500 = 2.2% | +2.2 pp |
+| Mean reward | 2.015837 | 2.816211 | +0.800374 |
+| Mean length | 37.934 | 41.668 | +3.734 decisions |
+| Mean travel time | 7.5868 s | 8.3336 s | +0.7468 s |
+| Mean minimum TTC | 0.600366 s | 0.628087 s | +0.027721 s |
+| Mean unsafe-TTC events | 16.116 | 16.486 | +0.370 |
+| Mean interventions | 0.000 | 0.000 | 0.000 |
+
+Fusion V1 is the first candidate in this record to exceed both the practical
+success and collision effect sizes with a favorable paired result, but its
+completion defect is real and prospectively disqualifying.
+
+### 64.3 Paired transition analysis
+
+The complete outcome transition matrix is:
+
+| V3 outcome | Fusion success | Fusion collision | Fusion incomplete |
+|---|---:|---:|---:|
+| Success | 280 | 12 | 2 |
+| Collision | 35 | 162 | 9 |
+| Incomplete | 0 | 0 | 0 |
+
+For binary success, Fusion V1 gains 35 successes and loses 14 across 49
+discordant episodes, a net gain of 21. The exact two-sided McNemar probability
+is `p = 0.003801654`. For collision, it removes 44 V3 collisions and introduces
+12, with exact `p = 0.000020877`. Both effects are favorable and statistically
+clear on this development set.
+
+Nine of the 11 incomplete episodes replace V3 collisions, while two replace V3
+successes. Every incomplete episode lasts 151 decisions / 30.2 seconds. Their
+minimum TTC values range from 0.757 to 3.024 seconds, so they are not a single
+near-collision edge case.
+
+A read-only replay of sampled incomplete seeds under the frozen candidate
+confirmed a stall mechanism. Seed 40181 chose 134 `IDLE`, 13 `SLOWER`, and four
+`FASTER` actions; seed 40382 chose 131 `IDLE`, 13 `SLOWER`, and seven `FASTER`.
+Both ended at speed 0 with zero motion during the last 20 decisions. These
+already-consumed replays produced no artifact and did not change the policy.
+
+### 64.4 Frozen development-gate decision
+
+| Gate | Required | Observed | Decision |
+|---|---:|---:|---|
+| Success | at least 60.8% | 63.0% | Passed |
+| Collision | at most 39.2% | 34.8% | Passed |
+| Incomplete | at most 2.0% | 2.2% | Failed |
+| Mean minimum TTC | at least 0.600366 s | 0.628087 s | Passed |
+| Favorable exact paired test | `p < 0.10` | `p = 0.003801654` | Passed |
+
+Four of five gates pass. The incomplete ceiling is missed by exactly one
+episode, but the gate was frozen and cannot be rounded or relaxed after the
+result. **Fusion V1 is rejected as-is and no untouched holdout is authorized.**
+It must not replace V3 or be described as an accepted improvement.
+
+The representation direction remains development-promising because both task
+effect sizes and paired tests passed strongly. The next controlled attempt may
+improve training robustness while keeping the fusion features and reward fixed;
+it may not tune feature scales on these outcomes.
+
+### 64.5 Frozen Fusion V2 training protocol
+
+Fusion V2 retains all M14A feature definitions, configuration, reward, action
+space, network, PPO coefficients, and seed-42 anchor. It changes the training
+data protocol and budget together as one predefined robustness package:
+
+| Property | Fusion V1 | Fusion V2 |
+|---|---:|---:|
+| Requested total steps | 200,000 | 500,000 |
+| Environments | 1 | 4 |
+| Initial environment seeds | `[42]` | `[42, 1042, 2042, 3042]` |
+| Per-environment `n_steps` | 1024 | 256 |
+| Total rollout size | 1024 | 1024 |
+| Batch size | 64 | 64 |
+| Learning rate | 0.0003 | 0.0003 |
+| Expected collected steps | 200,704 | 500,736 |
+| Internal evaluation | 50 every 10K; offset 70K | 100 every 25K; offset 80K |
+| Eligible checkpoint | final only | final only |
+
+Using four streams changes which experience enters a rollout while preserving
+the total rollout size and optimizer batch. The larger budget supplies 2.5
+times as much experience. These two training changes are intentionally bundled
+as a single development candidate; M14C cannot distinguish their individual
+effects.
+
+The output paths are:
+
+```text
+models/ppo_fusion_v2_multienv_seed42.zip
+results/ppo_fusion_v2_multienv_seed42.training.json
+```
+
+Keep the ZIP local and commit only the JSON. The final checkpoint is eligible
+for a development comparison only if the summary and local ZIP show the exact
+configuration/fusion settings, initial seeds, four environments, rollout 1024,
+500,736 collected steps, no intent/shield, finite parameters, and matching
+fingerprint. Callback-best and periodic checkpoints remain ineligible.
+
+### 64.6 Engineering verification and frozen command
+
+The four-environment trainer path passed a 32-total-step engineering smoke with
+fusion observation `[175]`, initial seeds `[7,1007,2007,3007]`, rollout size 32,
+and callback frequency correctly divided by four. All temporary checkpoint,
+summary, callback, and log artifacts were removed. The prior complete gate was
+Ruff clean with 114 tests passing.
+
+After pulling this record, rerun:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and neither output exists, run exactly:
+
+```powershell
+python -m scripts.train_ppo --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --timesteps 500000 --seed 42 --learning-rate 0.0003 --n-steps 256 --batch-size 64 --n-envs 4 --env-seed-stride 1000 --eval-seed-offset 80000 --eval-episodes 100 --evaluation-freq 25000 --checkpoint-freq 50000 --risk-fusion --fusion-neighbors 14 --fusion-range-scale 200.0 --fusion-relative-speed-scale 20.0 --fusion-ttc-scale 10.0 --fusion-cpa-horizon 5.0 --fusion-cpa-distance-scale 20.0 --summary-output results/ppo_fusion_v2_multienv_seed42.training.json --output models/ppo_fusion_v2_multienv_seed42 --refuse-overwrite
+```
+
+After training, stop. Commit only the training JSON regardless of completion or
+failure. Do not evaluate V2, substitute a checkpoint, change reward/features,
+run a shield, or reserve a new holdout until the final ZIP is audited.
+
+### 64.7 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-123 | Reject Fusion V1 as-is | Relax 2.0% incomplete ceiling to accept a strong aggregate | The precommitted completion gate failed at 2.2% | Retained |
+| D-124 | Preserve fusion as a promising development direction | Abandon fusion because one gate failed | Success +4.2 pp, collision -6.4 pp, and paired `p=0.00380` all passed | Retained |
+| D-125 | Keep feature scales and V3 reward fixed for Fusion V2 | Tune fusion thresholds or add a post-policy shield | Isolate training robustness without feedback-tuning the representation | Retained |
+| D-126 | Use four seed streams, rollout 1024, and 500K steps as one frozen training package | Select seed count or duration after another outcome | Increase experience diversity and budget prospectively | Retained |
+| D-127 | Continue to require the final checkpoint only | Inspect Fusion V1/V2 callback-best models | Avoid repeating M11 checkpoint-selection failure | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Completed M14B, rejected Fusion V1 as-is, and froze Fusion V2 multi-environment training | Preserve the one-episode gate failure while testing whether more diverse experience removes genuine stalls | Two-file scope/hashes, reference and fusion metadata, 500 rows, aggregate and 3-by-3 paired transitions, exact tests, all gates, sampled stall replays, and four-environment smoke verified | Result: `380d517`; documentation: this update |
+
+**Next action:** pass the complete test gate, run only the frozen Fusion V2 training command, and commit its training JSON while keeping all checkpoints local.
