@@ -27,8 +27,14 @@ def main() -> None:
     parser.add_argument("--config-sha256", default=None)
     parser.add_argument("--episodes", type=int, default=100)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--safety-shield", action="store_true")
+    shield_group = parser.add_mutually_exclusive_group()
+    shield_group.add_argument("--safety-shield", action="store_true")
+    shield_group.add_argument("--cpa-shield", action="store_true")
     parser.add_argument("--unsafe-ttc", type=float, default=2.0)
+    parser.add_argument("--cpa-time-threshold", type=float, default=2.0)
+    parser.add_argument("--cpa-distance-threshold", type=float, default=3.0)
+    parser.add_argument("--cpa-horizon", type=float, default=3.0)
+    parser.add_argument("--cpa-max-range", type=float, default=60.0)
     parser.add_argument("--intent-model", default=None)
     parser.add_argument("--intent-neighbors", type=int, default=5)
     parser.add_argument("--intent-history-length", type=int, default=None)
@@ -101,6 +107,11 @@ def main() -> None:
         config_path=args.config,
         seed=args.seed,
         safety_shield=args.safety_shield,
+        cpa_safety_shield=args.cpa_shield,
+        cpa_time_threshold=args.cpa_time_threshold,
+        cpa_distance_threshold=args.cpa_distance_threshold,
+        cpa_horizon=args.cpa_horizon,
+        cpa_max_range=args.cpa_max_range,
         intent_model=args.intent_model,
         intent_neighbors=args.intent_neighbors,
         intent_history_length=intent_history_length,
@@ -162,8 +173,23 @@ def main() -> None:
             "config_sha256": config_sha256,
             "first_seed": args.seed,
             "last_seed": args.seed + args.episodes - 1,
-            "safety_shield": args.safety_shield,
+            "safety_shield": bool(args.safety_shield or args.cpa_shield),
+            "safety_shield_type": (
+                "radial_ttc"
+                if args.safety_shield
+                else "cpa_acceleration_veto"
+                if args.cpa_shield
+                else None
+            ),
             "unsafe_ttc_threshold": args.unsafe_ttc,
+            "cpa_time_threshold": (
+                args.cpa_time_threshold if args.cpa_shield else None
+            ),
+            "cpa_distance_threshold": (
+                args.cpa_distance_threshold if args.cpa_shield else None
+            ),
+            "cpa_horizon": args.cpa_horizon if args.cpa_shield else None,
+            "cpa_max_range": args.cpa_max_range if args.cpa_shield else None,
             "intent_model_path": (
                 str(Path(args.intent_model)) if args.intent_model is not None else None
             ),

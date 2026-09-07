@@ -5082,3 +5082,114 @@ committed even if the first visible result is unfavorable.
 | 2026-09-07 | Completed M12A and froze the M12B mild CPA experiment | Test selective caution after the diagnostic passed its prospective feasibility rule | Single-result-file commit, SHA-256 and metadata, exact reference flag, 60-profile count, mechanical feasibility and ranking, and legacy-reference metrics independently verified | Result: `7dddf05`; documentation: this update |
 
 **Next action:** implement the mild CPA wrapper and evaluation metadata, add focused tests, then pass Ruff and the complete test suite. Do not evaluate seeds 40042–40541 until that implementation and the exact paired commands are recorded.
+
+
+---
+
+## 58. Milestone M12B implementation — mild CPA acceleration veto
+
+**Experiment ID:** E-M12B-V3-MILD-CPA-SHIELD-S40042
+
+**Status:** Implemented, verified, and frozen; paired evaluation pending
+
+**Date recorded:** 2026-09-07
+
+### 58.1 Implemented policy-path difference
+
+`CPAAccelerationShield` uses the same every-approach geometry as M12A. At each
+decision it computes all finite CPAs within 3.0 seconds for traffic initially
+within 60.0 metres. If and only if PPO proposes `FASTER` and at least one
+approach has CPA time at most 2.0 seconds and miss distance at most 3.0 metres,
+the wrapper executes `IDLE`. It does not alter `IDLE`, `SLOWER`, or any other
+action and carries no latch or hidden cautious state across decisions.
+
+The existing rejected radial-TTC wrapper remains available under its old
+`--safety-shield` flag for reproducibility. The evaluator exposes the new rule
+only under the mutually exclusive `--cpa-shield` flag, so the two shields cannot
+be combined. A CPA result summary records:
+
+- `safety_shield=true`;
+- `safety_shield_type="cpa_acceleration_veto"`;
+- CPA time, distance, horizon, and range values;
+- the unchanged PPO/configuration fingerprints and all existing protocol
+  metadata.
+
+Baseline summaries record `safety_shield=false`, no shield type, and null CPA
+parameters. Per-step wrapper information distinguishes proposed and executed
+actions, records whether a matching conflict existed, records its time and
+distance, and maintains the existing intervention count used by episode CSVs.
+
+### 58.2 Verification before holdout
+
+Focused tests cover the exact boundary match, `FASTER`-to-`IDLE` execution,
+non-intervention for `IDLE`, release on nonmatching geometry, intervention-rate
+accounting, invalid nonfinite/nonpositive parameters, and a time threshold
+beyond the CPA horizon. The environment factory rejects simultaneous TTC and
+CPA shields.
+
+The complete gate after implementation passed:
+
+```text
+ruff check: passed
+pytest: 96 passed in 4.75 s
+```
+
+A one-episode real-environment engineering smoke used already-consumed seed 7,
+the frozen V3/configuration hashes, and all frozen CPA values. It completed with
+success, no collision, 44 decisions, and exactly one intervention. Its summary
+correctly recorded `cpa_acceleration_veto` and all four parameters. This single
+episode is only an integration check and makes no performance claim. Both
+temporary smoke artifacts were deleted; no research result was overwritten and
+seeds 40042–40541 were not touched.
+
+### 58.3 Frozen execution protocol
+
+After pulling this implementation, run the complete gate:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and none of the four output paths exists, run both commands as
+one paired experiment. Do not stop or modify the second command after observing
+the first result.
+
+Baseline:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip --model-sha256 f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 40042 --unsafe-ttc 2.0 --output results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --refuse-overwrite
+```
+
+Mild CPA shield:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip --model-sha256 f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 40042 --unsafe-ttc 2.0 --cpa-shield --cpa-time-threshold 2.0 --cpa-distance-threshold 3.0 --cpa-horizon 3.0 --cpa-max-range 60.0 --output results/ppo_reward_v3_cpa_shield_holdout_seed40042.csv --refuse-overwrite
+```
+
+The required small result scope is exactly:
+
+```text
+results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv
+results/ppo_reward_v3_cpa_baseline_holdout_seed40042.summary.json
+results/ppo_reward_v3_cpa_shield_holdout_seed40042.csv
+results/ppo_reward_v3_cpa_shield_holdout_seed40042.summary.json
+```
+
+Commit all four together regardless of outcome. Do not commit the PPO ZIP,
+train anything, rerun either side, substitute seeds, add the emergency rule, or
+change a threshold after seeing results.
+
+### 58.4 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-099 | Implement the M12A-selected mild veto exactly | Add braking, a cooldown, intent, or another selected profile | Preserve a single interpretable intervention against V3 | Retained |
+| D-100 | Make old TTC and new CPA flags mutually exclusive and record a shield type | Reuse the ambiguous old boolean alone | Prevent accidental shield combination and result misclassification | Retained |
+| D-101 | Treat baseline and shield evaluations as one indivisible four-artifact experiment | Inspect baseline before deciding whether to run the shield | Preserve the precommitted paired design | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Implemented and froze the M12B mild CPA shield and paired commands | Causally test the selective M12A association without global braking | Ruff passed, 96 tests passed, and a seed-7 real-environment smoke verified one intervention and complete metadata | This implementation update |
+
+**Next action:** pull this implementation, pass the complete test gate, run both frozen evaluations exactly once, and commit all four small artifacts together. Keep the model local.

@@ -11,7 +11,7 @@ from safeintent_rl.config import load_config, split_env_config
 from safeintent_rl.envs.driver_behavior import DriverBehaviorWrapper
 from safeintent_rl.envs.reward import RouteProgressRewardWrapper
 from safeintent_rl.intent.wrapper import IntentObservationWrapper
-from safeintent_rl.safety.shield import TTCSafetyShield
+from safeintent_rl.safety.shield import CPAAccelerationShield, TTCSafetyShield
 
 FALLBACK_INTERSECTION_IDS = ("intersection-v2", "intersection-v1", "intersection-v0")
 
@@ -34,6 +34,11 @@ def make_intersection_env(
     driver_behaviors: bool = True,
     safety_shield: bool = False,
     ttc_threshold: float = 2.0,
+    cpa_safety_shield: bool = False,
+    cpa_time_threshold: float = 2.0,
+    cpa_distance_threshold: float = 3.0,
+    cpa_horizon: float = 3.0,
+    cpa_max_range: float = 60.0,
     intent_model: str | Path | None = None,
     intent_neighbors: int = 5,
     intent_device: str = "cpu",
@@ -44,6 +49,9 @@ def make_intersection_env(
     intent_history_tracking_neighbors: int | None = None,
 ) -> gym.Env:
     """Create the project's intersection environment with optional research wrappers."""
+    if safety_shield and cpa_safety_shield:
+        raise ValueError("TTC and CPA safety shields cannot be combined")
+
     loaded = load_config(config_path)
     reward_wrapper_config = loaded.pop("reward_wrapper", None)
     preferred_id, env_config = split_env_config(loaded)
@@ -72,6 +80,14 @@ def make_intersection_env(
         )
     if safety_shield:
         env = TTCSafetyShield(env, ttc_threshold=ttc_threshold)
+    if cpa_safety_shield:
+        env = CPAAccelerationShield(
+            env,
+            time_threshold=cpa_time_threshold,
+            distance_threshold=cpa_distance_threshold,
+            horizon=cpa_horizon,
+            max_range=cpa_max_range,
+        )
     if seed is not None:
         env.reset(seed=seed)
     return env
