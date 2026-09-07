@@ -4615,3 +4615,114 @@ Both failed attempts stopped at temporary-fixture setup and produced no experime
 | 2026-09-07 | Centralized collision detection and made success collision-free prospectively | Prevent a crashed arrival from being counted as a policy success | Ruff passed; full suite passed with 84 tests after two recorded sandbox temp-directory failures | This implementation update |
 
 **Next action:** design and append a non-interventional post-M10 diagnostic or a new controlled intervention before running any more training or evaluation. Do not tune on or reuse seeds 20042–20541, do not rerun M10, and do not combine the rejected shield or V2 policy without a newly frozen protocol.
+
+
+---
+
+## 54. Milestone M11 design — prospective V3 checkpoint selection
+
+**Experiment ID:** E-M11-V3-BEST120K-VS-FINAL200K-S42
+
+**Status:** Designed and frozen; paired evaluation pending
+
+**Date recorded:** 2026-09-07
+
+**Research role:** determine whether the automatically selected validation-reward checkpoint from the original V3 training run improves success relative to that run's final checkpoint
+
+### 54.1 Motivation and controlled intervention
+
+M10 showed that improved intent availability did not produce the required driving improvement. Before changing the reward, observation, PPO algorithm, traffic, or safety mechanism again, M11 tests a simpler hypothesis already suggested by the original V3 training trace: the final training state may not be the strongest state produced by the run.
+
+The original V3 `EvalCallback` evaluated 20 deterministic episodes every 10,000 training steps and automatically saved a new checkpoint only when mean validation reward improved. Its maximum recorded mean reward was 4.655 at 120,000 steps; the final 200,000-step evaluation recorded 2.035. The callback therefore saved the 120K policy as `logs/ppo_reward_v3_seed42/best/best_model.zip`. This checkpoint existed before M10's results and was selected mechanically by the original callback, not by searching the new holdout.
+
+M11 changes only the evaluated checkpoint within the same original training run:
+
+| Property | Baseline | Candidate |
+|---|---|---|
+| Policy | V3 final checkpoint | V3 callback-best checkpoint |
+| Stored timesteps | 200,704 | 120,000 |
+| Training seed | 42 | 42 |
+| Reward/configuration | V3 | V3 |
+| Observation | Native `Box(15, 7)` | Native `Box(15, 7)` |
+| Action space | Discrete, 3 actions | Discrete, 3 actions |
+| Intent features | None | None |
+| Safety shield | Disabled | Disabled |
+
+No new PPO training occurs. The hypothesis is checkpoint-selection feasibility, not a claim that fewer training steps are generally superior.
+
+### 54.2 Checkpoint audit
+
+| Property | V3 final baseline | V3 120K candidate |
+|---|---|---|
+| Path | `models/ppo_reward_v3_seed42.zip` | `logs/ppo_reward_v3_seed42/best/best_model.zip` |
+| SHA-256 | `f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c` | `3e7cff6c846ac75dc383bce45f2ab2d82234956423f8eb4f6ff7c4c47d05f0d9` |
+| Stored timesteps | 200,704 | 120,000 |
+| Learning rate | 0.0003 | 0.0003 |
+| PPO rollout steps | 1,024 | 1,024 |
+| Batch size | 64 | 64 |
+| Gamma / GAE lambda | 0.99 / 0.95 | 0.99 / 0.95 |
+| Entropy coefficient | 0.01 | 0.01 |
+| Policy network | `[256, 256]` | `[256, 256]` |
+| Parameter count | 186,884 | 186,884 |
+| Parameters finite | Yes | Yes |
+
+Both checkpoints and `configs/intersection_reward_v3.yaml` were independently loaded or hashed before this protocol was frozen. The configuration SHA-256 remains `433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69`.
+
+The 120K candidate may not be replaced by a different periodic checkpoint after any M11 result is observed. Testing every stored checkpoint and reporting the maximum would create an unregistered multiple-comparison search.
+
+### 54.3 Frozen paired holdout and gates
+
+Seeds **30042–30541** are newly reserved for exactly 500 paired episodes per checkpoint. They do not appear in the preceding research record. Both policies use deterministic actions, the unchanged V3 configuration, no intent model, no safety shield, and the 2.0-second unsafe-TTC reporting threshold. The collision-first success definition introduced after M10 applies equally to both sides.
+
+M11 accepts the 120K candidate only if all conditions hold relative to the newly measured 200K baseline:
+
+1. candidate success is at least 3.0 percentage points higher;
+2. candidate collision is at least 3.0 percentage points lower;
+3. candidate incomplete non-collision episodes are at most 2.0%;
+4. candidate mean minimum TTC is at least the paired baseline value;
+5. the paired success change is favorable with exact two-sided McNemar `p < 0.05`.
+
+These are the same effect-size, completion, TTC, and significance rules used for M10. Mean reward and travel time are descriptive. If any gate fails, the 120K candidate is rejected and the 200K V3 checkpoint remains current best. A result near 64% success would meet the practical success target only if the paired baseline remains near its historical 60–61% range; no success percentage is guaranteed before evaluation.
+
+### 54.4 Pre-run verification and frozen commands
+
+The repository passed `git diff --check`, Ruff, and all 84 tests immediately before this design was recorded. After pulling this protocol, rerun:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and none of the four new outputs exists, run both evaluations as one experiment:
+
+```powershell
+python -m scripts.evaluate_policy --model models/ppo_reward_v3_seed42.zip --model-sha256 f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 30042 --unsafe-ttc 2.0 --output results/ppo_reward_v3_final200k_seed30042.csv --refuse-overwrite
+
+python -m scripts.evaluate_policy --model logs/ppo_reward_v3_seed42/best/best_model.zip --model-sha256 3e7cff6c846ac75dc383bce45f2ab2d82234956423f8eb4f6ff7c4c47d05f0d9 --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 30042 --unsafe-ttc 2.0 --output results/ppo_reward_v3_best120k_seed30042.csv --refuse-overwrite
+```
+
+Expected versionable outputs:
+
+```text
+results/ppo_reward_v3_final200k_seed30042.csv
+results/ppo_reward_v3_final200k_seed30042.summary.json
+results/ppo_reward_v3_best120k_seed30042.csv
+results/ppo_reward_v3_best120k_seed30042.summary.json
+```
+
+Commit the four files together regardless of outcome. Keep both ZIP files local. Do not stop after the first result, rerun either output, test another stored checkpoint, or change the order, seeds, hashes, configuration, TTC reporting threshold, or evaluation code.
+
+### 54.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-081 | Test the original automatically selected V3 120K checkpoint before new training | Immediately change reward, PPO budget, architecture, intent, or shield | Original validation reward peaked at 120K, while final-checkpoint reward was lower | Retained |
+| D-082 | Compare only the automatic best checkpoint with the frozen final checkpoint | Scan all periodic checkpoints | Avoid a post-result multiple-comparison search | Retained |
+| D-083 | Reserve seeds 30042–30541 for the corrected paired comparison | Reuse consumed seeds 10042–10541 or 20042–20541 | Preserve a clean evaluation after the prospective outcome-definition fix | Retained |
+| D-084 | Reuse the five M10 acceptance gates | Lower the threshold to accept a small gain | Require a practically meaningful, safe, and statistically supported improvement | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Audited and froze M11 V3 checkpoint-selection experiment | Seek a higher-success policy before adding another algorithmic or reward confound | Candidate hash, timesteps, spaces, PPO settings, architecture, parameter count/finiteness, original validation trace, unused seeds, and 84-test baseline verified | This design update |
+
+**Next action:** pull this design, rerun Ruff and all tests, execute both frozen M11 evaluations exactly once, and commit all four small result artifacts. Do not train a new model yet.
