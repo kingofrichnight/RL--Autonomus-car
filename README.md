@@ -265,13 +265,14 @@ future evaluations from counting a crashed arrival as a success. See
 rerun M10 or compare later evaluations that use the revised outcome rule
 directly against the earlier summaries.
 
-M11 now tests whether V3's automatically selected 120K validation checkpoint
-is better than its frozen 200K final checkpoint. This is a checkpoint-selection
-experiment, not new training: reward, PPO settings, observation, actions,
-intent, and shield all remain unchanged. After pulling the frozen protocol and
-passing Ruff and pytest, run both hash-pinned evaluations on the new paired
-seeds 30042–30541. Do not evaluate other intermediate checkpoints or run only
-one side of the pair.
+M11 tested V3's automatically selected 120K validation checkpoint against the
+frozen 200K final checkpoint. The 120K policy was worse: 57.6% success and 42.4%
+collision versus 60.8% and 39.2%. It produced 23 paired rescues but 39 paired
+regressions (`p = 0.0559`, unfavorable), so it is rejected. Validation reward
+over only 20 episodes was not a reliable success-selection rule. The 200K V3
+checkpoint remains current best. The next safety direction is a
+non-interventional conflict diagnostic followed by selectively targeted
+caution, not another global waiting penalty or blanket TTC shield.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.

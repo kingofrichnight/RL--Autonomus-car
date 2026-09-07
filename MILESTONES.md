@@ -4726,3 +4726,102 @@ Commit the four files together regardless of outcome. Keep both ZIP files local.
 | 2026-09-07 | Audited and froze M11 V3 checkpoint-selection experiment | Seek a higher-success policy before adding another algorithmic or reward confound | Candidate hash, timesteps, spaces, PPO settings, architecture, parameter count/finiteness, original validation trace, unused seeds, and 84-test baseline verified | This design update |
 
 **Next action:** pull this design, rerun Ruff and all tests, execute both frozen M11 evaluations exactly once, and commit all four small result artifacts. Do not train a new model yet.
+
+
+---
+
+## 55. Milestone M11 result — prospective V3 checkpoint selection
+
+**Experiment ID:** E-M11-V3-BEST120K-VS-FINAL200K-S42
+
+**Status:** Complete; 120K checkpoint rejected
+
+**Date recorded:** 2026-09-07
+
+**Result commit:** [`992afdc`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/992afdc67287ab1a1d1afb64cbf852a59e697e23)
+
+### 55.1 Artifact and protocol audit
+
+The result commit follows the frozen M11 design directly and contains exactly the two 500-row CSVs and their two summaries. No source, configuration, checkpoint, or unrelated result changed.
+
+| Artifact | SHA-256 |
+|---|---|
+| `results/ppo_reward_v3_final200k_seed30042.csv` | `fa36efa8afb82745a3652c60504d07d3cf054496b7fea74933ee51e67eab60de` |
+| `results/ppo_reward_v3_final200k_seed30042.summary.json` | `520bfcb14d5ba93b014e246db1c923674894d0c17f37d3972bb9f4909101a837` |
+| `results/ppo_reward_v3_best120k_seed30042.csv` | `055a203af42d5f299ff9d757e92e8995ed943cb83796261f51d4712011c68951` |
+| `results/ppo_reward_v3_best120k_seed30042.summary.json` | `afc390d237769e58c1dafbc3df2ac1c7d0e53cecf4408c5b96967ba554565ce8` |
+
+Both summaries record seeds 30042–30541, the frozen V3 configuration SHA-256 `433e6972...fae69`, no intent model, no shield, and the 2.0-second unsafe-TTC reporting threshold. The baseline hash is `f46964bf...706c`; the sole candidate hash is `3e7cff6c...f0d9`. The new collision-first outcome definition was applied to both. All 1,000 rows are mutually exclusive: every episode is either success or collision, with no overlap and no incomplete row.
+
+### 55.2 Aggregate result
+
+| Metric | V3 final 200K | V3 automatic-best 120K | Candidate minus baseline |
+|---|---:|---:|---:|
+| Episodes | 500 | 500 | 0 |
+| Mean reward | 2.272665 | 1.718763 | -0.553901 |
+| Mean episode length | 38.404 | 39.084 | +0.680 |
+| Success rate | 60.8% | 57.6% | -3.2 pp |
+| Collision rate | 39.2% | 42.4% | +3.2 pp |
+| Incomplete non-collision rate | 0.0% | 0.0% | 0.0 pp |
+| Mean travel time | 7.6808 s | 7.8168 s | +0.1360 s |
+| Mean minimum TTC | 0.612142 s | 0.611624 s | -0.000518 s |
+| Mean unsafe-TTC events | 16.132 | 16.324 | +0.192 |
+| Mean safety interventions | 0.0 | 0.0 | 0.0 |
+
+The candidate is worse on success, collision, reward, travel time, minimum TTC, and unsafe-event count. Its only neutral result is completion.
+
+### 55.3 Paired success test
+
+| Final 200K success | Candidate 120K success | Episodes |
+|---:|---:|---:|
+| True | True | 265 |
+| True | False | 39 |
+| False | True | 23 |
+| False | False | 173 |
+
+There are 62 discordant pairs. The candidate rescues 23 baseline failures but regresses 39 baseline successes, a net loss of 16 successes. The exact two-sided McNemar probability is
+
+$$
+p = 2\sum_{k=0}^{23}{62 \choose k}(0.5)^{62}=0.055897.
+$$
+
+The result is close to 0.05 only in the unfavorable direction. It cannot satisfy the prospectively required favorable paired test.
+
+### 55.4 Gate decision and interpretation
+
+| Gate | Required | Observed | Decision |
+|---|---:|---:|---|
+| Success improvement | at least +3.0 pp | -3.2 pp | Failed |
+| Collision reduction | at least -3.0 pp | +3.2 pp | Failed |
+| Candidate incomplete rate | at most 2.0% | 0.0% | Passed |
+| Mean minimum TTC | candidate at least baseline | 0.611624 < 0.612142 s | Failed |
+| Favorable exact paired test | `p < 0.05` | unfavorable; `p = 0.055897` | Failed |
+
+Only one of five gates passes. **The automatic-best 120K checkpoint is rejected.** The original 20-episode validation-reward maximum did not generalize to higher success on the independent paired holdout. The final 200K V3 checkpoint remains the current best accepted policy at SHA-256 `f46964bf...706c`.
+
+No other periodic checkpoint may now be scanned or substituted under M11. Seeds 30042–30541 are consumed. This result does not show that 200K is universally optimal; it shows that the original automatic 120K reward-selected candidate is not a successful replacement.
+
+The clean collision-first baseline also independently reproduced V3 at 60.8% success, close to its prior holdouts. This reinforces that the approximately 60–61% success level is stable enough to require an actual intervention rather than checkpoint cherry-picking.
+
+### 55.5 Direction after M11
+
+Global caution remains rejected by existing evidence: V4 introduced conservative waiting and the 2.0-second radial-TTC shield produced 28.6% incomplete episodes. M11 also rules out recovering a higher-success policy merely by substituting the original callback-best checkpoint.
+
+The next safety work must therefore be **selective caution**. Before implementing an intervention, a non-interventional diagnostic should replay the accepted V3 policy on already consumed development seeds and measure action-conditioned intersection conflict geometry. Its purpose is to distinguish true projected crossing conflicts from low radial TTC caused by non-conflicting or clearing traffic. Thresholds and anti-deadlock behavior must be frozen from development diagnostics before any new paired holdout is reserved or evaluated.
+
+No new training, safety shield evaluation, or untouched holdout is authorized by this result section.
+
+### 55.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-085 | Reject the V3 automatic-best 120K checkpoint | Promote it from the original validation reward | 57.6% success and 42.4% collision; four of five gates failed | Retained |
+| D-086 | Retain final 200K V3 as current best | Scan other stored checkpoints after seeing M11 | Final V3 beat the only prospectively selected candidate by 3.2 success points | Retained |
+| D-087 | Consume seeds 30042–30541 and forbid checkpoint scanning on them | Use them to choose another training step | Prevent post-holdout multiple comparisons | Retained |
+| D-088 | Develop action-conditioned selective caution next | Increase global caution or reuse the 2.0-second shield | Prior global caution caused waiting/incompletion; M11 shows checkpoint choice is insufficient | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Completed and rejected M11 automatic V3 checkpoint selection | Test whether the original validation-reward checkpoint improved success without retraining | Four-file scope, four hashes, frozen metadata, 1,000 exclusive episode outcomes, aggregate metrics, paired table, exact McNemar test, and all five gates independently verified | Result: `992afdc`; documentation: this update |
+
+**Next action:** implement and freeze a non-interventional, action-conditioned conflict diagnostic on already consumed development seeds before designing a selective-caution shield. Do not train or evaluate a new safety intervention yet.
