@@ -286,11 +286,12 @@ the stronger emergency-braking rule remains deferred.
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.
 
-The separate M12B mild CPA shield is enabled with `--cpa-shield`. Its frozen
-research thresholds are 2.0 s CPA time, 3.0 m miss distance, a 3.0 s horizon,
-and 60.0 m range. It changes only matching `FASTER` proposals to `IDLE`; it is
-not the rejected radial-TTC shield. See `MILESTONES.md` for the reserved paired
-evaluation commands and do not tune these values on the holdout.
+The separate M12B mild CPA shield was also rejected. Its selective
+`FASTER`-to-`IDLE` veto produced 58.6% success and 41.4% collision versus the
+paired V3 baseline's 58.8% and 41.2%. It avoided incomplete episodes but changed
+only one paired terminal outcome despite 1,489 recorded vetoes. V3 therefore
+remains current best. The next development step must test causal action potency
+on consumed seeds before spending another untouched holdout.
 
 Record a trained episode:
 

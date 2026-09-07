@@ -5193,3 +5193,143 @@ change a threshold after seeing results.
 | 2026-09-07 | Implemented and froze the M12B mild CPA shield and paired commands | Causally test the selective M12A association without global braking | Ruff passed, 96 tests passed, and a seed-7 real-environment smoke verified one intervention and complete metadata | This implementation update |
 
 **Next action:** pull this implementation, pass the complete test gate, run both frozen evaluations exactly once, and commit all four small artifacts together. Keep the model local.
+
+
+---
+
+## 59. Milestone M12B result — mild CPA veto rejected
+
+**Experiment ID:** E-M12B-V3-MILD-CPA-SHIELD-S40042
+
+**Status:** Completed; rejected as an improvement
+
+**Date recorded:** 2026-09-07
+
+### 59.1 Artifact scope and protocol integrity
+
+Commit `15b7c8f` adds exactly the four required artifacts and no other file:
+
+| Artifact | SHA-256 |
+|---|---|
+| `results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv` | `aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4` |
+| `results/ppo_reward_v3_cpa_baseline_holdout_seed40042.summary.json` | `51fe8e4aa86f62b2bbb5b66a7e8979655305e3a03ad571ca631d40828c7556a1` |
+| `results/ppo_reward_v3_cpa_shield_holdout_seed40042.csv` | `18a997fd0bca8bd3a724019240d755d56ab3b53a1718fd1812f2aebe890a41ff` |
+| `results/ppo_reward_v3_cpa_shield_holdout_seed40042.summary.json` | `f234962ede4d871db94972c87cd6a932bdb326562f54ca68857803c3e9289bbd` |
+
+Both CSVs contain exactly 500 exclusive collision-first outcomes for ordered
+seeds 40042–40541. Both summaries match their CSV arithmetic and record the
+same deterministic V3 checkpoint SHA-256 `f46964bf...706c`, configuration
+SHA-256 `433e6972...fae69`, no intent model, and unsafe-TTC reporting threshold
+2.0 seconds. The baseline records no shield. The candidate records
+`cpa_acceleration_veto` with time 2.0 s, miss distance 3.0 m, horizon 3.0 s,
+and range 60.0 m. No seed, checkpoint, configuration, or protocol drift was
+found.
+
+The user reported completing the required Ruff and pytest gate before the
+paired run. The result artifacts do not independently encode that console
+output.
+
+### 59.2 Aggregate result
+
+| Metric | Paired V3 baseline | Mild CPA shield | Shield minus baseline |
+|---|---:|---:|---:|
+| Success | 294/500 = 58.8% | 293/500 = 58.6% | -0.2 pp |
+| Collision | 206/500 = 41.2% | 207/500 = 41.4% | +0.2 pp |
+| Incomplete | 0/500 = 0.0% | 0/500 = 0.0% | 0.0 pp |
+| Mean reward | 2.015837 | 1.978920 | -0.036917 |
+| Mean length | 37.934 | 37.958 | +0.024 decisions |
+| Mean travel time | 7.5868 s | 7.5916 s | +0.0048 s |
+| Mean minimum TTC | 0.600366 s | 0.603559 s | +0.003193 s |
+| Mean unsafe-TTC events | 16.116 | 16.120 | +0.004 |
+| Mean interventions | 0.000 | 2.978 | +2.978 |
+
+The shield made 1,489 recorded interventions across 18,979 decisions, a 7.8455%
+decision intervention rate. It intervened in 361/500 episodes and at most 11
+times in one episode. There were 705 interventions among shield-success
+episodes and 784 among shield-collision episodes. Zero incompletions confirm
+that the mild rule avoided the old shield's waiting failure, but it did not
+convert that restraint into better terminal outcomes.
+
+### 59.3 Paired outcome analysis
+
+| V3 baseline success | Mild shield success | Episodes |
+|---|---|---:|
+| True | True | 293 |
+| True | False | 1 |
+| False | True | 0 |
+| False | False | 206 |
+
+Only one success-discordant pair exists. The shield rescued no V3 failures and
+regressed one V3 success, so the exact two-sided McNemar probability is 1.0.
+Collision transitions are the inverse: 206 episodes collide under both, zero
+baseline-only collisions occur, and one shield-only collision occurs. Its exact
+two-sided probability is also 1.0.
+
+The sole terminal change is seed 40379. V3 succeeded in 9.0 s with reward
+8.656246; the shield made six vetoes and collided after 5.8 s with reward
+-8.115289. Its minimum TTC increased from 0.569823 to 1.063304 s, demonstrating
+that a higher mean or episode minimum TTC cannot substitute for a collision
+outcome gate.
+
+Only 19/500 episodes changed any recorded reward, length, travel-time,
+minimum-TTC, or unsafe-event metric even though 361 episodes recorded at least
+one veto. HighwayEnv clips `FASTER` at the maximum discrete speed index, so a
+`FASTER` proposal and `IDLE` can have identical low-level consequences when the
+ego is already saturated. The present artifacts do not record speed index at
+each veto, so saturation is a source-supported explanation rather than a
+measured attribution. The key empirical result is still unambiguous: this veto
+had almost no causal terminal effect.
+
+### 59.4 Precommitted gate decision
+
+| Gate | Required | Observed | Decision |
+|---|---:|---:|---|
+| Success improvement | at least +3.0 pp | -0.2 pp | Failed |
+| Collision reduction | at least -3.0 pp | +0.2 pp | Failed |
+| Candidate incomplete rate | at most 2.0% | 0.0% | Passed |
+| Mean minimum TTC | candidate at least baseline | 0.603559 > 0.600366 s | Passed |
+| Favorable exact paired test | `p < 0.05` | unfavorable; `p = 1.0` | Failed |
+
+Only two of five gates pass. **The mild CPA acceleration veto is rejected as an
+improvement.** It must not replace final 200K V3, and its favorable minimum-TTC
+change must not be reported as a safety improvement while collision increased.
+V3 remains the current best accepted policy.
+
+Seeds 40042–40541 are now consumed. Neither the CPA thresholds nor the action
+replacement may be tuned and then claimed on this block as final evidence.
+
+### 59.5 Direction after M12B
+
+M12A found a strong terminal association, but M12B showed that neutralizing a
+`FASTER` proposal is usually not a causally potent control change in this
+environment. Immediately deploying the M12A emergency rule would confound two
+changes—expanding the action scope to `IDLE` and replacing actions with
+`SLOWER`—while revisiting the conservative behavior already seen with the old
+shield.
+
+The next step should therefore be a single **development-only selective-braking
+screen** on consumed seeds. Keep the selected CPA geometry and `FASTER_ONLY`
+scope fixed, change only the executed override from `IDLE` to `SLOWER`, and bind
+the run to the committed paired V3 baseline. This isolates action potency while
+remaining narrower than the rejected `FASTER_OR_IDLE` radial-TTC shield. It may
+decide whether another untouched holdout is worth spending, but cannot itself
+establish a final improvement.
+
+Before that run, the implementation, exact reference hash, output path, and
+development feasibility gates must be recorded. No new holdout is reserved by
+this result.
+
+### 59.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-102 | Reject the M12B mild CPA veto and retain V3 | Promote it for slightly higher mean minimum TTC | Success fell, collision rose, and three of five gates failed | Retained |
+| D-103 | Treat 1,489 vetoes as recorded interventions, not 1,489 effective control changes | Infer causal potency from wrapper counts | Only 19 episodes changed any reported trajectory metric and one changed terminal outcome | Retained |
+| D-104 | Diagnose a `FASTER_ONLY` selective-braking override on consumed seeds next | Add the full emergency action scope or spend a new holdout immediately | Isolate stronger action potency without reintroducing broad idle-action braking | Retained |
+| D-105 | Consume seeds 40042–40541 | Retune and reclaim them as untouched | Their paired outcomes directly determined the M12B rejection and next direction | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Completed and rejected M12B mild CPA veto | Test whether selective neutralization improves V3 without conservative waiting | Four-file scope and hashes, 1,000 rows, metadata, aggregate arithmetic, intervention counts, paired transitions, exact tests, and all five gates independently verified | Result: `15b7c8f`; documentation: this update |
+
+**Next action:** implement and freeze one development-only `FASTER`-to-`SLOWER` CPA screen bound to the committed seed-40042 V3 baseline. Do not reserve or evaluate another untouched holdout yet.
