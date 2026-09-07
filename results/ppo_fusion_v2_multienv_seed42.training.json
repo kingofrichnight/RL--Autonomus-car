@@ -1,0 +1,60 @@
+{
+  "algorithm": "PPO",
+  "config_path": "configs\\intersection_reward_v3.yaml",
+  "config_sha256": "433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69",
+  "training_seed": 42,
+  "internal_evaluation_seed_offset": 80000,
+  "timesteps_requested": 500000,
+  "timesteps_collected": 500736,
+  "learning_rate": 0.0003,
+  "n_steps": 256,
+  "batch_size": 64,
+  "n_envs": 4,
+  "env_seed_stride": 1000,
+  "training_seed_offsets": [
+    0,
+    1000,
+    2000,
+    3000
+  ],
+  "training_initial_seeds": [
+    42,
+    1042,
+    2042,
+    3042
+  ],
+  "rollout_size": 1024,
+  "eval_episodes": 100,
+  "evaluation_freq_timesteps": 25000,
+  "evaluation_callback_frequency": 6250,
+  "checkpoint_freq_timesteps": 50000,
+  "checkpoint_callback_frequency": 12500,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "ent_coef": 0.01,
+  "policy_network": [
+    256,
+    256
+  ],
+  "observation_shape": [
+    175
+  ],
+  "safety_shield": false,
+  "ttc_threshold": 2.0,
+  "risk_fusion": true,
+  "fusion_neighbors": 14,
+  "fusion_features_per_neighbor": 5,
+  "fusion_range_scale": 200.0,
+  "fusion_relative_speed_scale": 20.0,
+  "fusion_ttc_scale": 10.0,
+  "fusion_cpa_horizon": 5.0,
+  "fusion_cpa_distance_scale": 20.0,
+  "intent_model_path": null,
+  "intent_model_sha256": null,
+  "intent_neighbors": 0,
+  "intent_history_length": null,
+  "intent_history_tracking_neighbors": null,
+  "intent_device": null,
+  "model_path": "models\\ppo_fusion_v2_multienv_seed42.zip",
+  "model_sha256": "7253cf4a64785bd9d851bf91dbe3c5c2b96d159910d238f0eb5640fea7cb38b9"
+}
