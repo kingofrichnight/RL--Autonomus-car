@@ -4825,3 +4825,135 @@ No new training, safety shield evaluation, or untouched holdout is authorized by
 | 2026-09-07 | Completed and rejected M11 automatic V3 checkpoint selection | Test whether the original validation-reward checkpoint improved success without retraining | Four-file scope, four hashes, frozen metadata, 1,000 exclusive episode outcomes, aggregate metrics, paired table, exact McNemar test, and all five gates independently verified | Result: `992afdc`; documentation: this update |
 
 **Next action:** implement and freeze a non-interventional, action-conditioned conflict diagnostic on already consumed development seeds before designing a selective-caution shield. Do not train or evaluate a new safety intervention yet.
+
+
+---
+
+## 56. Milestone M12A design — action-conditioned conflict diagnostic
+
+**Experiment ID:** E-M12A-V3-CPA-CONFLICT-DIAGNOSTIC-S10042
+
+**Status:** Implemented and frozen; non-interventional diagnostic pending
+
+**Date recorded:** 2026-09-07
+
+**Research role:** identify selective conflict rules that cover collision episodes without imposing the broad intervention burden that caused TTC-shield deadlock
+
+### 56.1 Scope and causal boundary
+
+M12A is a development diagnostic, not a policy evaluation and not a safety result. It replays the accepted final V3 checkpoint on the already-consumed seeds 10042–10541. The PPO action is sent to the environment unchanged at every decision. No reward, observation, traffic, action, model, intent feature, or shield changes.
+
+The run must reproduce `results/ppo_reward_v3_holdout_seed10042.csv` exactly before its conflict profiles are accepted. That reference predates the collision-first correction, but its 500 rows contain 298 success-only and 202 collision-only outcomes with no overlap or incompletion; the prospective correction therefore does not alter any reference row.
+
+Frozen provenance:
+
+| Property | Value |
+|---|---|
+| PPO checkpoint | `models/ppo_reward_v3_seed42.zip` |
+| PPO SHA-256 | `f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c` |
+| Configuration | `configs/intersection_reward_v3.yaml` |
+| Configuration SHA-256 | `433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69` |
+| Reference episode CSV | `results/ppo_reward_v3_holdout_seed10042.csv` |
+| Reference SHA-256 | `642a0a34841f6bc351acd573b5c057a95c53ddcc2348553de1f10adee0286c09` |
+| Episodes / seeds | 500 / 10042–10541 |
+| Policy | Deterministic V3; no intent; no shield |
+| Unsafe-TTC reporting threshold | 2.0 s |
+| Output | `results/ppo_reward_v3_conflict_diagnostics_seed10042.json` |
+
+Seeds 10042–10541 were already consumed by M5–M9 and remain development-only. The diagnostic cannot support a final performance claim.
+
+### 56.2 Closest-approach geometry
+
+For relative position $r=p_{other}-p_{ego}$ and relative velocity $v=v_{other}-v_{ego}$, constant-velocity time to closest approach is
+
+$$
+t_{CPA}=-\frac{r\cdot v}{v\cdot v}.
+$$
+
+For finite $t_{CPA}$ within the three-second horizon, predicted miss distance is
+
+$$
+d_{CPA}=\lVert r+v t_{CPA}\rVert_2.
+$$
+
+Stationary relative motion, a closest approach in the past, or a closest approach beyond the horizon is excluded. Traffic currently beyond 60 metres is excluded. Every finite nearby vehicle approach is retained. A decision matches a threshold pair if **any** retained vehicle has both $t_{CPA}$ and $d_{CPA}$ at or below that pair.
+
+This is more selective than the rejected radial-TTC rule, which reacts to closing distance without requiring a small projected miss distance. It is still a constant-velocity diagnostic, not proof that an override would prevent a collision.
+
+### 56.3 Frozen profile grid and windows
+
+The diagnostic profiles two proposed-action scopes:
+
+1. `FASTER_ONLY`, representing a mild caution veto that could replace acceleration with `IDLE`;
+2. `FASTER_OR_IDLE`, representing an emergency scope that could replace acceleration or maintained speed with `SLOWER`.
+
+Each scope is crossed with five CPA time thresholds and six miss-distance thresholds:
+
+```text
+time thresholds (s):     0.50, 0.75, 1.00, 1.50, 2.00
+distance thresholds (m): 1.50, 2.00, 2.50, 3.00, 4.00, 5.00
+```
+
+This produces 60 fixed profiles. Every profile reports decision triggers and episode-level trigger coverage over the complete episode, final one second, and final two seconds. Reports separate collision-episode coverage from success-episode burden. The old 2.0-second `FASTER_OR_IDLE` radial-TTC rule is profiled as a fixed reference.
+
+These labels measure association with final episode outcome, not counterfactual benefit. No reported trigger is called a prevented collision.
+
+### 56.4 Development feasibility rule
+
+For mild caution, inspect `FASTER_ONLY` in the final-two-second window. For emergency braking, inspect `FASTER_OR_IDLE` in the final-one-second window. A profile is development-feasible only if all hold:
+
+1. at least 50% of collision episodes contain a trigger in the applicable window;
+2. no more than 30% of success episodes contain a trigger in that window;
+3. collision coverage minus success burden is at least 25 percentage points.
+
+Within each action scope, rank feasible profiles by: largest coverage-minus-burden advantage, then largest collision coverage, then smallest success burden, then smallest all-episode trigger rate, then smaller time and distance thresholds. This rule is frozen before the 500-episode diagnostic. If neither scope has a feasible profile, no CPA shield is authorized and the failure must be recorded. If one or both scopes pass, their mechanically selected profiles inform a separately implemented M12B intervention with explicit release/anti-deadlock behavior; M12A itself does not authorize evaluation of that intervention.
+
+### 56.5 Failure preservation and implementation verification
+
+Model, configuration, and reference hashes are checked before environment creation. The output uses exclusive creation and cannot overwrite existing evidence. If episode reproduction fails, the JSON records `reference_reproduced=false`, the failure reason, summary, and observed episode rows before the command raises. A failed diagnostic output must be committed and analyzed rather than silently rerun.
+
+The initial engineering implementation retained only the single smallest miss distance per decision. Review found that this could hide an earlier, slightly wider approach when evaluating a shorter time threshold. No research run used that implementation. It was corrected to retain every finite nearby closest approach, and a regression test constructs exactly this earlier-wider/later-closer case.
+
+Final engineering verification:
+
+```text
+ruff check: passed
+pytest: 89 passed in 3.31 s
+two-episode seed-7 replay: exact reference reproduction
+smoke decisions / fixed profiles: 89 / 60
+```
+
+The smoke used temporary files only; they were removed after verification. It did not touch any reserved or prior evaluation seed.
+
+### 56.6 Frozen command
+
+After pulling the implementation, run:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and the output path does not exist, run exactly:
+
+```powershell
+python -m scripts.diagnose_conflicts --model models/ppo_reward_v3_seed42.zip --model-sha256 f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 10042 --unsafe-ttc 2.0 --cpa-horizon 3.0 --max-range 60.0 --reference-csv results/ppo_reward_v3_holdout_seed10042.csv --reference-csv-sha256 642a0a34841f6bc351acd573b5c057a95c53ddcc2348553de1f10adee0286c09 --output results/ppo_reward_v3_conflict_diagnostics_seed10042.json
+```
+
+Commit only `results/ppo_reward_v3_conflict_diagnostics_seed10042.json`, whether it succeeds or preserves a failure. Do not commit the PPO ZIP, rerun with different thresholds, run a shield, train a model, or use a new holdout.
+
+### 56.7 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-089 | Diagnose selective conflict geometry before implementing another shield | Immediately deploy a weaker radial-TTC threshold | The rejected shield had high intervention burden and no conflict-path filter | Retained |
+| D-090 | Use consumed seeds 10042–10541 with exact reference reproduction | Spend a new untouched seed block | Threshold development is not a final policy claim | Retained |
+| D-091 | Retain every finite nearby closest approach | Store only the globally smallest miss distance | The latter can mask an earlier threshold-matching conflict | Retained |
+| D-092 | Freeze 60 profiles and mechanical feasibility/ranking rules | Choose thresholds after freely browsing arbitrary combinations | Constrain development selection and preserve failed feasibility evidence | Retained |
+| D-093 | Keep M12A strictly non-interventional | Simulate overrides during threshold selection | Isolate conflict association before testing causal policy changes | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Implemented and froze M12A action-conditioned CPA diagnostic | Design selective caution while controlling success burden and deadlock risk | Geometry/profile tests, reference/failure guards, Ruff, 89 tests, and exact two-episode replay passed; the corrected single-approach design failure was recorded | This implementation update |
+
+**Next action:** pull M12A, rerun Ruff and all tests, run only the frozen non-interventional diagnostic, and commit its JSON. Do not train or evaluate a shield yet.

@@ -274,6 +274,12 @@ checkpoint remains current best. The next safety direction is a
 non-interventional conflict diagnostic followed by selectively targeted
 caution, not another global waiting penalty or blanket TTC shield.
 
+That M12A diagnostic is now implemented and frozen. It replays V3 on the
+already-consumed seeds 10042–10541, requires exact reproduction of the existing
+episode CSV, and profiles 60 action-conditioned closest-approach rules without
+changing any action. Run it only after pulling the implementation and passing
+Ruff and pytest; commit its small JSON output and keep the PPO checkpoint local.
+
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.
 
