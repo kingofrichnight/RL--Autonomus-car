@@ -308,6 +308,12 @@ features from HighwayEnv state, not real camera/LiDAR measurements. The first
 controlled training keeps V3 reward, traffic, actions, PPO hyperparameters,
 seed, and 200K budget fixed so only the observation changes.
 
+Fusion V1 training completed successfully at 200,704 steps with checkpoint
+SHA-256 `690d90d7...644e3`. Its 175-input checkpoint passed structural and
+finite-parameter checks. It is not yet an accepted driving policy: the next
+step is a paired development evaluation against V3 on already-consumed seeds,
+followed by a new untouched holdout only if all development gates pass.
+
 Record a trained episode:
 
 ```bash

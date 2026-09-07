@@ -5753,3 +5753,122 @@ the completed checkpoint.
 | 2026-09-07 | Implemented and froze M14A physics-informed feature fusion and reproducible trainer controls | Give PPO continuous interaction-risk features without another hand-written override | Ruff, 114 tests, ten-step paired non-interference check, and 32-step `[175]` PPO smoke passed; all temporary artifacts removed | This implementation update |
 
 **Next action:** pull this implementation, pass the complete test gate, run only the frozen M14A training command, and commit its JSON summary while keeping the model local.
+
+
+---
+
+## 63. Milestone M14A training result and M14B development protocol
+
+**Experiment IDs:** E-M14A-PPO-V3-KINEMATIC-RISK-FUSION-S42 and E-M14B-FUSION-V1-DEV-S40042
+
+**Status:** Training completed and checkpoint validated; paired development evaluation pending
+
+**Date recorded:** 2026-09-07
+
+### 63.1 Training artifact verification
+
+Commit `1d27c6c` adds only
+`results/ppo_fusion_v1_seed42.training.json`. Its SHA-256 is
+`62713bca9d6c9c2bf5df15b9d179e447c882c065f0ee8854fd0d9e9ea8404ec7`.
+The local checkpoint remains ignored and has SHA-256
+`690d90d738892c1428c6b1eb4f85769ef39f3827daaa96deb9078155a84644e3`,
+exactly matching the committed summary.
+
+| Training property | Required | Observed | Decision |
+|---|---:|---:|---|
+| Configuration SHA-256 | `433e6972...fae69` | exact | Passed |
+| Training seed / environments | 42 / 1 | 42 / 1 | Passed |
+| Requested / collected steps | 200,000 / 200,704 | 200,000 / 200,704 | Passed |
+| Learning rate | 0.0003 | 0.0003 | Passed |
+| `n_steps` / batch size | 1024 / 64 | 1024 / 64 | Passed |
+| Gamma / GAE / entropy | 0.99 / 0.95 / 0.01 | exact | Passed |
+| Policy network | `[256, 256]` | `[256, 256]` | Passed |
+| Observation shape | `[175]` | `[175]` | Passed |
+| Fusion slots/features | 14 / 5 | 14 / 5 | Passed |
+| Fusion scales | 200 / 20 / 10 / 5 / 20 | exact | Passed |
+| Intent / safety shield | none / false | none / false | Passed |
+| Internal evaluation | offset 70,000; 50 every 10,000 | exact | Passed |
+
+Independent loading confirmed 200,704 stored timesteps, a 175-value Box
+observation, three discrete actions, the frozen PPO hyperparameters, and finite
+policy parameters. A deterministic seed-7 reset, prediction, and step succeeded
+with the production fusion environment. These are integrity checks, not driving
+performance evidence.
+
+The final 200K checkpoint is accepted as the sole M14B candidate. Callback-best
+and periodic fusion checkpoints may not be inspected or substituted after any
+development result is visible.
+
+### 63.2 Frozen paired development comparison
+
+M14B uses the already-consumed seeds 40042–40541 and the exact committed V3
+baseline rather than spending a new holdout:
+
+```text
+results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv
+SHA-256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4
+```
+
+That reference contains 58.8% success, 41.2% collision, 0% incomplete, and mean
+minimum TTC 0.6003656548142169 s. The candidate uses the same configuration,
+reward, traffic, action space, deterministic evaluation, collision-first outcome
+rule, and unsafe-TTC reporting threshold. It adds only the frozen 175-value
+fusion observation. No intent model or safety shield is used.
+
+Because these seeds informed M12B/M13 and are development-only, passing M14B
+would authorize a separately frozen untouched holdout but would not establish a
+final improvement.
+
+### 63.3 Prospective development gates
+
+Fusion V1 is development-feasible only if all five conditions hold:
+
+1. success is at least 60.8% (304/500), at least +2.0 points over reference;
+2. collision is at most 39.2% (196/500), at least -2.0 points from reference;
+3. incomplete rate is at most 2.0%;
+4. mean minimum TTC is at least 0.6003656548142169 s;
+5. the paired success direction is favorable with exact two-sided McNemar
+   `p < 0.10`.
+
+These are development gates only. A later untouched holdout would retain the
+stricter final +3/-3-point, 2% incomplete, non-worsening TTC, and favorable
+`p < 0.05` rules. Mean reward, travel time, and unsafe-TTC events are
+descriptive and cannot rescue a failed gate.
+
+If any M14B gate fails, Fusion V1 is rejected. Do not train longer, select a
+stored checkpoint, change a feature scale, remove a channel, or reuse the
+development outputs to claim final performance.
+
+### 63.4 Frozen command
+
+First rerun the complete test gate:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and neither output exists, run exactly:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_fusion_v1_seed42.zip --model-sha256 690d90d738892c1428c6b1eb4f85769ef39f3827daaa96deb9078155a84644e3 --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 40042 --unsafe-ttc 2.0 --risk-fusion --fusion-neighbors 14 --fusion-range-scale 200.0 --fusion-relative-speed-scale 20.0 --fusion-ttc-scale 10.0 --fusion-cpa-horizon 5.0 --fusion-cpa-distance-scale 20.0 --reference-csv results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --reference-csv-sha256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4 --output results/ppo_fusion_v1_development_seed40042.csv --refuse-overwrite
+```
+
+Commit exactly the new CSV and summary JSON regardless of outcome. Keep the
+fusion and V3 ZIPs local. Do not rerun the baseline, evaluate a different
+checkpoint, use new seeds, change fusion scales, or start another training run.
+
+### 63.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-119 | Accept final Fusion V1 checkpoint for one development comparison | Retrain, train longer, or select callback-best | Summary and local ZIP match every frozen structural and provenance requirement | Retained |
+| D-120 | Use the consumed seed-40042 V3 baseline for M14B | Spend a new holdout immediately | Screen representation value before consuming new final evidence | Retained |
+| D-121 | Require all five prospective development gates | Advance based on reward or an unpaired aggregate | Preserve a meaningful completion/safety signal before final evaluation | Retained |
+| D-122 | Forbid fusion checkpoint selection after M14B begins | Browse periodic or callback-best models | M11 demonstrated non-generalization from small reward-based checkpoint selection | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Completed and accepted M14A training for one paired development evaluation | Validate the controlled 175-feature fusion policy before spending a holdout | Single-summary commit, summary/ZIP hashes, all training fields, checkpoint spaces/timesteps/hyperparameters/finiteness, and seed-7 inference independently verified | Result: `1d27c6c`; documentation: this update |
+
+**Next action:** pass the complete test gate, run only the frozen M14B command, and commit its two small outputs. Do not run a new holdout or another training job.
