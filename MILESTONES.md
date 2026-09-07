@@ -5462,3 +5462,125 @@ candidate, or commit the PPO checkpoint.
 | 2026-09-07 | Implemented and froze M13 selective-braking development screen | Test whether a causally stronger but still action-selective override merits another holdout | Ruff and 98 tests passed; two seed-7 smokes verified execution/reference binding and exposed then confirmed correction of the initial shield-type label | This implementation update |
 
 **Next action:** pull this implementation, pass the complete test gate, run only the frozen M13 development command, and commit its two small outputs. Do not run a new holdout.
+
+
+---
+
+## 61. Milestone M13 result — selective braking rejected
+
+**Experiment ID:** E-M13-V3-FASTER-ONLY-CPA-BRAKE-DEV-S40042
+
+**Status:** Completed; failed development feasibility and rejected
+
+**Date recorded:** 2026-09-07
+
+### 61.1 Artifact and protocol verification
+
+Commit `fd77a6d` adds exactly the required candidate CSV and summary:
+
+| Artifact | SHA-256 |
+|---|---|
+| `results/ppo_reward_v3_cpa_brake_development_seed40042.csv` | `64d32187cb0a4407eba2d2e9bd8dc6896a913487143fed6b8df08c9511ac52a3` |
+| `results/ppo_reward_v3_cpa_brake_development_seed40042.summary.json` | `20a09d44d7cb771e8d445e8fe3e78458930a362800618c5e6b65756d5c198f1f` |
+
+The CSV contains 500 exclusive collision-first outcomes for seeds
+40042–40541. The summary arithmetic matches the episode rows. It records final
+V3 SHA-256 `f46964bf...706c`, configuration SHA-256
+`433e6972...fae69`, no intent model, `cpa_selective_brake`, `SLOWER`, the
+frozen 2.0 s / 3.0 m / 3.0 s / 60.0 m geometry, and unsafe-TTC reporting at
+2.0 seconds. It also records the exact committed reference path and SHA-256
+`aab91174...a47fb4`. No protocol drift was found.
+
+The user reported completing Ruff and pytest before the run. As with M12B,
+the CSV and summary do not independently contain that console output.
+
+### 61.2 Aggregate development result
+
+| Metric | Committed V3 reference | Selective brake | Brake minus reference |
+|---|---:|---:|---:|
+| Success | 294/500 = 58.8% | 261/500 = 52.2% | -6.6 pp |
+| Collision | 206/500 = 41.2% | 239/500 = 47.8% | +6.6 pp |
+| Incomplete | 0/500 = 0.0% | 0/500 = 0.0% | 0.0 pp |
+| Mean reward | 2.015837 | 0.696949 | -1.318888 |
+| Mean length | 37.934 | 39.542 | +1.608 decisions |
+| Mean travel time | 7.5868 s | 7.9084 s | +0.3216 s |
+| Mean minimum TTC | 0.600366 s | 0.682174 s | +0.081808 s |
+| Mean unsafe-TTC events | 16.116 | 16.944 | +0.828 |
+| Mean interventions | 0.000 | 3.532 | +3.532 |
+
+The selective brake made 1,766 interventions over 19,771 policy decisions, an
+8.9323% intervention rate. It intervened in 361/500 episodes and reached 16
+interventions in one episode. Unlike the weak M12B veto, braking materially
+changed paired trajectories, but its net effect was harmful.
+
+### 61.3 Paired transitions and exact test
+
+| V3 reference success | Selective-brake success | Episodes |
+|---|---|---:|
+| True | True | 240 |
+| True | False | 54 |
+| False | True | 21 |
+| False | False | 185 |
+
+The brake rescues 21 V3 collisions but destroys 54 V3 successes, a net loss of
+33 successes across 75 discordant episodes. The exact two-sided McNemar
+probability is `p = 0.000176309`. The difference is statistically clear in the
+unfavorable direction. Collision transitions are exactly inverse and have the
+same probability.
+
+This result also reinforces the prior warning about TTC summaries. Mean minimum
+TTC improves by 0.0818 seconds while collision rises by 6.6 points. Delaying or
+changing intersection entry can increase the recorded closest pass before a
+later collision; minimum TTC is not a surrogate acceptance outcome.
+
+### 61.4 Frozen development-gate decision
+
+| Gate | Required | Observed | Decision |
+|---|---:|---:|---|
+| Success | at least 60.8% | 52.2% | Failed |
+| Collision | at most 39.2% | 47.8% | Failed |
+| Incomplete | at most 2.0% | 0.0% | Passed |
+| Mean minimum TTC | at least 0.600366 s | 0.682174 s | Passed |
+| Favorable exact paired test | `p < 0.10` | unfavorable; `p = 0.000176309` | Failed |
+
+Only two of five gates pass. **Selective CPA braking is rejected.** Per the
+prospective routing rule, no untouched holdout may be spent on it. Do not tune
+the brake action, CPA thresholds, action scope, persistence, or cooldown using
+these results.
+
+Final 200K PPO V3 remains the current best accepted policy. The radial-TTC
+shield, mild CPA veto, and selective CPA brake are all rejected for different
+failure modes: conservative incompletion, negligible causal effect, and
+significant collision worsening, respectively.
+
+### 61.5 Direction after hand-written shielding
+
+The repeated shield failures show that constant-velocity conflict geometry is
+useful for retrospective association but not sufficient to choose safe
+intersection actions under reactive multi-vehicle dynamics. Further manual
+threshold searches on consumed seeds would overfit the same outcomes and are
+not authorized.
+
+The next success-oriented direction is to improve the learned base policy's
+robustness. Before another long run, audit and freeze a multi-environment,
+multi-seed PPO V3 training protocol with more experience and a larger internal
+development evaluation. Keep the V3 reward, observation, traffic, and action
+spaces fixed so training diversity and budget are the controlled changes. The
+new policy must first pass a paired development screen before any untouched
+holdout is reserved. No training is authorized until that implementation,
+seed schedule, budget, checkpoint rule, and gates are recorded.
+
+### 61.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-110 | Reject M13 selective braking | Advance it for higher mean minimum TTC | Success fell 6.6 points, collision rose 6.6 points, and the paired change was significantly unfavorable | Retained |
+| D-111 | End manual CPA/TTC shield tuning on consumed outcomes | Try another threshold, scope, or cooldown | Three shield designs failed through incompletion, non-effect, or collision worsening | Retained |
+| D-112 | Improve the learned V3 base policy next | Reserve a holdout for another hand-written override | V3 remains stable near 59–61%, while post-processing has not improved it | Retained |
+| D-113 | Require a multi-seed PPO candidate to pass development before a new holdout | Train and immediately claim on untouched seeds | Control compute and holdout expenditure after repeated negative experiments | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Completed and rejected M13 selective-braking development screen | Test whether stronger action potency could turn M12A association into improved outcomes | Two-file scope and hashes, reference binding, 500 rows, metadata, aggregate arithmetic, 75 paired transitions, exact tests, and all gates independently verified | Result: `fd77a6d`; documentation: this update |
+
+**Next action:** design and implement a multi-environment, multi-seed PPO V3 training protocol with fixed reward/observation/action settings and prospective development gates. Do not train or evaluate another shield.

@@ -293,11 +293,12 @@ only one paired terminal outcome despite 1,489 recorded vetoes. V3 therefore
 remains current best. The next development step must test causal action potency
 on consumed seeds before spending another untouched holdout.
 
-That development-only M13 screen is implemented as `--cpa-shield
---cpa-override-action SLOWER`. It keeps the M12A-selected 2.0 s / 3.0 m
-`FASTER_ONLY` geometry fixed and binds its output to the committed seed-40042
-V3 baseline hash. This stronger selective brake is not yet an accepted shield
-and cannot support a final performance claim on those consumed seeds.
+The development-only M13 selective-braking screen also failed. Changing
+matching `FASTER` proposals to `SLOWER` reduced success to 52.2% and increased
+collision to 47.8% on the consumed paired seeds. All tested hand-written
+shields are rejected; higher mean minimum TTC did not imply fewer collisions.
+Future work should improve the learned base policy rather than tune another CPA
+or TTC override on consumed outcomes.
 
 Record a trained episode:
 
