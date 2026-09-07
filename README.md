@@ -247,27 +247,38 @@ controlled PPO experiment.
 
 Production eight-step inference with 14-slot history retention is now
 implemented and preserves the same five intent outputs and 120-value policy
-observation. After pulling the implementation and rerunning all tests, train the
-single controlled PPO + intent V2 policy:
+observation. The controlled PPO + intent V2 training run completed at 200,704
+steps and passed its checkpoint audit. The final policy SHA-256 is
+`4fc855e064c366b0d0b94b807066b235a46f8cf3c7bfb06edceb6a56fa9b1773`.
+
+After pulling the training record and rerunning all tests, evaluate both frozen
+policies on the new paired holdout. Run both commands without retraining or
+changing settings between them:
 
 ```bash
-python -m scripts.train_ppo \
+python -m scripts.evaluate_policy \
+  --model models/ppo_reward_v3_seed42.zip \
+  --model-sha256 f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c \
   --config configs/intersection_reward_v3.yaml \
   --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 \
-  --timesteps 200000 --seed 42 --learning-rate 0.0003 \
-  --n-steps 1024 --batch-size 64 \
+  --episodes 500 --seed 20042 --unsafe-ttc 2.0 \
+  --output results/ppo_reward_v3_holdout_seed20042.csv --refuse-overwrite
+
+python -m scripts.evaluate_policy \
+  --model models/ppo_intent_v2_seed42.zip \
+  --model-sha256 4fc855e064c366b0d0b94b807066b235a46f8cf3c7bfb06edceb6a56fa9b1773 \
+  --config configs/intersection_reward_v3.yaml \
+  --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 \
+  --episodes 500 --seed 20042 --unsafe-ttc 2.0 \
   --intent-model models/intent_gru_h8_seed42.pt \
   --intent-model-sha256 74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05 \
   --intent-neighbors 5 --intent-history-length 8 \
   --intent-history-tracking-neighbors 14 --intent-device cpu \
-  --eval-seed-offset 1000 \
-  --summary-output results/ppo_intent_v2_seed42.training.json \
-  --output models/ppo_intent_v2_seed42 --refuse-overwrite
+  --output results/ppo_intent_v2_holdout_seed20042.csv --refuse-overwrite
 ```
 
-Commit only `results/ppo_intent_v2_seed42.training.json` and keep the PPO ZIP
-local. Do not evaluate either policy on the newly reserved seeds 20042–20541
-until the training summary and checkpoint are validated.
+Commit both CSV files and both generated `.summary.json` files. Keep all model
+checkpoints local and do not rerun either holdout after observing the results.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.

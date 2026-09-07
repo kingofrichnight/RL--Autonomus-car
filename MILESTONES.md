@@ -4385,3 +4385,115 @@ An initial read-only V3 metadata assertion incorrectly expected a flattened stor
 | 2026-09-06 | Implemented and froze M10 PPO + intent V2 training and untouched paired holdout | Test the accepted classifier/coverage representation without changing reward, PPO, shield, or policy input size | 83 tests, real-checkpoint environment smoke, 32-step PPO/trainer smoke, one-episode evaluator smoke, and V3 checkpoint audit passed; two engineering setup assumptions failed and were recorded | This implementation update |
 
 **Next action:** pull this implementation, rerun Ruff and all tests, run only the frozen M10 training command, commit its JSON summary, and keep the final PPO checkpoint local. Do not evaluate seeds 20042–20541 yet.
+
+
+---
+
+## 52. Milestone M10A result — PPO + intent V2 training
+
+**Experiment ID:** E-M10-PPO-INTENT-V2-H8T14-S42-200K
+
+**Status:** Training complete; checkpoint validated; paired holdout authorized
+
+**Date recorded:** 2026-09-06
+
+**Training-summary commit:** [`0d71ab0`](https://github.com/kingofrichnight/RL--Autonomus-car/commit/0d71ab074bff1c8410b426bdf42277aa568ad5bd)
+
+**Training summary:** `results/ppo_intent_v2_seed42.training.json`
+
+**Summary SHA-256:** `5d5b7138239670892744df958a2668a3828f14509f1a7d5eab5eb4680ae511d0`
+
+**Local checkpoint:** `models/ppo_intent_v2_seed42.zip`
+
+**Checkpoint SHA-256:** `4fc855e064c366b0d0b94b807066b235a46f8cf3c7bfb06edceb6a56fa9b1773`
+
+### 52.1 Training-summary validation
+
+The result commit contains only the small training JSON; all model checkpoints remain local. Every frozen Section 51 property matched:
+
+| Property | Expected | Recorded | Decision |
+|---|---:|---:|---|
+| Algorithm | PPO | PPO | Passed |
+| Configuration SHA-256 | `433e6972...fae69` | `433e6972...fae69` | Passed |
+| Training seed | 42 | 42 | Passed |
+| Internal-evaluation seed offset | 1,000 | 1,000 | Passed |
+| Requested timesteps | 200,000 | 200,000 | Passed |
+| Collected timesteps | 200,704 | 200,704 | Passed |
+| Learning rate | 0.0003 | 0.0003 | Passed |
+| Rollout steps | 1,024 | 1,024 | Passed |
+| Batch size | 64 | 64 | Passed |
+| Gamma / GAE lambda | 0.99 / 0.95 | 0.99 / 0.95 | Passed |
+| Entropy coefficient | 0.01 | 0.01 | Passed |
+| Policy network | `[256, 256]` | `[256, 256]` | Passed |
+| Observation shape | `[120]` | `[120]` | Passed |
+| Safety shield | Disabled | Disabled | Passed |
+| Unsafe-TTC reporting threshold | 2.0 s | 2.0 s | Passed |
+| Intent checkpoint SHA-256 | `74a72cf2...fc05` | `74a72cf2...fc05` | Passed |
+| Intent output / tracking slots | 5 / 14 | 5 / 14 | Passed |
+| Intent history / device | 8 / CPU | 8 / CPU | Passed |
+
+The configuration, accepted intent checkpoint, and final PPO checkpoint hashes were independently recomputed from local files and match the summary.
+
+### 52.2 Checkpoint validation
+
+| Property | Verified value |
+|---|---|
+| File size | 2,370,824 bytes |
+| Stored timesteps | 200,704 |
+| Observation space | Flat float32 `Box(120,)`; final 15 probability features bounded to `[0,1]` |
+| Action space | Discrete, 3 actions |
+| PPO settings | Exact Section 51 match |
+| Policy network | `[256, 256]` |
+| Policy parameters | All finite |
+
+The final post-training checkpoint—not the callback's best checkpoint—is frozen for evaluation. Validation loaded the ZIP on CPU and did not execute any episode from the reserved holdout.
+
+### 52.3 Interpretation and decision
+
+M10A confirms that the intended 8/14/5 observation pipeline completed the unchanged 200K PPO protocol and produced a structurally valid final policy. It provides no evidence yet about success, collision, incompleteness, TTC, or reward.
+
+Accept `models/ppo_intent_v2_seed42.zip` at SHA-256 `4fc855e0...b1773` as the sole M10 policy checkpoint. No retraining, callback-best substitution, reward change, classifier change, tracking change, or safety shield is permitted.
+
+Both V3 and V2 must now be evaluated exactly once on the previously reserved seeds 20042–20541. Running both policies is one paired experiment. Do not stop to redesign or tune after seeing the first policy's output. Commit all four small result artifacts and retain the outcome whether M10 passes or fails.
+
+### 52.4 Frozen paired evaluation commands
+
+After pulling this record, first run:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and none of the four output paths exists, run both commands:
+
+```powershell
+python -m scripts.evaluate_policy --model models/ppo_reward_v3_seed42.zip --model-sha256 f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 20042 --unsafe-ttc 2.0 --output results/ppo_reward_v3_holdout_seed20042.csv --refuse-overwrite
+
+python -m scripts.evaluate_policy --model models/ppo_intent_v2_seed42.zip --model-sha256 4fc855e064c366b0d0b94b807066b235a46f8cf3c7bfb06edceb6a56fa9b1773 --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 20042 --unsafe-ttc 2.0 --intent-model models/intent_gru_h8_seed42.pt --intent-model-sha256 74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05 --intent-neighbors 5 --intent-history-length 8 --intent-history-tracking-neighbors 14 --intent-device cpu --output results/ppo_intent_v2_holdout_seed20042.csv --refuse-overwrite
+```
+
+Expected versionable outputs:
+
+```text
+results/ppo_reward_v3_holdout_seed20042.csv
+results/ppo_reward_v3_holdout_seed20042.summary.json
+results/ppo_intent_v2_holdout_seed20042.csv
+results/ppo_intent_v2_holdout_seed20042.summary.json
+```
+
+Commit all four files together. Keep all `.zip` and `.pt` files local. Do not rerun, modify, or selectively omit a result after observing it.
+
+### 52.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-073 | Accept final PPO + intent V2 checkpoint `4fc855e0...b1773` for paired evaluation | Retrain or substitute the callback-best checkpoint | All summary, ZIP, space, hyperparameter, and finiteness checks passed | Retained |
+| D-074 | Run both V3 and V2 evaluations as one indivisible paired experiment | Inspect the new V3 baseline before deciding whether to run V2 | Preserve the precommitted design after either result becomes visible | Retained |
+| D-075 | Commit all four holdout artifacts regardless of outcome | Commit only favorable or aggregate results | Preserve episode-level paired evidence and complete provenance | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-06 | Completed and validated M10A training | Freeze the final PPO + intent V2 checkpoint before touching the reserved holdout | Commit scope, four hashes, all summary fields, checkpoint spaces/hyperparameters/timesteps, probability bounds, and parameter finiteness verified | Result: `0d71ab0`; documentation: this update |
+
+**Next action:** run both frozen 500-episode evaluations on seeds 20042–20541 after the full test gate; commit both CSVs and both summaries. Do not retrain or run only one policy.
