@@ -4957,3 +4957,128 @@ Commit only `results/ppo_reward_v3_conflict_diagnostics_seed10042.json`, whether
 | 2026-09-07 | Implemented and froze M12A action-conditioned CPA diagnostic | Design selective caution while controlling success burden and deadlock risk | Geometry/profile tests, reference/failure guards, Ruff, 89 tests, and exact two-episode replay passed; the corrected single-approach design failure was recorded | This implementation update |
 
 **Next action:** pull M12A, rerun Ruff and all tests, run only the frozen non-interventional diagnostic, and commit its JSON. Do not train or evaluate a shield yet.
+
+
+---
+
+## 57. Milestone M12A result and M12B design — selective mild CPA veto
+
+**Experiment IDs:** E-M12A-V3-CPA-CONFLICT-DIAGNOSTIC-S10042 and E-M12B-V3-MILD-CPA-SHIELD-S40042
+
+**Status:** M12A completed and accepted as development evidence; M12B design frozen, implementation pending
+
+**Date recorded:** 2026-09-07
+
+### 57.1 M12A artifact and integrity verification
+
+The diagnostic result was added alone in commit `7dddf05`. Its SHA-256 is
+`b0f052838d44ffd0256c43a0a7f134132bb86dfcaf240163fdda4be3656829ae`.
+The committed metadata exactly matches the frozen Section 56 protocol:
+
+| Property | Observed |
+|---|---|
+| Schema / diagnostic | 1 / `action_conditioned_closest_approach` |
+| Non-interventional | `true` |
+| PPO SHA-256 | `f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c` |
+| Configuration SHA-256 | `433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69` |
+| Reference CSV SHA-256 | `642a0a34841f6bc351acd573b5c057a95c53ddcc2348553de1f10adee0286c09` |
+| Episodes / seeds | 500 / 10042–10541 |
+| CPA horizon / range | 3.0 s / 60.0 m |
+| Policy decisions / fixed profiles | 19,053 / 60 |
+| Exact reference reproduction | `true` |
+
+The reproduced aggregate is 59.6% success, 40.4% collision, 0% incomplete,
+mean reward 2.088917, and mean minimum TTC 0.616385 s. This is an integrity
+check of already-consumed development episodes, not a new performance estimate.
+
+### 57.2 Frozen feasibility rule applied mechanically
+
+Seventeen of the 30 `FASTER_ONLY` profiles pass the mild final-two-second
+feasibility rule. The unique mechanically ranked winner is:
+
+| Scope | CPA time | Miss distance | Collision coverage | Success burden | Advantage | All-decision trigger rate |
+|---|---:|---:|---:|---:|---:|---:|
+| `FASTER_ONLY` | 2.0 s | 3.0 m | 159/202 = 78.7129% | 1/298 = 0.3356% | 78.3773 pp | 1,370/19,053 = 7.1905% |
+
+Fourteen of the 30 `FASTER_OR_IDLE` profiles pass the emergency
+final-one-second rule. Its mechanically ranked winner uses the same geometric
+thresholds and covers 172/202 collision episodes (85.1485%) with 0/298 success
+episodes burdened in the final second, an 85.1485-point advantage. Its
+all-decision trigger rate is 8.6286%.
+
+For context, the rejected radial-TTC reference triggers on 40.5238% of all
+decisions and appears in 297/298 successful episodes. The CPA profiles are much
+more selective at decision level. Nevertheless, the selected mild profile
+appears at least once anywhere in 177/298 successful episodes and 169/202
+collision episodes. The strong terminal-window separation is associative and
+does not imply that applying the rule throughout an episode will preserve those
+successes.
+
+### 57.3 Interpretation and intervention choice
+
+M12A passes its development feasibility rule and authorizes one causal shield
+experiment. It does not prove that either rule prevents collisions. To minimize
+the risk of repeating V4 and the old TTC shield's conservative waiting, M12B
+tests only the milder winner first:
+
+1. compute every finite nearby CPA with the frozen 3.0-second horizon and
+   60.0-metre range;
+2. intervene only when the PPO proposes `FASTER` and any approach has
+   $t_{CPA}\leq2.0$ s and $d_{CPA}\leq3.0$ m;
+3. execute `IDLE` for that decision instead of `FASTER`;
+4. do not latch, brake, or alter later actions: the veto releases immediately
+   when the conflict clears or the policy proposes any action other than
+   `FASTER`.
+
+This one-decision neutral veto is the explicit anti-deadlock behavior. Repeated
+independent vetoes remain possible while both the proposed action and geometry
+continue to match, so incomplete rate and travel time remain required evidence.
+The stronger `FASTER_OR_IDLE`-to-`SLOWER` emergency rule is deferred and must not
+be combined with M12B after seeing its result.
+
+### 57.4 Frozen untouched paired evaluation
+
+Seeds **40042–40541** are newly reserved for exactly 500 episodes of the V3
+baseline and 500 paired episodes of the mild CPA shield. They do not occur in
+the preceding record. Both sides use deterministic final V3 checkpoint
+`f46964bf...706c`, configuration `433e6972...fae69`, no intent model, unchanged
+reward and traffic settings, collision-first success detection, and the 2.0 s
+unsafe-TTC reporting threshold. The only policy-path difference is the frozen
+one-step veto above.
+
+The paired experiment passes only if all conditions hold:
+
+1. shield success is at least 3.0 percentage points above the newly measured
+   paired V3 baseline;
+2. shield collision is at least 3.0 percentage points below baseline;
+3. shield incomplete rate is at most 2.0%;
+4. shield mean minimum TTC is at least the paired baseline value;
+5. the paired success change is favorable with exact two-sided McNemar
+   `p < 0.05`.
+
+Mean reward, travel time, unsafe-TTC events, and interventions are descriptive.
+If any gate fails, the mild CPA shield is rejected as an improvement and final
+200K V3 remains current best. If the paired baseline is again near 60–61%, the
+practical success gate requires approximately 63–64%; this is a threshold, not
+a forecast.
+
+The two evaluations are one indivisible experiment. Neither output may be used
+to retune thresholds, add emergency braking, change the veto action, or decide
+whether to run the other side. Both outputs must use exclusive creation and be
+committed even if the first visible result is unfavorable.
+
+### 57.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-094 | Accept M12A as valid development evidence | Reject it for no policy intervention | Exact 500-row reproduction, fixed hashes, 19,053 decisions, and all 60 profiles verified | Retained |
+| D-095 | Mechanically select the 2.0 s / 3.0 m `FASTER_ONLY` profile | Choose a visually attractive profile after the run | It ranks first under the frozen coverage-minus-burden rule | Retained |
+| D-096 | Test only a one-step `FASTER`-to-`IDLE` veto in M12B | Immediately combine mild and emergency rules | The old global shield and V4 both caused conservative failures | Retained |
+| D-097 | Reserve paired seeds 40042–40541 and rerun V3 under collision-first detection | Reuse development seeds or compare against an older aggregate | M12A consumed 10042–10541 for design and earlier aggregates used different contexts | Retained |
+| D-098 | Reuse the five 3 pp, completion, TTC, and paired-significance gates | Accept a small descriptive gain | Maintain the existing improvement standard | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Completed M12A and froze the M12B mild CPA experiment | Test selective caution after the diagnostic passed its prospective feasibility rule | Single-result-file commit, SHA-256 and metadata, exact reference flag, 60-profile count, mechanical feasibility and ranking, and legacy-reference metrics independently verified | Result: `7dddf05`; documentation: this update |
+
+**Next action:** implement the mild CPA wrapper and evaluation metadata, add focused tests, then pass Ruff and the complete test suite. Do not evaluate seeds 40042–40541 until that implementation and the exact paired commands are recorded.

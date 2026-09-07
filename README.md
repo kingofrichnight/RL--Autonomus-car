@@ -274,11 +274,14 @@ checkpoint remains current best. The next safety direction is a
 non-interventional conflict diagnostic followed by selectively targeted
 caution, not another global waiting penalty or blanket TTC shield.
 
-That M12A diagnostic is now implemented and frozen. It replays V3 on the
-already-consumed seeds 10042–10541, requires exact reproduction of the existing
-episode CSV, and profiles 60 action-conditioned closest-approach rules without
-changing any action. Run it only after pulling the implementation and passing
-Ruff and pytest; commit its small JSON output and keep the PPO checkpoint local.
+The M12A non-interventional diagnostic completed and exactly reproduced V3 on
+the already-consumed seeds 10042–10541. The mechanically selected mild rule
+vetoes only `FASTER` when constant-velocity closest approach is at most 2.0 s
+with miss distance at most 3.0 m. In the final two seconds it appeared in
+159/202 collision episodes and only 1/298 success episodes. This is association,
+not a prevented-collision claim. M12B will test that one-step `FASTER`-to-`IDLE`
+veto against an independently rerun V3 baseline on untouched paired seeds;
+the stronger emergency-braking rule remains deferred.
 
 The current 2.0-second TTC shield was rejected as too conservative. Do not combine it with
 the intent-aware policy until a new safety experiment is explicitly designed and recorded.
