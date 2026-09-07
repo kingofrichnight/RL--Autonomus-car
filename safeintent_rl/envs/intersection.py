@@ -39,6 +39,7 @@ def make_intersection_env(
     cpa_distance_threshold: float = 3.0,
     cpa_horizon: float = 3.0,
     cpa_max_range: float = 60.0,
+    cpa_override_action: str = "IDLE",
     intent_model: str | Path | None = None,
     intent_neighbors: int = 5,
     intent_device: str = "cpu",
@@ -87,6 +88,7 @@ def make_intersection_env(
             distance_threshold=cpa_distance_threshold,
             horizon=cpa_horizon,
             max_range=cpa_max_range,
+            override_action=cpa_override_action,
         )
     if seed is not None:
         env.reset(seed=seed)

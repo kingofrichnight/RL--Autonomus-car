@@ -72,6 +72,24 @@ def test_cpa_shield_releases_when_geometry_does_not_match() -> None:
     assert info["cpa_conflict"] is False
 
 
+def test_cpa_shield_can_selectively_brake_faster() -> None:
+    base = StubIntersection((2.0, 2.0))
+    env = CPAAccelerationShield(base, override_action="SLOWER")
+    env.reset()
+
+    _, _, _, _, info = env.step(2)
+
+    assert base.last_action == 0
+    assert info["safety_intervened"] is True
+    assert info["proposed_action"] == 2
+    assert info["executed_action"] == 0
+
+
+def test_cpa_shield_rejects_unknown_override_action() -> None:
+    with pytest.raises(ValueError, match="must be IDLE or SLOWER"):
+        CPAAccelerationShield(StubIntersection((2.0, 2.0)), override_action="BRAKE")
+
+
 @pytest.mark.parametrize(
     ("keyword", "value"),
     [

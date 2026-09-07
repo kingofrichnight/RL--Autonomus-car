@@ -35,6 +35,14 @@ def main() -> None:
     parser.add_argument("--cpa-distance-threshold", type=float, default=3.0)
     parser.add_argument("--cpa-horizon", type=float, default=3.0)
     parser.add_argument("--cpa-max-range", type=float, default=60.0)
+    parser.add_argument(
+        "--cpa-override-action",
+        type=str.upper,
+        choices=("IDLE", "SLOWER"),
+        default="IDLE",
+    )
+    parser.add_argument("--reference-csv", default=None)
+    parser.add_argument("--reference-csv-sha256", default=None)
     parser.add_argument("--intent-model", default=None)
     parser.add_argument("--intent-neighbors", type=int, default=5)
     parser.add_argument("--intent-history-length", type=int, default=None)
@@ -49,6 +57,8 @@ def main() -> None:
         parser.error("--intent-model-sha256 requires --intent-model")
     if args.config_sha256 is not None and args.config is None:
         parser.error("--config-sha256 requires --config")
+    if args.reference_csv_sha256 is not None and args.reference_csv is None:
+        parser.error("--reference-csv-sha256 requires --reference-csv")
     if (
         args.intent_model is None
         and (
@@ -68,6 +78,15 @@ def main() -> None:
         and config_sha256.lower() != args.config_sha256.lower()
     ):
         raise ValueError("Configuration fingerprint does not match --config-sha256")
+    reference_csv_sha256 = (
+        file_sha256(args.reference_csv) if args.reference_csv is not None else None
+    )
+    if (
+        args.reference_csv_sha256 is not None
+        and reference_csv_sha256 is not None
+        and reference_csv_sha256.lower() != args.reference_csv_sha256.lower()
+    ):
+        raise ValueError("Reference CSV fingerprint does not match --reference-csv-sha256")
     intent_model_sha256 = (
         file_sha256(args.intent_model) if args.intent_model is not None else None
     )
@@ -112,6 +131,7 @@ def main() -> None:
         cpa_distance_threshold=args.cpa_distance_threshold,
         cpa_horizon=args.cpa_horizon,
         cpa_max_range=args.cpa_max_range,
+        cpa_override_action=args.cpa_override_action,
         intent_model=args.intent_model,
         intent_neighbors=args.intent_neighbors,
         intent_history_length=intent_history_length,
@@ -177,7 +197,11 @@ def main() -> None:
             "safety_shield_type": (
                 "radial_ttc"
                 if args.safety_shield
-                else "cpa_acceleration_veto"
+                else (
+                    "cpa_acceleration_veto"
+                    if args.cpa_override_action == "IDLE"
+                    else "cpa_selective_brake"
+                )
                 if args.cpa_shield
                 else None
             ),
@@ -190,6 +214,13 @@ def main() -> None:
             ),
             "cpa_horizon": args.cpa_horizon if args.cpa_shield else None,
             "cpa_max_range": args.cpa_max_range if args.cpa_shield else None,
+            "cpa_override_action": (
+                args.cpa_override_action if args.cpa_shield else None
+            ),
+            "reference_csv_path": (
+                str(Path(args.reference_csv)) if args.reference_csv is not None else None
+            ),
+            "reference_csv_sha256": reference_csv_sha256,
             "intent_model_path": (
                 str(Path(args.intent_model)) if args.intent_model is not None else None
             ),

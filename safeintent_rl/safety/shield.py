@@ -76,7 +76,7 @@ class TTCSafetyShield(gym.Wrapper):
 
 
 class CPAAccelerationShield(gym.Wrapper):
-    """Veto unsafe acceleration with one neutral action and no persistent latch."""
+    """Override CPA-conflicted acceleration with a configured longitudinal action."""
 
     def __init__(
         self,
@@ -86,6 +86,7 @@ class CPAAccelerationShield(gym.Wrapper):
         distance_threshold: float = 3.0,
         horizon: float = 3.0,
         max_range: float = 60.0,
+        override_action: str = "IDLE",
     ) -> None:
         super().__init__(env)
         parameters = {
@@ -99,11 +100,15 @@ class CPAAccelerationShield(gym.Wrapper):
                 raise ValueError(f"{name} must be finite and positive")
         if time_threshold > horizon:
             raise ValueError("time_threshold cannot exceed horizon")
+        normalized_override = override_action.upper()
+        if normalized_override not in {"IDLE", "SLOWER"}:
+            raise ValueError("override_action must be IDLE or SLOWER")
 
         self.time_threshold = float(time_threshold)
         self.distance_threshold = float(distance_threshold)
         self.horizon = float(horizon)
         self.max_range = float(max_range)
+        self.override_action = normalized_override
         self.interventions = 0
         self.decisions = 0
 
@@ -171,10 +176,14 @@ class CPAAccelerationShield(gym.Wrapper):
         action_type = getattr(self.unwrapped, "action_type", None)
         actions = getattr(action_type, "actions", {})
         action_name = str(actions.get(action, "")).upper()
-        idle_index = next(
-            (index for index, name in actions.items() if str(name).upper() == "IDLE"),
+        override_index = next(
+            (
+                index
+                for index, name in actions.items()
+                if str(name).upper() == self.override_action
+            ),
             None,
         )
-        if action_name == "FASTER" and idle_index is not None:
-            return int(idle_index), True
+        if action_name == "FASTER" and override_index is not None:
+            return int(override_index), True
         return action, False

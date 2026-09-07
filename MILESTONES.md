@@ -5333,3 +5333,132 @@ this result.
 | 2026-09-07 | Completed and rejected M12B mild CPA veto | Test whether selective neutralization improves V3 without conservative waiting | Four-file scope and hashes, 1,000 rows, metadata, aggregate arithmetic, intervention counts, paired transitions, exact tests, and all five gates independently verified | Result: `15b7c8f`; documentation: this update |
 
 **Next action:** implement and freeze one development-only `FASTER`-to-`SLOWER` CPA screen bound to the committed seed-40042 V3 baseline. Do not reserve or evaluate another untouched holdout yet.
+
+
+---
+
+## 60. Milestone M13 design and implementation — selective-braking development screen
+
+**Experiment ID:** E-M13-V3-FASTER-ONLY-CPA-BRAKE-DEV-S40042
+
+**Status:** Implemented, verified, and frozen; development run pending
+
+**Date recorded:** 2026-09-07
+
+### 60.1 Purpose and fixed single-factor change
+
+M13 tests whether M12B failed because `FASTER`-to-`IDLE` was usually a weak or
+clipped control change. It is a development screen, not a new holdout and not a
+final safety claim. It preserves every selected conflict condition:
+
+| Property | Frozen value |
+|---|---|
+| PPO / configuration | Final V3 / unchanged reward V3 |
+| Proposed-action scope | `FASTER_ONLY` |
+| CPA time threshold | 2.0 s |
+| CPA miss-distance threshold | 3.0 m |
+| CPA horizon / current range | 3.0 s / 60.0 m |
+| Intent model | None |
+| Unsafe-TTC reporting threshold | 2.0 s |
+| Seeds / episodes | Consumed 40042–40541 / 500 |
+| Executed override | `SLOWER` |
+
+The only intervention change relative to M12B is the executed meta-action:
+matching `FASTER` proposals become `SLOWER` rather than `IDLE`. The rule still
+does not intervene on proposed `IDLE` actions and has no latch. This isolates a
+stronger longitudinal response without adopting the broad
+`FASTER_OR_IDLE` emergency scope.
+
+The comparator is not rerun. M13 is bound to the committed M12B baseline:
+
+```text
+results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv
+SHA-256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4
+```
+
+The evaluator verifies that fingerprint before loading the environment and
+records the reference path and hash in the candidate summary. A mismatch ends
+the run before an output is written.
+
+### 60.2 Prospective development feasibility gates
+
+The fixed reference contains 294/500 success, 206/500 collision, no incomplete
+episodes, and mean minimum TTC 0.6003656548142169 s. The selective brake is
+development-feasible only if all five conditions hold:
+
+1. success is at least 60.8% (304/500), an improvement of at least 2.0 points;
+2. collision is at most 39.2% (196/500), a reduction of at least 2.0 points;
+3. incomplete rate is at most 2.0%;
+4. mean minimum TTC is at least 0.6003656548142169 s;
+5. the paired success direction is favorable with exact two-sided McNemar
+   `p < 0.10`.
+
+The 2-point and 0.10 levels are a development screen, not relaxed final
+acceptance. If all pass, a separately designed untouched comparison must still
+use the established final thresholds of at least +3 success points, at least
+-3 collision points, at most 2% incomplete, non-worsening mean minimum TTC,
+and favorable exact `p < 0.05`. If any development gate fails, reject selective
+braking and do not spend another holdout on it.
+
+Only this single candidate is authorized. Do not compare `IDLE` scope, another
+override action, another CPA threshold, a cooldown, or a combined shield after
+seeing the M13 output.
+
+### 60.3 Implementation and engineering verification
+
+`CPAAccelerationShield` now accepts only `IDLE` or `SLOWER` as its configured
+override and retains `IDLE` as the default so M12B remains reproducible. The
+evaluator exposes `--cpa-override-action`, verifies an optional reference CSV
+fingerprint, and records both fields. `IDLE` outputs retain shield type
+`cpa_acceleration_veto`; `SLOWER` outputs use `cpa_selective_brake`.
+
+Focused tests verify `SLOWER` execution and reject unknown override names. The
+complete post-implementation gate passed:
+
+```text
+ruff check: passed
+pytest: 98 passed in 3.29 s
+```
+
+The first one-episode seed-7 engineering smoke correctly executed two braking
+interventions and verified the reference hash, but exposed that the summary
+still used the older `cpa_acceleration_veto` label. No research seed was used
+and the temporary output was deleted. The label was corrected before M13; the
+complete gate passed again, and a second seed-7 smoke reproduced the same
+episode while recording `cpa_selective_brake`, `SLOWER`, and the exact reference
+hash. Its two temporary files were also deleted. Neither smoke is performance
+evidence.
+
+### 60.4 Frozen command
+
+After pulling the implementation, run:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and neither output exists, run exactly:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_reward_v3_seed42.zip --model-sha256 f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 40042 --unsafe-ttc 2.0 --cpa-shield --cpa-time-threshold 2.0 --cpa-distance-threshold 3.0 --cpa-horizon 3.0 --cpa-max-range 60.0 --cpa-override-action SLOWER --reference-csv results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --reference-csv-sha256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4 --output results/ppo_reward_v3_cpa_brake_development_seed40042.csv --refuse-overwrite
+```
+
+Commit exactly the new CSV and summary JSON regardless of outcome. Do not
+rerun the V3 baseline, use a new seed, alter a threshold, run a second braking
+candidate, or commit the PPO checkpoint.
+
+### 60.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-106 | Screen `FASTER_ONLY`-to-`SLOWER` as the sole M13 candidate | Expand to `IDLE`, tune thresholds, or combine shields | Isolates action potency after the neutral veto changed almost no trajectories | Retained |
+| D-107 | Reuse consumed seeds and the exact committed V3 baseline | Spend a new holdout or rerun the comparator | M13 is candidate triage, not a final policy claim | Retained |
+| D-108 | Require all five prospective development gates | Advance on a descriptive success increase | Prevent another holdout for a weak or unsafe signal | Retained |
+| D-109 | Give selective braking a distinct summary type | Reuse the mild-veto label | Preserve unambiguous artifact provenance | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Implemented and froze M13 selective-braking development screen | Test whether a causally stronger but still action-selective override merits another holdout | Ruff and 98 tests passed; two seed-7 smokes verified execution/reference binding and exposed then confirmed correction of the initial shield-type label | This implementation update |
+
+**Next action:** pull this implementation, pass the complete test gate, run only the frozen M13 development command, and commit its two small outputs. Do not run a new holdout.
