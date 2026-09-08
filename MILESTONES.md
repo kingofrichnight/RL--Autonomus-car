@@ -6046,3 +6046,117 @@ run a shield, or reserve a new holdout until the final ZIP is audited.
 | 2026-09-07 | Completed M14B, rejected Fusion V1 as-is, and froze Fusion V2 multi-environment training | Preserve the one-episode gate failure while testing whether more diverse experience removes genuine stalls | Two-file scope/hashes, reference and fusion metadata, 500 rows, aggregate and 3-by-3 paired transitions, exact tests, all gates, sampled stall replays, and four-environment smoke verified | Result: `380d517`; documentation: this update |
 
 **Next action:** pass the complete test gate, run only the frozen Fusion V2 training command, and commit its training JSON while keeping all checkpoints local.
+
+
+---
+
+## 65. Milestone M14C training result and M14D development protocol
+
+**Experiment IDs:** E-M14C-FUSION-V2-MULTIENV-S42 and E-M14D-FUSION-V2-DEV-S40042
+
+**Status:** Fusion V2 training completed and validated; paired development evaluation pending
+
+**Date recorded:** 2026-09-07
+
+### 65.1 Training artifact and checkpoint audit
+
+Commit `86a0c9e` adds only
+`results/ppo_fusion_v2_multienv_seed42.training.json`. Its SHA-256 is
+`0f8f080f31f6026af2c02d41ffa68709939996ada9c9172022db97c2099e869f`.
+The local final checkpoint remains ignored and has SHA-256
+`7253cf4a64785bd9d851bf91dbe3c5c2b96d159910d238f0eb5640fea7cb38b9`,
+matching the summary exactly.
+
+| Training property | Frozen value | Observed | Decision |
+|---|---:|---:|---|
+| Configuration SHA-256 | `433e6972...fae69` | exact | Passed |
+| Anchor seed | 42 | 42 | Passed |
+| Environments | 4 | 4 | Passed |
+| Initial seeds | 42, 1042, 2042, 3042 | exact | Passed |
+| Requested / collected steps | 500,000 / 500,736 | exact | Passed |
+| Per-env `n_steps` / rollout | 256 / 1024 | 256 / 1024 | Passed |
+| Batch / learning rate | 64 / 0.0003 | exact | Passed |
+| Gamma / GAE / entropy | 0.99 / 0.95 / 0.01 | exact | Passed |
+| Observation shape | `[175]` | `[175]` | Passed |
+| Fusion slots/features | 14 / 5 | 14 / 5 | Passed |
+| Fusion scales | 200 / 20 / 10 / 5 / 20 | exact | Passed |
+| Internal evaluation | offset 80K; 100 every 25K | exact | Passed |
+| Intent / shield | none / false | none / false | Passed |
+
+Independent loading confirmed 500,736 stored timesteps, stored `n_envs=4`, a
+175-value Box observation, three discrete actions, `n_steps=256`, batch 64,
+the fixed PPO coefficients, and finite policy parameters. A deterministic
+seed-7 production-fusion reset, prediction, and step succeeded. None of these
+checks measure success or collision performance.
+
+The final checkpoint is accepted as the sole M14D candidate. Callback-best and
+periodic checkpoints are ineligible regardless of their internal reward.
+
+### 65.2 Frozen M14D comparison
+
+M14D evaluates final Fusion V2 once on the consumed seeds 40042–40541 and binds
+the run to the same committed V3 baseline SHA-256
+`aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4`.
+The evaluation uses deterministic actions, collision-first outcomes, the
+unchanged V3 configuration, all fixed fusion scales, no intent model, no
+shield, and unsafe-TTC reporting at 2.0 seconds.
+
+This is development evidence. No untouched holdout is authorized until M14D
+passes. The evaluation cannot be used to choose a stored training checkpoint,
+feature scale, training seed, or further duration.
+
+### 65.3 Prospective advancement gates
+
+Fusion V2 was designed to remove Fusion V1's stall excess without giving back
+its strong effect. It advances only if all conditions hold:
+
+1. success is at least Fusion V1's 63.0% (315/500);
+2. collision is at most Fusion V1's 34.8% (174/500);
+3. incomplete rate is at most 2.0% (no more than 10/500);
+4. mean minimum TTC is at least the V3 reference's 0.6003656548142169 s;
+5. relative to V3, paired success change is favorable with exact two-sided
+   McNemar `p < 0.05`.
+
+The first two gates deliberately preserve Fusion V1's observed task effect
+rather than reverting to the weaker original development floors. This rule is
+fixed before viewing any Fusion V2 policy result. Mean reward, travel time,
+unsafe-TTC events, and internal evaluation curves are descriptive.
+
+If any gate fails, reject Fusion V2 and do not inspect other checkpoints or
+retune training on seeds 40042–40541. If all pass, reserve a new untouched
+500-episode paired V3/Fusion V2 holdout with the established final +3/-3-point,
+2% incomplete, non-worsening TTC, and favorable `p < 0.05` rules.
+
+### 65.4 Frozen command
+
+First run:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only if both pass and neither output exists, run exactly:
+
+```powershell
+python scripts/evaluate_policy.py --model models/ppo_fusion_v2_multienv_seed42.zip --model-sha256 7253cf4a64785bd9d851bf91dbe3c5c2b96d159910d238f0eb5640fea7cb38b9 --config configs/intersection_reward_v3.yaml --config-sha256 433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69 --episodes 500 --seed 40042 --unsafe-ttc 2.0 --risk-fusion --fusion-neighbors 14 --fusion-range-scale 200.0 --fusion-relative-speed-scale 20.0 --fusion-ttc-scale 10.0 --fusion-cpa-horizon 5.0 --fusion-cpa-distance-scale 20.0 --reference-csv results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --reference-csv-sha256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4 --output results/ppo_fusion_v2_development_seed40042.csv --refuse-overwrite
+```
+
+Commit exactly the new CSV and summary JSON regardless of outcome. Keep every
+checkpoint local. Do not evaluate Fusion V1 again, rerun V3, substitute a V2
+checkpoint, change fusion parameters, or use a new seed block.
+
+### 65.5 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-128 | Accept final Fusion V2 for one development evaluation | Inspect callback-best or periodic checkpoints | Training summary and local final ZIP pass every frozen integrity check | Retained |
+| D-129 | Require V2 to preserve V1's 63.0% success and 34.8% collision | Reuse only the weaker +2/-2-point floors | V2 exists specifically to fix stalls without losing V1's task effect | Retained |
+| D-130 | Keep the 2.0% incomplete ceiling unchanged | Round 2.2% down or allow one extra episode | Completion was the sole V1 failure and must be fixed prospectively | Retained |
+| D-131 | Continue using consumed seeds for M14D | Spend a new holdout before V2 screening | Candidate selection remains development work | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-07 | Completed and accepted M14C training for one strict Fusion V2 development comparison | Test whether multi-stream 500K training removes V1 stalls without losing its gains | Single-summary scope/hash, exact training fields, local ZIP fingerprint, stored spaces/timesteps/n-envs/PPO settings/finiteness, and seed-7 inference verified | Result: `86a0c9e`; documentation: this update |
+
+**Next action:** pass the complete test gate, run only the frozen M14D command, and commit its two small artifacts. Do not evaluate a holdout or any other checkpoint.

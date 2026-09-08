@@ -315,6 +315,12 @@ However, 11/500 episodes were incomplete (2.2%), one episode above the frozen
 features and reward but trains longer across four deterministic environment
 seed streams to test whether greater experience removes the observed stalls.
 
+Fusion V2 training completed at 500,736 steps with checkpoint SHA-256
+`7253cf4a...38b9`. The four-stream checkpoint passed all structural and
+finite-parameter checks. Its development evaluation must now preserve Fusion
+V1's 63.0% success / 34.8% collision while reducing incomplete episodes to at
+most 2.0%; it is not accepted before that comparison.
+
 Record a trained episode:
 
 ```bash
