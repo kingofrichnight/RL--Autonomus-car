@@ -6160,3 +6160,151 @@ checkpoint, change fusion parameters, or use a new seed block.
 | 2026-09-07 | Completed and accepted M14C training for one strict Fusion V2 development comparison | Test whether multi-stream 500K training removes V1 stalls without losing its gains | Single-summary scope/hash, exact training fields, local ZIP fingerprint, stored spaces/timesteps/n-envs/PPO settings/finiteness, and seed-7 inference verified | Result: `86a0c9e`; documentation: this update |
 
 **Next action:** pass the complete test gate, run only the frozen M14D command, and commit its two small artifacts. Do not evaluate a holdout or any other checkpoint.
+
+
+---
+
+## 66. Milestone M14D result — Fusion V2 removes incompletion but loses driving gains
+
+**Experiment ID:** E-M14D-FUSION-V2-DEV-S40042
+
+**Status:** Completed; Fusion V2 rejected as an improvement; V3 remains current best accepted policy
+
+**Date recorded:** 2026-09-08
+
+### 66.1 Result artifacts and protocol verification
+
+Result commit `1f25f4278b4425b02c7909d177b976f5d1ca5ec0` adds exactly the
+500-row CSV and its summary JSON. At the start of this review the commit was
+local while remote `main` remained at `0b22160`; the result and this analysis
+are to be pushed together. Neither checkpoint is tracked.
+
+| Artifact | SHA-256 |
+|---|---|
+| `results/ppo_fusion_v2_development_seed40042.csv` | `4d5100a13ee82ceff4f1114440e51178f0a3ee940a71166818a6a23ef2533589` |
+| `results/ppo_fusion_v2_development_seed40042.summary.json` | `e0cfda3bb507c58fb53ea94ee834c64632674a38c43098f70b8fca40e4339193` |
+| Bound V3 baseline CSV | `aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4` |
+| Descriptive Fusion V1 comparator CSV | `1c54c4d36525bd84daf82c2773729aee3e4429c68db83d5ec67563b86605d632` |
+
+The summary matches all 28 checked frozen protocol fields and all three
+normalized paths: final V2 checkpoint, V3 configuration, bound baseline,
+500 episodes, seeds 40042–40541, deterministic evaluator, unsafe TTC 2.0 s,
+14 neighbors with five fusion features and scales 200/20/10/5/20, no intent,
+and no safety shield. The local checkpoint, configuration, and baseline
+fingerprints were independently recomputed and match section 65 exactly.
+There are no code, configuration, or test changes in the result commit.
+
+All three CSVs have 500 rows, no overlapping success/collision flags, and no
+nonfinite numeric values. Every reported aggregate reproduces from its CSV
+within `1e-12`. Collision-first classification therefore leaves these rows
+unchanged. The summaries specify identical seed bounds and the evaluator
+resets with `seed + episode_index`, then writes episodes in order. Since the
+CSV schema has no seed column, the pairing below relies on that recorded
+generation order; per-row seed identities cannot be independently certified
+from the CSVs alone.
+
+Ruff and the complete **114-test** suite passed during this result audit. This
+post-run check verifies the current code; no separate pre-evaluation test log
+is included in the two result artifacts. No evaluation, training, checkpoint
+scan, or episode replay was run during this review.
+
+### 66.2 Reproduced development metrics
+
+All policies below use the same consumed seeds 40042–40541.
+
+| Metric | V3 reference | Fusion V1 | Fusion V2 |
+|---|---:|---:|---:|
+| Success | 294/500 (58.8%) | 315/500 (63.0%) | 291/500 (58.2%) |
+| Collision | 206/500 (41.2%) | 174/500 (34.8%) | 209/500 (41.8%) |
+| Incomplete | 0/500 (0%) | 11/500 (2.2%) | 0/500 (0%) |
+| Mean reward | 2.0158370123 | 2.8162111915 | 1.8878335538 |
+| Mean length | 37.934 | 41.668 | 38.714 |
+| Mean travel time (s) | 7.5868 | 8.3336 | 7.7428 |
+| Mean minimum TTC (s) | 0.6003656548 | 0.6280867209 | 0.6174481851 |
+| Mean unsafe-TTC events | 16.116 | 16.486 | 16.100 |
+| Mean safety interventions | 0 | 0 | 0 |
+
+Relative to V3, V2 changes success by **-0.6 percentage points** and collision
+by **+0.6 points**. Relative to Fusion V1, it changes success by **-4.8 points**,
+collision by **+7.0 points**, and incompletion by **-2.2 points**. Higher mean
+minimum TTC than V3 does not establish lower collision risk.
+
+### 66.3 Paired outcomes and exact tests
+
+Rows are V3 outcomes; columns are Fusion V2 outcomes:
+
+| V3 outcome | V2 success | V2 collision | V2 incomplete |
+|---|---:|---:|---:|
+| Success | 274 | 20 | 0 |
+| Collision | 17 | 189 | 0 |
+| Incomplete | 0 | 0 | 0 |
+
+V2 gains 17 successes and loses 20. The exact two-sided McNemar test gives
+`p = 0.7428293587290682`, with an unfavorable direction. The collision test
+has the same discordant counts and p-value. These results do not demonstrate
+a statistically significant difference from V3.
+
+The additional Fusion V1 comparison is descriptive analysis of already
+consumed development results, not an extra advancement test:
+
+| Fusion V1 outcome | V2 success | V2 collision | V2 incomplete |
+|---|---:|---:|---:|
+| Success | 273 | 42 | 0 |
+| Collision | 16 | 158 | 0 |
+| Incomplete | 2 | 9 | 0 |
+
+V2 loses 42 V1 successes and gains 18, giving exact two-sided success
+`p = 0.002670436282807066` in the unfavorable direction. It removes 16 V1
+collisions but adds 51, giving collision `p = 0.000021689238760717064`.
+Of the 11 V1 incomplete episodes, **two become successes and nine become
+collisions**. Eliminating incompletion consequently did not recover safe
+completion in most of those cases.
+
+### 66.4 Frozen gate decisions
+
+| Gate from section 65 | Observed | Decision |
+|---|---|---|
+| Success at least 315/500 (63.0%) | 291/500 (58.2%) | Failed |
+| Collision at most 174/500 (34.8%) | 209/500 (41.8%) | Failed |
+| Incomplete at most 10/500 (2.0%) | 0/500 (0%) | Passed |
+| Mean minimum TTC at least 0.6003656548142169 s | 0.6174481850738929 s | Passed |
+| Favorable paired success versus V3, exact `p < 0.05` | 17 gains, 20 losses; `p = 0.7428293587` | Failed |
+
+Only two of five gates pass. **Fusion V2 is rejected as an improvement.**
+No untouched holdout advances from M14D. Fusion V1 remains rejected under its
+original 2.0% incomplete ceiling; its promising development aggregate does
+not make it an accepted replacement. V3 remains current best accepted policy.
+
+### 66.5 Interpretation and next research direction
+
+The V2 training package successfully removed incomplete terminal outcomes,
+but failed to preserve V1's success and collision gains. Longer training,
+four environment streams, and shorter per-environment rollouts changed
+together, so this comparison cannot identify which training change caused
+the regression. The CSVs contain terminal aggregates, not action traces;
+they also cannot establish that V2 became more aggressive or explain the
+timing of the added collisions.
+
+The next work is to design and freeze a non-interventional action/timing
+diagnostic using the existing V1 and V2 final policies on consumed cases,
+including the incomplete-to-collision transitions. Its aim is to distinguish
+unsafe entry timing from stalled but otherwise safe opportunities before
+choosing another controlled training experiment. It must preserve policy
+actions and reproduce the relevant committed episode outcomes. This result
+section does not select new coefficients, feature scales, training duration,
+checkpoints, or a new holdout, and it provides no new run command.
+
+### 66.6 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-132 | Reject Fusion V2 and retain V3 as current best accepted policy | Advance because incompletion reached zero | Success, collision, and paired-success gates failed | Retained |
+| D-133 | Preserve Fusion V1's original rejection | Relax its 2.0% incomplete ceiling after V2 failed | V1 still has 11/500 incomplete episodes | Retained |
+| D-134 | Diagnose action timing before choosing another training experiment | Assume more training or greater caution will improve both outcomes | Nine of eleven V1 incomplete cases became collisions; terminal CSVs cannot explain mechanism | Retained |
+| D-135 | Treat M14D pairing as supported by generation order | Claim the CSV independently certifies every seed | Seed bounds are in summaries; row-level seed IDs are absent | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-08 | Recorded and rejected M14D Fusion V2 development result | Apply all frozen gates and preserve unsuccessful evidence | Two-file scope; artifact/model/config/reference hashes; protocol fields; 1,500 existing CSV rows and aggregates; paired matrices and exact tests; Ruff and 114 tests passed | Result: `1f25f42`; documentation: this update |
+
+**Next action:** freeze an action/timing diagnostic on consumed cases before another local run. Keep all models local and do not rerun M14D or evaluate an untouched holdout.

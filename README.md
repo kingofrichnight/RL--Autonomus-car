@@ -321,6 +321,13 @@ finite-parameter checks. Its development evaluation must now preserve Fusion
 V1's 63.0% success / 34.8% collision while reducing incomplete episodes to at
 most 2.0%; it is not accepted before that comparison.
 
+Fusion V2 subsequently failed development: 58.2% success, 41.8% collision,
+and 0% incomplete on the same 500 seeds. It failed three of five frozen gates
+and is rejected. Of Fusion V1's 11 incomplete episodes, only two became
+successes and nine became collisions. V3 remains the best accepted policy;
+the next work is a frozen diagnostic of action timing in these regressions
+before another training experiment. See MILESTONES.md section 66.
+
 Record a trained episode:
 
 ```bash
