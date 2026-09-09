@@ -328,6 +328,12 @@ successes and nine became collisions. V3 remains the best accepted policy;
 the next work is a frozen diagnostic of action timing in these regressions
 before another training experiment. See MILESTONES.md section 66.
 
+The M15A action-timing diagnostic is now implemented. It replays 89 frozen
+paired cases (178 episodes), checks each against its original CSV row, and
+records action, target-speed, motion, lane, and conflict traces. Run the
+hash-bound command in MILESTONES.md section 67 after the test gate; commit its
+single JSON report, including a failed report if reproduction fails.
+
 Record a trained episode:
 
 ```bash

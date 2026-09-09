@@ -6308,3 +6308,198 @@ checkpoints, or a new holdout, and it provides no new run command.
 | 2026-09-08 | Recorded and rejected M14D Fusion V2 development result | Apply all frozen gates and preserve unsuccessful evidence | Two-file scope; artifact/model/config/reference hashes; protocol fields; 1,500 existing CSV rows and aggregates; paired matrices and exact tests; Ruff and 114 tests passed | Result: `1f25f42`; documentation: this update |
 
 **Next action:** freeze an action/timing diagnostic on consumed cases before another local run. Keep all models local and do not rerun M14D or evaluate an untouched holdout.
+
+
+---
+
+## 67. Milestone M15A implementation and frozen protocol — fusion action timing
+
+**Experiment ID:** E-M15A-FUSION-TIMING-DEV-S40042
+
+**Status:** Implemented and verified; full local diagnostic pending
+
+**Date recorded:** 2026-09-09
+
+### 67.1 Question and fixed case selection
+
+M14D found that nine of Fusion V1's eleven incomplete episodes became V2
+collisions, and 42 V1 successes also became collisions. This diagnostic
+collects decision traces to examine target-speed changes, motion, and
+conflict timing in those regressions. It does not alter either final policy.
+
+The references remain the committed V1/V2 development CSVs on consumed seeds
+40042–40541. Select every outcome-discordant row, plus the first ten rows in
+seed order from each of the stable-success and stable-collision groups:
+
+| V1 outcome | V2 outcome | Selected cases | Selection |
+|---|---|---:|---|
+| Success | Collision | 42 | All |
+| Collision | Success | 16 | All |
+| Incomplete | Success | 2 | All |
+| Incomplete | Collision | 9 | All |
+| Success | Success | 10 | First ten by seed |
+| Collision | Collision | 10 | First ten by seed |
+| **Total** | | **89** | **178 replays, one per policy per case** |
+
+The implementation independently reproduced these counts before any full
+diagnostic run. It processes the selected cases in ascending seed order and
+records both the inferred source-row index and explicit replay seed. Original
+CSVs still lack seed columns; seed identity comes from their documented row
+order and summary bounds, as disclosed in section 66. These selected cases
+are for diagnosis and cannot estimate population success/collision rates.
+The twenty unchanged cases provide descriptive context rather than randomized
+experimental controls.
+
+### 67.2 Frozen inputs and implementation
+
+New files:
+
+- `scripts/diagnose_fusion_timing.py`: reference audit, deterministic case
+  selection, non-interventional replay, comparison, and exclusive JSON output;
+- `configs/fusion_timing_v1.json`: all frozen inputs and diagnostic settings;
+- `tests/test_fusion_timing_diagnostic.py`: thirty new tests including
+  parameterized cases.
+
+Protocol SHA-256:
+
+```text
+374d4556e282e8753d42c63af37557bd3e3ae6b31d598286739c27c860eda0dc
+```
+
+The protocol binds the V3 configuration and both final Fusion checkpoints
+to the fingerprints recorded in sections 63–66. It also binds each reference
+CSV and summary JSON; all seven input fingerprints were checked against the
+local files. Reference aggregates, column order, row count, integer counts,
+collision-first outcomes, seed bounds, and fusion metadata must agree before
+loading either policy. The V1 summary fingerprint is
+`ef286f04a0a7bca4d40059c2bd7baadbe6f33ac541cc8c0a926579a2a783b7da`;
+the V2 summary fingerprint is
+`e0cfda3bb507c58fb53ea94ee834c64632674a38c43098f70b8fca40e4339193`.
+
+The environment uses the existing V3 reward, 175-value fusion observation,
+14 neighbors, and unchanged fusion scales 200/20/10/5/20. Evaluation keeps
+deterministic prediction, the original automatic device selection, 5 Hz
+policy frequency, and unsafe-TTC reporting at 2.0 s. No intent or shield is
+enabled. The report records actual model devices, Python/package versions,
+the diagnostic source hash, and the complete protocol.
+
+### 67.3 Measurements and interpretation limits
+
+Before every action, record the observation fingerprint, selected action,
+ego speed and target speed, position, current and target lane indices, lane
+longitudinal coordinate and remaining distance, radial TTC, and nearby CPA
+geometry. After the unchanged action is passed to `env.step`, record actual
+speed, target speed, route progress, and termination/truncation flags.
+
+The explanatory CPA flag uses the already-established thresholds of time
+at most 2.0 s and distance at most 3.0 m, with a 3.0 s horizon and 60 m range.
+It checks every candidate pair and records the number that qualify, alongside
+the closest-distance pair. These thresholds only annotate the trace. Geometry
+comes from simulator traffic state and may include traffic beyond the policy's
+visible slots; it is never inserted into the observation or action path.
+
+Per-episode summaries count actions, flagged actions, target increases and
+decreases, and low-speed samples. Low speed is defined as absolute speed at
+most 0.5 m/s. The longest consecutive low-speed run and low-speed samples
+without the CPA flag are also reported. Sample counts divided by 5 give
+sampled durations in seconds. The terminal window uses the last two seconds
+of each policy's own episode, which may end at different times.
+
+`IDLE` continues the existing speed target and may produce acceleration or
+braking. The controller derives `FASTER`/`SLOWER` targets from measured speed,
+so command counts alone do not establish aggressiveness. Current/target lane
+changes are geometric route indicators, not exact physical conflict-zone
+crossings. Missing CPA predictions or unflagged low-speed samples do not
+certify a safe opportunity to move.
+
+The report gives the first differing action and first differing observation
+within the common decision horizon. Initial observations and the complete
+observation prefix through the first differing action must match. After that
+action, traffic and ego trajectories may diverge; comparisons of later
+actions are not counterfactual tests on the same scene. This diagnostic can
+describe behavior but cannot prove which coupled V2 training change caused
+its regression or which alternative action would have prevented a collision.
+
+### 67.4 Reproduction and failure rules
+
+Each replay must reproduce all eight original episode metrics. Boolean and
+integer counts must match exactly; floating-point metrics use absolute
+tolerance `1e-12` and zero relative tolerance. Metric accumulation preserves
+the production evaluator's pre-step TTC and `info.get("min_ttc", pre_step_ttc)`
+fallback. No post-step TTC substitution or policy action override is allowed.
+
+Accept the diagnostic for analysis only if all 178 episode comparisons and
+all 89 shared-observation-prefix checks pass. A passed diagnostic does not
+advance either rejected policy or authorize an untouched holdout.
+
+Reports include full traces stored as compact arrays with named columns.
+Only descriptive trace floats are rounded to six decimals; original metrics,
+their comparisons, observation hashes, and summary counts are unrounded.
+Absent finite TTC/CPA predictions use JSON `null`; invalid physical state or
+policy observations fail the run. Strict JSON serialization rejects NaNs.
+
+Output creation is exclusive and refuses an existing report. Protocol-loading,
+fingerprint, replay, prefix, and cleanup errors preserve a failure JSON when
+the output location is writable. Metric failures include the failing seed,
+policy, observed/expected metrics, and mismatched fields. Cleanup failures do
+not mask an earlier error. Preserve and commit a failure report; do not delete
+it and rerun or change seeds, checkpoints, or diagnostic thresholds.
+
+### 67.5 Verification and implementation corrections
+
+Ruff and the complete **144-test** suite passed. The thirty new tests cover
+case selection and collision-first handling; exact count/tolerant float
+comparison; NaN rejection; low-speed streaks; IDLE/target-speed semantics;
+action/observation divergence ordering; snapshot non-interference with RNG,
+route, vehicle position, and observations; deterministic action forwarding;
+exclusive output; protocol-loading and metric failures; and cleanup errors.
+
+Two short seed-7 checks, one for each existing final Fusion policy, reproduced
+the uninstrumented production evaluation behavior: every episode metric,
+action, and observation hash matched. Both policies loaded on CPU with
+175-value observations, and their shared-observation-prefix check passed.
+These checks wrote no artifacts and produced no new development-rate claims.
+The full 178-episode diagnostic has not been run by Codex.
+
+During implementation, a transcribed V1 summary hash and a lint line-length
+issue were corrected before the run protocol was finalized. Initial tests
+had 22 passes and three fixture setup errors because the sandbox could not
+access pytest's temporary directory; the permitted rerun passed all 25 tests
+then present, and the later full suite passed all 144 after five runner tests
+were added. Review also prompted failure recording for protocol-loading and
+cleanup errors, and rejection of nonfinite physical/observation values.
+
+### 67.6 Frozen local command
+
+From the project root with its virtual environment active, first run:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Only after both pass and the output does not already exist, run:
+
+```powershell
+python -m scripts.diagnose_fusion_timing --protocol configs/fusion_timing_v1.json --protocol-sha256 374d4556e282e8753d42c63af37557bd3e3ae6b31d598286739c27c860eda0dc --output results/fusion_timing_v1_development_seed40042.json
+```
+
+Commit only `results/fusion_timing_v1_development_seed40042.json`, whether it
+contains a successful reproduction or a preserved failure. Keep all model
+checkpoints local. No training, changed reward, altered feature scale,
+checkpoint search, or untouched holdout follows automatically from this run.
+
+### 67.7 Append-only decision and change-log additions
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-136 | Replay all changed outcomes plus twenty deterministic unchanged cases | Inspect only selected spectacular collisions | Covers every known V1/V2 outcome change with limited contextual replays | Retained |
+| D-137 | Record target and actual speed alongside policy commands | Infer caution from IDLE counts | IDLE can accelerate toward an existing target | Retained |
+| D-138 | Require original row reproduction and shared observation prefixes | Analyze traces without checking replay fidelity | Instrumentation must preserve behavior and common pre-divergence observations | Retained |
+| D-139 | Keep the diagnostic descriptive with no policy advancement | Infer safe alternative actions from unflagged geometry | Outcome-selected cases and constant-velocity geometry cannot establish causal safety | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-09 | Implemented and froze M15A Fusion action-timing diagnostic | Explain observed V2 regressions before selecting another training experiment | Seven input hashes and 89-case selection checked; Ruff and 144 tests passed; both seed-7 metric/action/observation checks passed | This implementation update |
+
+**Next action:** pass the test gate, run the single frozen local diagnostic command, and commit its one JSON output for analysis.
