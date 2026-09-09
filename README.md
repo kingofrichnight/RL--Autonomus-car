@@ -334,6 +334,14 @@ records action, target-speed, motion, lane, and conflict traces. Run the
 hash-bound command in MILESTONES.md section 67 after the test gate; commit its
 single JSON report, including a failed report if reproduction fails.
 
+M15A completed with all 178 episode replays and 89 observation-prefix checks
+passing. All eleven V1 incomplete cases ended with IDLE maintaining a zero
+speed target; they spent an average 25.53 seconds at low speed. In V2's 51
+added-collision cases, 157 of 202 CPA-flagged terminal-window decisions were
+IDLE with a positive target. Current observations omit that controller target.
+The next proposed experiment is to expose it explicitly to PPO; its benefit
+is untested. V3 remains the best accepted policy. See MILESTONES.md section 68.
+
 Record a trained episode:
 
 ```bash

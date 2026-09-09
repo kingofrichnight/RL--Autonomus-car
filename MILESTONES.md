@@ -6503,3 +6503,175 @@ checkpoint search, or untouched holdout follows automatically from this run.
 | 2026-09-09 | Implemented and froze M15A Fusion action-timing diagnostic | Explain observed V2 regressions before selecting another training experiment | Seven input hashes and 89-case selection checked; Ruff and 144 tests passed; both seed-7 metric/action/observation checks passed | This implementation update |
 
 **Next action:** pass the test gate, run the single frozen local diagnostic command, and commit its one JSON output for analysis.
+
+
+---
+
+## 68. Milestone M15A result — controller targets distinguish waiting from continued motion
+
+**Experiment ID:** E-M15A-FUSION-TIMING-DEV-S40042
+
+**Status:** Diagnostic completed and accepted for descriptive analysis; policy decisions unchanged
+
+**Date recorded:** 2026-09-09
+
+### 68.1 Artifact and independent reproduction audit
+
+Commit `e53ac66079d257814d4a183ad0d2503d340759fb` adds only
+`results/fusion_timing_v1_development_seed40042.json` (2,084,328 bytes).
+Its SHA-256 is:
+
+```text
+86e1e6b81e29f0a9761dbcf7637a7d094cbe59c2b1400d1474b530f4888de3f9
+```
+
+The local result commit initially had not been pushed: remote `main` was
+still `32f7286`. The result and this analysis are to be pushed together.
+The result commit changes no code, configuration, tests, or checkpoints.
+
+The report contains the exact frozen protocol at SHA-256
+`374d4556e282e8753d42c63af37557bd3e3ae6b31d598286739c27c860eda0dc`.
+Its recorded diagnostic source hash is
+`9c9a16f8bfb2c6767f7e70b69e556fd143956dbc8666b6780ce67203dd3c69e6`,
+matching the committed script. All seven bound input files were rehashed and
+matched: environment configuration, two final checkpoints, two CSVs, and two
+summary JSONs. Both model devices were CPU.
+
+Runtime recorded by the report: Python 3.12.9; NumPy 2.5.2; pandas 2.3.3;
+PyTorch 2.13.0; Gymnasium 1.3.0; HighwayEnv 1.12.1; Stable-Baselines3 2.9.0.
+These are the reported installed versions, not new dependency requirements.
+
+Independent read-only analysis verified:
+
+- all 89 selected cases, their order, explicit seeds, source row indices,
+  strata, and frozen transition counts;
+- all 178 observed and embedded expected metric records against the original
+  CSV rows, with exact flags/counts and `1e-12` absolute float tolerance;
+- all 8,213 trace rows, column counts, step/time ordering, action names,
+  observation fingerprints, finite physical scalars, and terminal flags;
+- every stored full-episode and terminal-window summary, reconstructed from
+  the compact traces, with no discrepancies due to six-decimal rounding;
+- all 89 first-action/observation-divergence comparisons and shared prefixes.
+
+`reference_reproduced` is true, `verified_episode_count` is 178, and there are
+no recorded run or cleanup failures. Ruff and all **144 tests** passed during
+this result audit. No policy was replayed or trained during the analysis.
+This post-run test check does not independently establish when the user's
+pre-run tests were executed.
+
+### 68.2 Incomplete cases are persistent zero-target stops
+
+Every V1 incomplete case remained on incoming lane `o0 -> ir0` and ended
+with zero recorded speed and a zero target speed. Across their last two
+seconds, all **110/110 decisions** were `IDLE`, at low speed, with target zero
+and no CPA flag. Their longest low-speed segment equaled their total low-speed
+duration. Mean low-speed duration was **25.5273 s**, using the frozen
+`abs(speed) <= 0.5 m/s` definition and 5 Hz sampling.
+
+| Seed | V1 low-speed time (s) | V2 outcome |
+|---:|---:|---|
+| 40092 | 25.6 | Collision |
+| 40094 | 26.4 | Collision |
+| 40160 | 24.2 | Collision |
+| 40168 | 26.2 | Collision |
+| 40181 | 26.0 | Collision |
+| 40302 | 25.8 | Collision |
+| 40335 | 25.4 | Collision |
+| 40382 | 25.4 | Success |
+| 40495 | 25.0 | Collision |
+| 40526 | 25.4 | Success |
+| 40530 | 25.4 | Collision |
+
+These V1 reference episodes contain 151 decisions and report 30.2 s under the
+existing evaluator; those values are preserved exactly. Mean V2 low-speed
+time on the same eleven seeds was only 0.0545 s, but nine outcomes became
+collisions. The absence of a CPA flag during a V1 stop is not proof that any
+particular departure time would have been safe.
+
+### 68.3 IDLE often maintains motion in V2's added collisions
+
+The 42 success-to-collision and nine incomplete-to-collision cases account
+for all 51 collisions V2 adds relative to V1. Across V2's final two seconds
+in these cases, **202 of 510 decisions** carry the frozen CPA flag. Of these
+202 flagged decisions, **157 are IDLE with a positive speed target**:
+109 at 9.0 m/s and 48 at 4.5 m/s. In the nine former incomplete cases alone,
+42 of 51 flagged terminal-window decisions are IDLE with a positive target.
+
+Thus the same action label appears both in long zero-target stops and in
+continued motion near projected conflicts. This is a description of the
+selected traces, not a claim that changing those IDLE decisions would have
+prevented the collisions.
+
+### 68.4 Command differences and effective target differences
+
+Raw command divergence often precedes any change in the speed target. In
+38 of the 42 success-to-collision cases, the first differing commands still
+produce the same target speed. The median first command difference is 0.4 s,
+whereas the median first target-speed difference is 3.0 s. At the first target
+difference, all 42 cases still have identical pre-action observations.
+
+The first differing targets are split in both directions:
+
+| Outcome transition | Cases | V1 target -> V2 target at first target difference | Median time (s) |
+|---|---:|---|---:|
+| Success -> collision | 42 | 22: 9 -> 4.5; 20: 4.5 -> 9 | 3.0 |
+| Incomplete -> collision | 9 | 4: 9 -> 4.5; 1: 4.5 -> 0; 4: 4.5 -> 9 | 1.2 |
+| Collision -> success | 16 | 8: 9 -> 4.5; 8: 4.5 -> 9 | 1.8 |
+| Incomplete -> success | 2 | 2: 4.5 -> 9 | 1.4 |
+
+All 69 changed-outcome cases have a first target difference on a shared
+pre-action observation. This does not isolate the effect of that single
+decision: later policies and traffic can diverge. Both slowing and retaining
+the higher target occur among regressions and improvements, so these results
+do not support a blanket claim that V2 is too aggressive or that globally
+greater caution would improve it.
+
+The twenty unchanged cases remain descriptive context only. The first command
+difference preserves the same target in 9/10 stable-collision and 10/10
+stable-success cases. Seven stable-collision and eight stable-success cases
+eventually have a target difference; five unchanged cases never do during
+their common trace horizon. Case selection is conditioned on known outcomes,
+so no new population rates or inferential significance claims are made here.
+
+### 68.5 Observation audit and next testable hypothesis
+
+Source inspection confirms the base observation selects
+`presence, x, y, vx, vy, cos_h, sin_h`. The existing fusion wrapper adds only
+neighbor range, closing speed, radial TTC, CPA time, and CPA distance.
+Neither component includes the ego controller's current target speed.
+
+The installed `MDPVehicle.act` maps FASTER/SLOWER from measured speed to a
+discrete target, while IDLE retains the existing target. The low-level speed
+controller uses the difference between target and measured speed. Therefore
+the current target is a relevant internal controller state that is not
+explicitly supplied to the feed-forward PPO policy. This source-level fact
+and the observed zero-/positive-target IDLE behavior motivate the next
+hypothesis; they do not prove that the missing input caused the failures.
+
+**Proposed next direction:** add an explicit ego target-speed observation as
+one isolated representation change, preserving all existing fusion values.
+Test it with a prospectively specified training budget, seed protocol, and
+development gates matched to its comparator. The purpose is to let PPO
+distinguish its current commanded speed from its measured motion. Its effect
+on success, collisions, or incompletion is unknown.
+
+This proposal is not an automatic training authorization or an implemented
+policy change. It requires an optional, backward-compatible observation
+extension, non-interference tests, and a frozen comparison protocol before a
+local training command is issued. No restart override, reward penalty,
+additional checkpoint search, or new holdout is selected by this result.
+
+### 68.6 Decisions and change log
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-140 | Accept M15A for descriptive analysis | Discard a completed diagnostic after policy failure | All 178 reference rows, 89 shared prefixes, and 8,213 trace rows verified | Retained |
+| D-141 | Distinguish commanded speed from action labels | Treat IDLE as stationary or harmless | Zero-target V1 stalls and positive-target V2 conflict decisions both use IDLE | Retained |
+| D-142 | Propose explicit target-speed observability as the next isolated experiment | Add a blanket caution or forced-restart rule | Relevant controller state is absent from the current observation; benefit remains untested | Proposed; implementation/protocol pending |
+| D-143 | Retain all existing policy rejections and V3 acceptance | Promote V1/V2 on diagnostic evidence | No new policy outcome comparison was performed | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-09 | Recorded successful M15A reproduction and controller-target findings | Turn the V2 regression into a specific, testable observation hypothesis | Single-result scope/hash, seven bound inputs, full protocol/source match, all metric rows/traces/summaries/prefixes, local controller/observation source, Ruff and 144 tests checked | Result: `e53ac66`; documentation: this update |
+
+**Next action:** implement and freeze one optional ego target-speed observation experiment before issuing another training command. V3 remains current best accepted policy; V1 and V2 remain rejected.
