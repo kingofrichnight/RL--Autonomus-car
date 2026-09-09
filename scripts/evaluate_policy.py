@@ -8,6 +8,7 @@ from pathlib import Path
 import pandas as pd
 from stable_baselines3 import PPO
 
+from safeintent_rl.config import load_config
 from safeintent_rl.envs import make_intersection_env
 from safeintent_rl.evaluation import (
     EpisodeMetrics,
@@ -50,6 +51,8 @@ def main() -> None:
     parser.add_argument("--fusion-ttc-scale", type=float, default=10.0)
     parser.add_argument("--fusion-cpa-horizon", type=float, default=5.0)
     parser.add_argument("--fusion-cpa-distance-scale", type=float, default=20.0)
+    parser.add_argument("--target-speed-observation", action="store_true")
+    parser.add_argument("--target-speed-scale", type=float, default=9.0)
     parser.add_argument("--intent-model", default=None)
     parser.add_argument("--intent-neighbors", type=int, default=5)
     parser.add_argument("--intent-history-length", type=int, default=None)
@@ -146,6 +149,8 @@ def main() -> None:
         fusion_ttc_scale=args.fusion_ttc_scale,
         fusion_cpa_horizon=args.fusion_cpa_horizon,
         fusion_cpa_distance_scale=args.fusion_cpa_distance_scale,
+        target_speed_observation=args.target_speed_observation,
+        target_speed_scale=args.target_speed_scale,
         intent_model=args.intent_model,
         intent_neighbors=args.intent_neighbors,
         intent_history_length=intent_history_length,
@@ -236,6 +241,13 @@ def main() -> None:
             ),
             "reference_csv_sha256": reference_csv_sha256,
             "risk_fusion": args.risk_fusion,
+            "target_speed_observation": args.target_speed_observation,
+            "target_speed_scale": (
+                args.target_speed_scale if args.target_speed_observation else None
+            ),
+            "collision_first_reward": bool(
+                load_config(args.config).get("reward_wrapper", {}).get("collision_first", False)
+            ),
             "fusion_neighbors": args.fusion_neighbors if args.risk_fusion else 0,
             "fusion_features_per_neighbor": 5 if args.risk_fusion else 0,
             "fusion_range_scale": args.fusion_range_scale if args.risk_fusion else None,

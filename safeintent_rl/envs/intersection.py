@@ -12,7 +12,7 @@ from safeintent_rl.envs.driver_behavior import DriverBehaviorWrapper
 from safeintent_rl.envs.reward import RouteProgressRewardWrapper
 from safeintent_rl.intent.wrapper import IntentObservationWrapper
 from safeintent_rl.safety.shield import CPAAccelerationShield, TTCSafetyShield
-from safeintent_rl.sensors import KinematicRiskFusionWrapper
+from safeintent_rl.sensors import EgoTargetSpeedObservation, KinematicRiskFusionWrapper
 
 FALLBACK_INTERSECTION_IDS = ("intersection-v2", "intersection-v1", "intersection-v0")
 
@@ -48,6 +48,8 @@ def make_intersection_env(
     fusion_ttc_scale: float = 10.0,
     fusion_cpa_horizon: float = 5.0,
     fusion_cpa_distance_scale: float = 20.0,
+    target_speed_observation: bool = False,
+    target_speed_scale: float = 9.0,
     intent_model: str | Path | None = None,
     intent_neighbors: int = 5,
     intent_device: str = "cpu",
@@ -97,6 +99,8 @@ def make_intersection_env(
             shadow_history_neighbors=intent_shadow_history_neighbors,
             history_tracking_neighbors=intent_history_tracking_neighbors,
         )
+    if target_speed_observation:
+        env = EgoTargetSpeedObservation(env, scale=target_speed_scale)
     if safety_shield:
         env = TTCSafetyShield(env, ttc_threshold=ttc_threshold)
     if cpa_safety_shield:

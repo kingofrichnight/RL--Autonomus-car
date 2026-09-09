@@ -6675,3 +6675,249 @@ additional checkpoint search, or new holdout is selected by this result.
 | 2026-09-09 | Recorded successful M15A reproduction and controller-target findings | Turn the V2 regression into a specific, testable observation hypothesis | Single-result scope/hash, seven bound inputs, full protocol/source match, all metric rows/traces/summaries/prefixes, local controller/observation source, Ruff and 144 tests checked | Result: `e53ac66`; documentation: this update |
 
 **Next action:** implement and freeze one optional ego target-speed observation experiment before issuing another training command. V3 remains current best accepted policy; V1 and V2 remain rejected.
+
+
+---
+
+## 69. Milestone M15B implementation — collision precedence and observable target speed
+
+**Experiment IDs:** E-M15B-CONTROLLER-STATE-IMPLEMENTATION, E-M15C-FUSION-CF-CONTROL-S42,
+E-M15D-FUSION-CF-TARGET-S42, and E-M15E-FUSION-CF-PAIR-DEV-S40042
+
+**Status:** Implementation verified; matched control training pending
+
+**Date recorded:** 2026-09-09
+
+### 69.1 Reward audit and isolated correction
+
+The installed HighwayEnv reward implementation sums the weighted collision
+and speed terms, then replaces that sum with the arrival reward whenever
+`has_arrived` is true. A test invoking that upstream implementation confirmed
+that simultaneous crash and arrival with the V3 coefficients returns a base
+reward of +5.0. Collision-first evaluation classification from section 52
+does not change that training reward. This edge case is a correctness concern;
+its contribution to the observed collision rates has not been quantified.
+
+`RouteProgressRewardWrapper` now accepts `collision_first=False`. The default
+preserves all historical behavior. When explicitly enabled and both collision
+and arrival are true, it reconstructs the ordinary collision-only weighted
+base reward, excluding the arrival component and preserving the existing
+on-road multiplier. Other transitions retain their original base reward.
+
+For the new V3 configuration, let O be the original on-road indicator and
+g(v) the original clipped speed reward in [0, 1]. On an overlapping terminal
+event only:
+
+```text
+old base reward = O * 5
+new base reward = O * (-10 + 0.05 * g(v))
+shaped reward   = base reward + 2 * normalized_positive_progress - 0.005
+```
+
+With O=1 and g(v)=1, the base changes from +5.0 to -9.95. The progress/time
+terms are unchanged. This narrowly repairs arrival precedence; it does not
+redesign ordinary collision rewards, off-road gating, risk shaping, NPC
+behavior, or terminal detection. Enabled runs expose the raw upstream base
+reward and a correction flag in step info. Normalized rewards and multiple
+controlled vehicles are rejected for this option rather than approximated.
+
+The new configuration is `configs/intersection_reward_v3_collision_first.yaml`:
+
+```text
+SHA-256 4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f
+```
+
+Its parsed content differs from the existing V3 configuration only by
+`reward_wrapper.collision_first: true`. The original V3 file and its SHA-256
+`433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69`
+are preserved. Historical checkpoints/results keep their original meaning.
+
+### 69.2 Optional controller-state observation
+
+`EgoTargetSpeedObservation` appends one scalar after the existing observation:
+
+```text
+augmented_observation = [original_observation, current_ego_target_speed / 9.0]
+```
+
+The feature uses the ego controller's target, not its measured speed, desired
+NPC speed, hidden driver label, or next selected action. It updates on reset
+and after each normal environment step. It does not change the target, route,
+RNG, control action, reward, or termination. The 175 existing Fusion values
+remain intact; enabling the option produces 176 values. At targets 0, 4.5,
+and 9 m/s, the new feature is respectively 0, 0.5, and 1.
+
+The environment factory, PPO trainer, and policy evaluator expose
+`--target-speed-observation` and `--target-speed-scale 9.0` as appropriate
+Python arguments/CLI flags. The option is off by default. Invalid scales and
+nonfinite or out-of-range targets fail rather than being silently clipped.
+Training/evaluation summaries record `target_speed_observation`,
+`target_speed_scale`, and `collision_first_reward` alongside existing hashes.
+The new input is used in both training and evaluation; an old 175-input
+checkpoint cannot be substituted for the 176-input candidate.
+
+No time-remaining, acceleration, route-stage, or additional traffic feature
+is introduced in this experiment. Live watch/video entry points are not part
+of this implementation; use the verified trainer/evaluator for this stage.
+
+### 69.3 Why a new matched control is needed
+
+Comparing a new target-aware policy trained under the repaired reward directly
+to old Fusion V1 would combine a reward change and an observation change.
+The prospective experiment therefore contains two fresh final checkpoints:
+
+| Arm | Reward | Inputs | Local model stem |
+|---|---|---:|---|
+| Control | V3 with collision-first overlap correction | 175 | `ppo_fusion_cf_control_seed42` |
+| Target-aware | Same corrected reward | 176 | `ppo_fusion_cf_target_seed42` |
+
+The control isolates corrected-reward training relative to the historical
+Fusion V1 setting. The candidate/control comparison then isolates the single
+added observation. Both use the original Fusion V1 training package rather
+than the coupled four-environment/500K V2 package. A shared training seed does
+not imply identical training trajectories after the policies diverge, and
+neither arm is an independent multi-seed replication.
+
+### 69.4 Frozen matched training package and release order
+
+| Setting | Both arms |
+|---|---|
+| Requested / expected collected steps | 200,000 / 200,704 |
+| Training seed | 42 |
+| Environments / stride | 1 / 1000 (only seed 42 used initially) |
+| Learning rate | 0.0003 |
+| `n_steps` / batch / rollout | 1024 / 64 / 1024 |
+| Gamma / GAE / entropy | 0.99 / 0.95 / 0.01 |
+| Policy network | [256, 256] |
+| Internal evaluation | Offset 70000; 50 episodes every 10000 timesteps |
+| Checkpoint interval | 25000 timesteps |
+| Fusion neighbors / scales | 14 / 200, 20, 10, 5, 20 |
+| Shield / intent | None / none |
+| Eligible checkpoint | Final checkpoint only |
+
+The control runs first. Its final ZIP and training JSON must pass an integrity
+audit before the candidate command is released. That audit checks artifacts
+and training metadata, not driving performance. Neither arm receives a
+development evaluation until both final checkpoints are audited. Callback-best
+and periodic checkpoints remain ineligible. Internal evaluation curves do not
+select duration, coefficients, input scales, or a checkpoint.
+
+First pass the test gate:
+
+```powershell
+python -m ruff check .
+python -m pytest -p no:cacheprovider
+```
+
+Then run only this control command from the project root:
+
+```powershell
+python -m scripts.train_ppo --config configs/intersection_reward_v3_collision_first.yaml --config-sha256 4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f --timesteps 200000 --seed 42 --learning-rate 0.0003 --n-steps 1024 --batch-size 64 --n-envs 1 --env-seed-stride 1000 --eval-seed-offset 70000 --eval-episodes 50 --evaluation-freq 10000 --checkpoint-freq 25000 --risk-fusion --fusion-neighbors 14 --fusion-range-scale 200.0 --fusion-relative-speed-scale 20.0 --fusion-ttc-scale 10.0 --fusion-cpa-horizon 5.0 --fusion-cpa-distance-scale 20.0 --summary-output results/ppo_fusion_cf_control_seed42.training.json --output models/ppo_fusion_cf_control_seed42 --refuse-overwrite
+```
+
+Commit only `results/ppo_fusion_cf_control_seed42.training.json`. Keep its ZIP
+and all callback checkpoints local. Stop and preserve outputs if a mismatch
+or existing-file refusal occurs.
+
+The candidate package is frozen now but not yet released: use the identical
+command settings, add `--target-speed-observation --target-speed-scale 9.0`,
+and replace only the output stem/summary with `ppo_fusion_cf_target_seed42`.
+Expected candidate metadata is observation shape [176], target feature true,
+scale 9.0, and collision-first reward true. The control must instead report
+[175], feature false, scale null, and collision-first reward true.
+
+### 69.5 Prospective development comparison and routing
+
+After both audits, the pair will each be evaluated once on the already-consumed
+seeds 40042–40541, using deterministic actions, collision-first outcomes,
+unsafe-TTC reporting at 2.0 s, and the same corrected configuration. Evaluation
+commands must include both audited model hashes and refuse existing outputs.
+No evaluation command is released with this implementation.
+
+Each arm's absolute quality screen requires all of the following:
+
+1. success at least 63.0% (315/500);
+2. collision at most 34.8% (174/500);
+3. incomplete at most 2.0% (10/500);
+4. mean minimum TTC at least V3's 0.6003656548142169 s;
+5. favorable paired success versus the frozen V3 reference with exact
+   two-sided McNemar `p < 0.05`.
+
+The historical V3 reference remains bound to CSV SHA-256
+`aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4`.
+Its outcome/TTC comparison is descriptive development evidence under unchanged
+dynamics; its mean reward is not comparable to corrected-reward runs.
+
+To retain the added target feature, it must pass that absolute screen and also
+improve over the freshly trained control by at least +2.0 success percentage
+points and -2.0 collision points, have non-worsening mean minimum TTC versus
+control, and show favorable paired success with exact two-sided `p < 0.05`.
+This incremental test prevents attributing a reward-only improvement to the
+new input. The 2.0% incomplete ceiling still applies.
+
+Prospective routing: retain the target-aware direction for replication if it
+passes every applicable gate; otherwise reject the feature candidate and
+retain only the corrected-reward control direction if that control passes
+its absolute screen. If neither qualifies, reject both. This is a planned
+development selection rule, not evidence that either method already improves
+driving. A retained direction requires separately frozen independent-training-
+seed replication and eventual untouched evaluation before a final policy
+claim. V3 remains the accepted policy throughout this screening stage.
+
+### 69.6 Verification, engineering results, and scope limits
+
+Ruff and the complete **168-test** suite passed, including 24 added cases.
+Tests cover the installed arrival override; the corrected overlap reward;
+unchanged non-overlap rewards and progress shaping; unsupported correction
+settings; the single-option YAML difference; target scaling, reset/step
+updates, invalid values, read-only observation/RNG/route behavior; and actual
+environment-factory shapes with and without Fusion.
+
+A seed-7 replay with the original Fusion V1 policy exercised original-reward,
+corrected-reward, and corrected-reward-plus-target environments in parallel.
+All 45 selected actions preserved observations (including the full 175-value
+prefix), terminal flags, and RNG states. There was no overlapping terminal
+event in that smoke; rewards matched, while synthetic tests specifically
+covered the rare correction branch.
+
+Both arms also passed end-to-end engineering smokes: 32 PPO timesteps with
+16-step rollouts, batch 16, seed 7, one CPU thread, internal evaluation seed
+offset 1, and one-episode evaluation on seed 7. Saved checkpoints contained
+finite parameters, reloaded, and produced the correct 175/176 observation
+and reward/target metadata. These settings differ deliberately from research
+training and cannot support a performance claim.
+
+| Engineering smoke | Internal evaluation, seed 8 | Evaluation, seed 7 |
+|---|---|---|
+| 175-input control | Incomplete, 151 steps, reward about -0.506 | Collision, 33 steps, reward -8.5081827487 |
+| 176-input target | Collision, 30 steps, reward about -7.35 | Success, 44 steps, reward 8.93 |
+
+All smoke outcomes, including failures, are preserved here for transparency;
+none informed the frozen gate thresholds or training duration. Temporary
+smoke checkpoints, logs, and output files are disposable engineering artifacts
+and are removed after verification. The research checkpoints have not been
+trained by Codex. Two initial line-length lint errors in the new metadata
+entries were corrected before the passing suite; there were no test failures.
+
+The earlier environment explanation also identified `yield_probability` as
+stored profile metadata, not an input to the installed yielding controller.
+Actual profile speed, acceleration, following-distance, and time-gap changes
+remain active. This implementation does not change yielding or traffic
+difficulty; any such change would require a separate environment experiment.
+
+### 69.7 Decisions and change log
+
+| ID | Decision | Alternatives considered | Evidence | Status |
+|---|---|---|---|---|
+| D-144 | Introduce collision precedence only through a new opt-in configuration | Silently alter historical V3 rewards | Upstream overlap returns +5; ordinary transitions and legacy configuration must remain reproducible | Retained |
+| D-145 | Append only normalized ego target speed | Add time, acceleration, route, and traffic features together | M15A identified missing controller state; one input enables a controlled test | Retained |
+| D-146 | Train a matched corrected-reward 175-input control before the 176-input candidate | Attribute a combined reward/input change to observability | Both arms need the same reward and training package | Retained |
+| D-147 | Freeze final-only 200K, one-environment, seed-42 training for both arms | Reuse V2's coupled 500K/four-stream package or select checkpoints | Match the original Fusion V1 package while isolating the new feature | Retained |
+| D-148 | Require absolute quality and incremental feature gates before replication | Advance on a single aggregate or reward change | Maintain the V1 completion/safety requirements and test feature value versus its matched control | Retained |
+| D-149 | Leave yielding behavior unchanged and document the metadata limitation | Implement probabilistic yielding within this experiment | Traffic changes would confound reward/observation effects | Retained |
+
+| Date | Change | Reason | Verification | Git commit |
+|---|---|---|---|---|
+| 2026-09-09 | Implemented isolated collision precedence and optional controller-state observation; froze matched training and development routing | Test the missing-target hypothesis without confounding it with reward correctness | Ruff and 168 tests; 45-step three-environment non-interference smoke; both 32-step train/save/load/evaluate smokes; old config hash preserved | This implementation update |
+
+**Next action:** pass tests, run only the corrected-reward control training command, and commit its training JSON for the checkpoint audit. Do not run the target candidate or any development evaluation yet.

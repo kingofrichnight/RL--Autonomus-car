@@ -342,6 +342,14 @@ IDLE with a positive target. Current observations omit that controller target.
 The next proposed experiment is to expose it explicitly to PPO; its benefit
 is untested. V3 remains the best accepted policy. See MILESTONES.md section 68.
 
+The optional target-speed input and a separate collision-first reward
+configuration are now implemented. Legacy V3 settings remain unchanged.
+The next matched experiment trains a 175-input corrected-reward control first,
+then a 176-input candidate with the same reward, seed, and 200K budget. Run
+only the control training command in MILESTONES.md section 69 after tests pass;
+commit its training JSON and keep the checkpoint local. Neither policy has
+been trained for the research comparison yet.
+
 Record a trained episode:
 
 ```bash

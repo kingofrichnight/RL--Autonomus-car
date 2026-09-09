@@ -3,7 +3,9 @@ from types import SimpleNamespace
 import gymnasium as gym
 import pytest
 from gymnasium import spaces
+from highway_env.envs.intersection_env import IntersectionEnv
 
+from safeintent_rl.config import load_config
 from safeintent_rl.envs.reward import RouteProgressRewardWrapper
 
 
@@ -99,3 +101,93 @@ def test_ttc_risk_penalty_is_bounded_and_actionable() -> None:
     assert info["risk_fraction"] == pytest.approx(0.25)
     assert info["risk_penalty"] == pytest.approx(0.05)
     assert reward == pytest.approx(0.945)
+
+
+class _TerminalRewardEnv(_ProgressEnv):
+    def __init__(self, *, crashed: bool, arrived: bool) -> None:
+        super().__init__()
+        self.vehicle.crashed = crashed
+        self.arrived = arrived
+        self.config = {
+            "controlled_vehicles": 1,
+            "normalize_reward": False,
+            "collision_reward": -10.0,
+            "arrived_reward": 5.0,
+            "high_speed_reward": 0.05,
+        }
+
+    def _agent_rewards(self, action, vehicle):
+        assert vehicle is self.vehicle
+        return {
+            "collision_reward": vehicle.crashed,
+            "arrived_reward": self.arrived,
+            "high_speed_reward": 1.0,
+            "on_road_reward": True,
+        }
+
+    def step(self, action):
+        observation, _, _, _, info = super().step(action)
+        # Exercise the installed upstream implementation, including its arrival precedence.
+        reward = IntersectionEnv._agent_reward(self, action, self.vehicle)
+        return observation, reward, self.vehicle.crashed or self.arrived, False, info
+
+
+def test_upstream_arrival_overrides_simultaneous_collision_reward() -> None:
+    env = _TerminalRewardEnv(crashed=True, arrived=True)
+    _, reward, _, _, _ = env.step(0)
+    assert reward == 5.0
+
+
+@pytest.mark.parametrize("crashed,arrived", [(False, False), (False, True), (True, False)])
+def test_collision_first_preserves_nonoverlap_rewards(crashed, arrived) -> None:
+    legacy = RouteProgressRewardWrapper(_TerminalRewardEnv(crashed=crashed, arrived=arrived))
+    corrected = RouteProgressRewardWrapper(
+        _TerminalRewardEnv(crashed=crashed, arrived=arrived), collision_first=True
+    )
+    legacy.reset()
+    corrected.reset()
+    left = legacy.step(1)
+    right = corrected.step(1)
+    assert left[:4] == right[:4]
+    assert right[4]["collision_arrival_reward_corrected"] is False
+    assert right[4]["uncorrected_base_reward"] == left[4]["base_reward"]
+
+
+def test_collision_first_removes_only_arrival_override_with_progress_preserved() -> None:
+    legacy = RouteProgressRewardWrapper(_TerminalRewardEnv(crashed=True, arrived=True))
+    corrected = RouteProgressRewardWrapper(
+        _TerminalRewardEnv(crashed=True, arrived=True), collision_first=True
+    )
+    legacy.reset()
+    corrected.reset()
+    left = legacy.step(1)
+    right = corrected.step(1)
+    assert left[0] == right[0] and left[2:4] == right[2:4]
+    assert left[4]["base_reward"] == right[4]["uncorrected_base_reward"] == 5.0
+    assert right[4]["base_reward"] == pytest.approx(-9.95)
+    assert right[4]["collision_arrival_reward_corrected"] is True
+    assert left[4]["progress_reward"] == right[4]["progress_reward"]
+    assert left[1] - right[1] == pytest.approx(14.95)
+    assert right[1] < 0
+    assert "collision_arrival_reward_corrected" not in left[4]
+
+
+@pytest.mark.parametrize("key,value", [("normalize_reward", True), ("controlled_vehicles", 2),
+                                     ("collision_reward", 0.0), ("collision_reward", float("nan"))])
+def test_collision_first_rejects_unsupported_reward_settings(key, value) -> None:
+    env = _TerminalRewardEnv(crashed=True, arrived=True)
+    env.config[key] = value
+    with pytest.raises(ValueError):
+        RouteProgressRewardWrapper(env, collision_first=True)
+
+
+def test_collision_first_requires_explicit_boolean() -> None:
+    with pytest.raises(ValueError, match="boolean"):
+        RouteProgressRewardWrapper(_ProgressEnv(), collision_first="false")
+
+
+def test_collision_first_configuration_changes_only_one_wrapper_option() -> None:
+    old = load_config("configs/intersection_reward_v3.yaml")
+    new = load_config("configs/intersection_reward_v3_collision_first.yaml")
+    assert new["reward_wrapper"].pop("collision_first") is True
+    assert new == old

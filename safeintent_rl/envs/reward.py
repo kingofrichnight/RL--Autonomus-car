@@ -20,6 +20,7 @@ class RouteProgressRewardWrapper(gym.Wrapper):
         arrival_distance: float = 25.0,
         risk_weight: float = 0.0,
         risk_ttc_threshold: float = 2.0,
+        collision_first: bool = False,
     ) -> None:
         super().__init__(env)
         if progress_weight < 0:
@@ -38,6 +39,20 @@ class RouteProgressRewardWrapper(gym.Wrapper):
         self.arrival_distance = float(arrival_distance)
         self.risk_weight = float(risk_weight)
         self.risk_ttc_threshold = float(risk_ttc_threshold)
+        if type(collision_first) is not bool:
+            raise ValueError("collision_first must be a boolean")
+        self.collision_first = collision_first
+        if collision_first:
+            base = self.unwrapped
+            if base.config.get("normalize_reward", False):
+                raise ValueError("collision_first requires unnormalized intersection rewards")
+            if base.config.get("controlled_vehicles", 1) != 1:
+                raise ValueError("collision_first supports one controlled vehicle")
+            if not callable(getattr(base, "_agent_rewards", None)):
+                raise TypeError("collision_first requires intersection agent reward components")
+            collision_reward = float(base.config.get("collision_reward", 0.0))
+            if not math.isfinite(collision_reward) or collision_reward >= 0:
+                raise ValueError("collision_first requires a finite negative collision reward")
         self._route: list[tuple[Any, Any, int]] = []
         self._lane_lengths: list[float] = []
         self._goal_progress = 0.0
@@ -52,6 +67,19 @@ class RouteProgressRewardWrapper(gym.Wrapper):
 
     def step(self, action: Any) -> tuple[Any, float, bool, bool, dict[str, Any]]:
         observation, base_reward, terminated, truncated, info = self.env.step(action)
+        uncorrected_base_reward = float(base_reward)
+        overlap_corrected = False
+        if self.collision_first:
+            base = self.unwrapped
+            components = base._agent_rewards(action, base.vehicle)
+            if components["collision_reward"] and components["arrived_reward"]:
+                # Match the existing collision-only branch; suppress only arrival precedence.
+                base_reward = sum(
+                    base.config.get(name, 0) * value
+                    for name, value in components.items()
+                    if name != "arrived_reward"
+                ) * components["on_road_reward"]
+                overlap_corrected = True
         current_progress = self._absolute_progress()
         distance_delta = max(0.0, current_progress - self._previous_progress)
         normalized_delta = distance_delta / self._remaining_distance
@@ -79,6 +107,11 @@ class RouteProgressRewardWrapper(gym.Wrapper):
                 "shaped_reward": shaped_reward,
             }
         )
+        if self.collision_first:
+            details.update({
+                "uncorrected_base_reward": uncorrected_base_reward,
+                "collision_arrival_reward_corrected": overlap_corrected,
+            })
         return observation, shaped_reward, terminated, truncated, details
 
     def _risk_penalty(self) -> tuple[float, float, float]:
