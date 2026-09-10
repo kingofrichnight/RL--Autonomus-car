@@ -7402,3 +7402,95 @@ checking unchanged source baselines and the append-only record prefix. There,
 Ruff passed and all 209 tests passed in 6.85 seconds; the two existing native
 unbounded-Box warnings remain. Unrelated maintenance-workspace static-obstacle
 changes were deliberately not copied. No dependency versions changed.
+
+## 75. Frozen V3-PredictiveSafety matched training package (2026-09-10)
+
+User asks to proceed to the next step. No algorithm/configuration change is
+needed. The scientific question is whether nine action-forecast values improve
+the learned safety/progress tradeoff beyond knowing the current target speed.
+
+### 75.1 Matched arms and compute budget
+
+| Setting | Control | Candidate |
+|---|---|---|
+| Model stem | ppo_v3_predictive_control_seed42 | ppo_v3_predictive_safety_v1_seed42 |
+| Inputs | 105 kinematics + target = 106 | Same prefix + nine forecasts = 115 |
+| Reward | Collision-first corrected V3 | Identical |
+| Shield / intent / fusion | None | None |
+| Initialization | Fresh PPO | Fresh PPO |
+| Requested / expected collected steps | 200000 / 200704 | 200000 / 200704 |
+
+Both arms use training seed 42, one environment, stride 1000, learning rate
+0.0003, rollout/n_steps 1024, batch 64, gamma 0.99, GAE 0.95, entropy 0.01,
+[256,256] policy/value network specification, and default PPO update settings
+from the same installed SB3 version. Internal deterministic evaluation uses
+offset 70000, 50 episodes every 10000 timesteps; checkpoints every 25000.
+Final checkpoint only is eligible, never callback-best or duration selection.
+No continuing training from the accepted V3 ZIP. No coefficient/seed changes
+based on internal curves. This is one training seed, not a replication study.
+
+The candidate adds forecast computation (initial-state engineering measurement
+18.47 ms per observation). Equal environment-step budgets are chosen for the
+scientific comparison, not equal wall-clock budgets. Actual total training time
+must be reported separately; the initial-state timing is not a runtime promise.
+
+Ruff and 209 tests passed in the actual repository in 7.07 seconds, with two
+existing Box warnings. A read-only engineering seed-7 check confirmed shapes
+106/115 and exact equality of the candidate's first 106 values to the control.
+
+### 75.2 Release order and exact commands
+
+Run the control first, audit its final checkpoint and summary against this
+package, then release the candidate. Do not start paired development evaluation
+until both final checkpoints are audited. Preserve all failures and outputs.
+The new control is necessary because the previous controls used 175/176 fusion
+inputs and cannot isolate the action-forecast contribution.
+
+Released control:
+
+```powershell
+python -u -m scripts.train_ppo --config configs/intersection_reward_v3_collision_first.yaml --config-sha256 4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f --timesteps 200000 --seed 42 --learning-rate 0.0003 --n-steps 1024 --batch-size 64 --n-envs 1 --env-seed-stride 1000 --eval-seed-offset 70000 --eval-episodes 50 --evaluation-freq 10000 --checkpoint-freq 25000 --target-speed-observation --target-speed-scale 9.0 --summary-output results/ppo_v3_predictive_control_seed42.training.json --output models/ppo_v3_predictive_control_seed42 --refuse-overwrite
+```
+
+Frozen candidate (do not run until control audit):
+
+```powershell
+python -u -m scripts.train_ppo --config configs/intersection_v3_predictive_safety_v1.yaml --config-sha256 e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14 --timesteps 200000 --seed 42 --learning-rate 0.0003 --n-steps 1024 --batch-size 64 --n-envs 1 --env-seed-stride 1000 --eval-seed-offset 70000 --eval-episodes 50 --evaluation-freq 10000 --checkpoint-freq 25000 --summary-output results/ppo_v3_predictive_safety_v1_seed42.training.json --output models/ppo_v3_predictive_safety_v1_seed42 --refuse-overwrite
+```
+
+Tests must pass before each run. Do not pass the standalone target-speed flag
+to the candidate: its config-driven predictor already includes that scalar.
+Keep all model/checkpoint ZIPs local. Commit only training summaries and research
+records after verification. Each new output stem must have no existing ZIP,
+summary, or log directory; check for duplicate running processes before launch.
+
+### 75.3 Prospective development gates
+
+After both audits, evaluate each final policy once on the consumed development
+seeds 40042–40541, 500 deterministic episodes, unsafe-TTC threshold 2.0 seconds,
+matching configuration/observation settings and explicit model/config hashes.
+Evaluation commands are not released here. No new holdout is used or reserved.
+
+Keep the existing strict development quality screen for each arm: success at
+least 63.0% (315/500), collisions at most 34.8% (174/500), incomplete at most 2.0%
+(10/500), mean minimum TTC at least 0.6003656548142169 seconds, and favorable
+paired success versus the frozen V3 reference with exact two-sided McNemar
+p < 0.05. Reference remains
+`results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv`, SHA-256
+`aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4`.
+V3 reference rewards are not comparable to corrected-reward means.
+
+Additionally, retaining the predictor requires at least +2.0 success percentage
+points and -2.0 collision points versus this fresh 106-input control, non-worsening
+mean minimum TTC, and favorable exact paired success p < 0.05. Every applicable
+gate must pass. If only the control passes the absolute screen, retain its
+direction, not the predictor. If neither qualifies, reject both and preserve
+their results. Do not relax gates after observing results. Any retained direction
+still needs independently frozen training-seed replication and untouched testing
+before replacing the accepted V3 policy.
+
+### 75.4 Launch status
+
+The package is frozen before launch. Only the control is authorized for the first
+launch after checking artifacts/processes; the candidate remains held for audit.
+No safety/performance improvement is claimed by release of these commands.
