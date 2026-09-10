@@ -7127,3 +7127,64 @@ SHA-256 were preserved rather than normalized after measurement. The same staged
 diff passed with the command-local `core.whitespace=cr-at-eol` setting; no stored
 Git setting, experiment parameter, source code, or result was changed by that
 check. Publication includes no model files and no intersection trainer edits.
+
+## 71. M15B corrected-reward control checkpoint audit (2026-09-10)
+
+The user completed the section 69 control run and committed its training summary
+in `4679cce`. This audit accepts the final artifact's integrity, not its driving
+performance. The separate pedestrian implementation was deferred when the user
+reported this completed run; no pedestrian code or results are claimed here.
+
+### 71.1 Artifact and protocol checks
+
+- Summary: `results/ppo_fusion_cf_control_seed42.training.json`, SHA-256
+  `83924df16058fd830cd74085ac3a3a1ffb9ee1c282493dcf4d0eac44b907b1bd`.
+- Local final ZIP: `models/ppo_fusion_cf_control_seed42.zip`, SHA-256
+  `f35892f6830b1d9bc23301229ea1813c3e309a2ecd4e5293fe689cbc54c88b77`.
+- Configuration SHA-256 matches the frozen section 69 value:
+  `4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f`.
+- ZIP integrity check passed; CPU reload succeeded; every policy state tensor
+  is finite. Checkpoint and configured environment spaces match: 175 inputs,
+  three discrete longitudinal actions. No driving episode was evaluated.
+- Checkpoint reports seed 42, 200704 collected steps, one environment,
+  n_steps 1024, batch 64, learning rate 0.0003, gamma 0.99, GAE 0.95,
+  entropy coefficient 0.01 and network [256, 256], matching section 69.
+- Summary reports 200000 requested steps, rollout 1024, initial seed [42],
+  stride 1000, internal evaluation offset 70000 / 50 episodes / interval
+  10000, checkpoint interval 25000, and the frozen 14-neighbor fusion scales.
+  Collision-first reward is true; target-speed observation is false with null
+  scale; shield and intent are absent. Callback settings are summary evidence,
+  not an independent reconstruction of the entire training execution.
+
+### 71.2 Verification and unsuccessful audit attempts
+
+Ruff with `--no-cache` passed; all **186 tests passed in 5.10 s**, with the two
+existing native unbounded-Box warnings. The initial restricted execution could
+not write Ruff cache or pytest temporary files (166 passed, 20 setup errors).
+Re-running with authorized temporary-file access resolved those access errors;
+no code was changed to make tests pass. The initial audit output serializer
+also rejected a NumPy int64 action count; converting the count to Python int
+resolved reporting. Neither failure altered the checkpoint or configuration.
+
+### 71.3 Decision and released next run
+
+Accept the control artifact for the matched experiment. V3 remains the accepted
+driving policy: no new success/collision rate is available. Do not run development
+or holdout evaluation yet, and do not substitute a callback-best checkpoint.
+
+Release the already-frozen target-aware candidate below. The only experimental
+change is the target-speed observation (scale 9.0, expected 176 inputs); output
+paths distinguish the two runs. Both candidate output paths were absent at
+audit time. Re-run tests before starting if code changes after this audit.
+
+```powershell
+python -m ruff check --no-cache .
+python -m pytest -p no:cacheprovider
+python -m scripts.train_ppo --config configs/intersection_reward_v3_collision_first.yaml --config-sha256 4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f --timesteps 200000 --seed 42 --learning-rate 0.0003 --n-steps 1024 --batch-size 64 --n-envs 1 --env-seed-stride 1000 --eval-seed-offset 70000 --eval-episodes 50 --evaluation-freq 10000 --checkpoint-freq 25000 --risk-fusion --fusion-neighbors 14 --fusion-range-scale 200.0 --fusion-relative-speed-scale 20.0 --fusion-ttc-scale 10.0 --fusion-cpa-horizon 5.0 --fusion-cpa-distance-scale 20.0 --target-speed-observation --target-speed-scale 9.0 --summary-output results/ppo_fusion_cf_target_seed42.training.json --output models/ppo_fusion_cf_target_seed42 --refuse-overwrite
+```
+
+Run the training command only after both test commands pass. Long training is
+left to the user's local workflow; it was not started by this audit. Commit the
+candidate training JSON when complete, keep model ZIPs local, and audit the
+candidate before releasing the paired development evaluation in section 69.5.
+No historical experiment, reward coefficient, seed, or evaluation gate changed.
