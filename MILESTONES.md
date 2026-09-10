@@ -6921,3 +6921,209 @@ difficulty; any such change would require a separate environment experiment.
 | 2026-09-09 | Implemented isolated collision precedence and optional controller-state observation; froze matched training and development routing | Test the missing-target hypothesis without confounding it with reward correctness | Ruff and 168 tests; 45-step three-environment non-interference smoke; both 32-step train/save/load/evaluate smokes; old config hash preserved | This implementation update |
 
 **Next action:** pass tests, run only the corrected-reward control training command, and commit its training JSON for the checkpoint audit. Do not run the target candidate or any development evaluation yet.
+
+---
+
+## 70. Reference-driven extension — static obstacle routing foundation
+
+**Experiment ID:** E-M16A-STATIC-ROUTE-ENGINEERING-S7
+
+**Date recorded:** 2026-09-09
+
+**Status at implementation:** implemented; full tests passed; 20-case engineering gate pending.
+
+### 70.1 Authority, reference, and benchmark separation
+
+The user requested use of the selected reference and major changes where needed.
+The selected workspace `REFERENCE.md` is the obstacle/pedestrian/rerouting reading
+list, not another intersection reward-tuning proposal. README and the complete
+previous research record were read before edits. The reference is preserved as
+supplied and is included with this implementation.
+
+This authorizes a separate extension, not rewriting failed intersection results.
+The new `obstacle_route_v1` family implements only the first two static-obstacle
+ladder stages. Pedestrians, uncertainty-aware prediction, traffic-aware lane
+changes, and predictive shielding remain unimplemented. No simulator migration,
+dependency change, old configuration modification, or PPO training is performed.
+V3 remains the best accepted intersection policy. Section 69 remains unchanged;
+an already-running corrected-reward control need not be interrupted. This stage
+does not release its target candidate or development evaluation.
+
+The selected sources were checked against primary abstracts/documentation:
+
+- [Bastani, model predictive shielding](https://arxiv.org/abs/1905.10691):
+  learned/backup policy separation is a future design rationale. This stage
+  does not implement MPS or inherit its conditional safety proof.
+- [Golchoubian et al., uncertainty-aware crowd navigation](https://arxiv.org/abs/2405.13969):
+  pedestrian-state uncertainty motivates a later stage; the paper's reported
+  improvement cannot forecast this project's rates.
+- [HighwayEnv custom environments](https://highway-env.farama.org/make_your_own/):
+  retain HighwayEnv road, vehicle, collision, and Gymnasium interfaces.
+
+### 70.2 Implemented modules and protocol
+
+New independent modules are `safeintent_rl/agents/route_graph.py`,
+`safeintent_rl/envs/obstacle_route.py`, `scripts/evaluate_obstacle_route.py`,
+and `tests/test_obstacle_route.py`. Existing intersection source is untouched.
+The new factory is explicit; it does not register over or replace any old ID.
+
+`configs/obstacle_route_v1.json` SHA-256:
+
+```text
+3da86256869eceaf8892169e2e3613b7858f53fd2d736b5f379dd659e2428857
+```
+
+| Property | Version 1 setting |
+|---|---|
+| Road | Two 4 m wide straight lanes, length 200 m |
+| Ego start / goal | x=10 m in lane 0 / x>=160 m on road without collision |
+| Initial speed / allowed targets | 4.5 m/s / 0, 4.5, 9 m/s |
+| Blockage | 4 m by 4 m, lane 0; x uniform [70,90] m |
+| Matched scenario variants | Lane 1 open; lane 1 also blocked at the same x |
+| Other traffic / pedestrians / sensor noise | None / none / none |
+| Dynamics / decisions / maximum duration | 15 Hz / 5 Hz / 30 s |
+| Safe blocked stop | Speed <=0.1 m/s for five decisions (1 s), before blockage, on road, no crash, clearance >=2 m |
+| Engineering seeds | 7–16 for each variant, 20 episodes total |
+| Engineering controller | Deterministic B0 graph route + meta-actions |
+
+The directed planning graph contains start, two lane alternatives, and goal.
+Edges cost length/reference speed plus risk cost and lane-change cost in seconds.
+Risk cost is zero in this static stage; lane change costs 1 second. Dijkstra
+breaks equal-cost paths lexicographically. Impassable edges are **excluded**,
+not assigned a large finite penalty that might still permit an impossible path.
+This refines the reference's blocked-edge formula. No path returns None.
+The graph is a local lane abstraction, not a city network or junction reroute.
+It is computed at reset because these blockages never change during an episode.
+
+B0 selects the open lane with LANE_RIGHT and requests FASTER afterward.
+With no path it repeatedly requests SLOWER and ends in a separately classified
+safe blocked stop. It has complete static lane availability from the simulator,
+and assumes the adjacent lane is empty. It rejects extra road vehicles instead
+of claiming to handle traffic. It is not a safety shield and logs zero overrides.
+
+### 70.3 Observation, reward, and outcome definitions
+
+The independent observation is 3x7 kinematics (ego plus up to two obstacles),
+flattened to 21 values, then six bounded features: target speed/9, target lane,
+route-available flag, clipped remaining x distance/160, and two lane-block flags.
+Missing route uses lane value zero and availability zero. The resulting 27-value
+input and five-action space are incompatible with old V3/Fusion checkpoints.
+No hidden intent label is supplied. Native observation prefix and RNG behavior
+are covered by non-interference tests.
+
+This family has its own explicitly versioned reward, not V3 reward:
+
+```text
+collision:                -10
+else off road:            -10
+else successful arrival:   +5
+else: 2 * positive_new_x_progress / 150 - 0.025 * 0.2
+```
+
+Progress uses a capped forward high-water mark, so backward/forward oscillation
+cannot collect the same distance twice. Terminal collision/offroad/arrival
+replaces shaping for that step. Safe blocked stop has no arrival bonus.
+Collision takes precedence over arrival. Time limits use simulation-step counts
+(150 decisions at the frozen duration) rather than accumulated float time.
+
+JSON episode rows explicitly record seed, variant, sampled blockage position,
+reward, length/time, success, collision, offroad, incomplete, safe blocked stop,
+reroute success, obstacle collision, and minimum obstacle clearance. Clearance
+is the signed distance between conservative circumcircles, sampled at 15 Hz;
+negative clearance can occur without a polygon collision and is not labeled a
+collision. This is not exact footprint separation or pedestrian clearance.
+No TTC/CPA or pedestrian metrics are fabricated for this stage.
+
+The evaluator reuses existing collision-first success/collision helpers but
+uses a separate JSON schema to avoid changing historical CSV meanings. A safe
+blocked stop is a terminal task fallback, **not route completion**; ordinary
+timeouts remain incomplete. Report scenarios separately, never advertise
+combined safe-stop-plus-arrival counts as PPO success percentage.
+
+The evaluator verifies protocol SHA, freezes a parsed in-memory configuration,
+records module hashes and package versions, and refuses output overwrite.
+Exceptions preserve partial rows and a failure reason. A completed but failed
+feasibility gate also retains its report and exits nonzero.
+
+### 70.4 Tests and prospective engineering gate
+
+Ruff passed and all **186 tests passed in 5.00 s** before the engineering run.
+Eighteen added cases cover blocked/no-path routing, deterministic ties/cycles,
+invalid costs, both scenario outcomes, obstacle visibility, matched layouts,
+read-only augmentation, collision-first reward, a real straight-line collision,
+post-terminal step refusal, forbidden reset overrides, Gymnasium API checks,
+failed-report preservation, and overwrite refusal.
+
+An initial lint check found one import-order issue and five overlong lines;
+these were corrected before the full test gate. The initial 16 tests passed.
+Gymnasium emitted two warnings about native HighwayEnv unbounded Box limits;
+API checks still passed. These are not numerical training failures.
+
+Before the 20-case run, require all open-lane episodes to reroute and arrive
+without crash/offroad, and all blocked-lane episodes to stop safely without
+crash/offroad. Every case must pass; this is an engineering feasibility gate,
+not a learned-policy acceptance threshold or population safety estimate.
+
+```powershell
+python -m scripts.evaluate_obstacle_route --protocol configs/obstacle_route_v1.json --protocol-sha256 3da86256869eceaf8892169e2e3613b7858f53fd2d736b5f379dd659e2428857 --episodes 10 --seed 7 --output results/obstacle_route_v1_b0_engineering_seed7.json
+```
+
+### 70.5 Decisions and remaining stages
+
+| ID | Decision | Reason |
+|---|---|---|
+| D-150 | Add a separate reference-driven environment family | Lane rerouting needs lateral control and a different task; do not corrupt V3 comparisons |
+| D-151 | Validate deterministic routing before PPO | Establish a physically executable baseline before learning |
+| D-152 | Exclude blocked edges and distinguish safe stop from success | Prevent impossible routes and inflated completion metrics |
+| D-153 | Implement the static ladder first | Pedestrian dynamics, uncertainty, and shielding need their own measured validation |
+| D-154 | Keep old experiment protocols intact | Broad change permission does not erase the append-only research record |
+
+After this gate, the next reference stage is a crossing pedestrian with actual
+time-evolving position, followed by conservative uncertainty features and
+yield/resume tests. Before enabling a braking-feasibility shield, calibrate the
+actual meta-action/low-level braking response: the installed MDPVehicle uses
+measured-speed index transitions and proportional deceleration, not an assumed
+constant road braking value. Predictive shielding and mixed traffic remain
+separate later stages. No long PPO run or untouched holdout is released here.
+
+| Date | Change | Verification |
+|---|---|---|
+| 2026-09-09 | Added reference-driven static route family, independent B0, observations and outcome ledger | Ruff; 186 tests; 20-case engineering result to be appended below |
+
+### 70.6 Engineering result recorded 2026-09-10
+
+The exact section 70.4 command completed after the 186-test gate. The retained
+artifact is `results/obstacle_route_v1_b0_engineering_seed7.json`, SHA-256:
+
+```text
+1eb0620da774e231c7dacb029009eee821ba56d53993df70ba762ee7acb590d8
+```
+
+| Scenario | Cases | Route completions | Collisions | Safe blocked stops | Mean time |
+|---|---:|---:|---:|---:|---:|
+| Open adjacent lane | 10 | 10 | 0 | 0 | 17.4 s |
+| Both lanes blocked | 10 | 0 | 0 | 10 | 3.0 s |
+
+No case ended offroad or incomplete. Both variants contain ordered seeds 7–16
+and the same sampled obstacle x for each seed. All twenty cases satisfy the
+prospective engineering gate. The open-lane minimum circumcircle clearance
+across cases is -1.521011 m despite no polygon collision, illustrating why this
+conservative metric must not be interpreted as physical overlap. The blocked
+cases stop immediately after discovering no path, with at least 54.363869 m
+conservative clearance remaining. They do **not** validate last-moment braking,
+a calibrated stopping-distance bound, or eventual resumption after blockage.
+
+**Decision:** accept M16A as an engineering foundation for the next scenario
+stage. Do not claim 100% learned-policy success, general traffic safety, or an
+improvement over V3. The task is deliberately simple, uses privileged static
+map occupancy, and has no other moving actors. No checkpoints were created.
+All existing intersection experiments and section 69 commands are unchanged.
+
+### 70.7 Publication integrity note
+
+During repository staging, the default whitespace check flagged the raw JSON's
+Windows CRLF line endings as trailing whitespace. The result bytes and recorded
+SHA-256 were preserved rather than normalized after measurement. The same staged
+diff passed with the command-local `core.whitespace=cr-at-eol` setting; no stored
+Git setting, experiment parameter, source code, or result was changed by that
+check. Publication includes no model files and no intersection trainer edits.

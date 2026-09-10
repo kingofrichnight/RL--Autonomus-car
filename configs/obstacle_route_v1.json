@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "family": "obstacle_route_v1",
+  "road_length_m": 200.0,
+  "goal_x_m": 160.0,
+  "ego_x_m": 10.0,
+  "ego_speed_mps": 4.5,
+  "obstacle_x_range_m": [70.0, 90.0],
+  "simulation_frequency": 15,
+  "policy_frequency": 5,
+  "duration": 30.0,
+  "progress_reward": 2.0,
+  "time_cost_per_s": 0.025,
+  "arrival_reward": 5.0,
+  "collision_reward": -10.0,
+  "offroad_reward": -10.0,
+  "safe_stop_speed_mps": 0.1,
+  "safe_stop_hold_s": 1.0,
+  "clearance_margin_m": 2.0,
+  "lane_change_cost_s": 1.0
+}

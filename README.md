@@ -6,6 +6,27 @@ SafeIntent-RL is a master's-level research project for studying whether inferred
 
 > **Research record:** See [MILESTONES.md](MILESTONES.md) for the complete chronological engineering log, mathematical formulation, experiment results, design decisions, failures, corrections, and planned milestones.
 
+## Reference-driven extension (separate from the intersection benchmark)
+
+The selected [REFERENCE.md](REFERENCE.md) motivates a staged hybrid architecture:
+deterministic routing, tactical control, and a separately evaluated safety layer.
+The first implementation, `obstacle_route_v1`, has two straight lanes with one
+static blockage and either an open alternate lane or a second blockage.
+It provides graph-based route selection, lateral actions, controller/route
+observations, and a rule-based feasibility evaluator. A blocked-route safe stop
+is explicitly **not** route success. It is not a pedestrian implementation or
+a predictive safety shield, and its easier scenario rates must not be compared
+to V3 intersection rates.
+
+See MILESTONES.md section 70 for the exact protocol, engineering checks, and
+remaining stages. Existing intersection factories, PPO commands, checkpoints,
+and the section 69 corrected-reward control experiment are unchanged. Do not
+load a V3 checkpoint into the new 27-input/five-action environment.
+
+The 20-case B0 engineering check passed: ten open-lane route completions and
+ten safe blocked stops, with no collisions. These are simple static-scenario
+checks, not learned-policy performance or evidence of pedestrian safety.
+
 The repository currently provides a complete, runnable research foundation:
 
 - Gymnasium + HighwayEnv intersection setup
