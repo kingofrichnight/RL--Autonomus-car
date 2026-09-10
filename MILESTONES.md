@@ -7494,3 +7494,12 @@ before replacing the accepted V3 policy.
 The package is frozen before launch. Only the control is authorized for the first
 launch after checking artifacts/processes; the candidate remains held for audit.
 No safety/performance improvement is claimed by release of these commands.
+
+Control launch confirmed at local 19:15:07 on 2026-09-10, initial launcher PID
+26952, after an authorized process check found no active PPO trainer and neither
+arm had pre-existing ZIP/summary/log artifacts. The exact section 75.2 control
+command runs in a hidden background process, with unbuffered stdout/stderr in
+`logs/ppo_v3_predictive_control_seed42/console.stdout.log` and
+`logs/ppo_v3_predictive_control_seed42/console.stderr.log`. Initial stdout confirms
+CPU execution and TensorBoard output to `PPO_1`; no startup error was logged.
+Status: running, not complete or accepted. Candidate training has not started.
