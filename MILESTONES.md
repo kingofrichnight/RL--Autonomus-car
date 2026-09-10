@@ -7246,3 +7246,38 @@ execution may run the two independent arms concurrently, using separate console
 logs; it does not change seeds, deterministic prediction, or episode order within
 each arm. No result is claimed at release. If an arm fails, preserve its logs
 and any artifacts before deciding whether a rerun is justified.
+
+## 73. Paired development artifact incident and provisional results (2026-09-10)
+
+Both evaluation console logs report 500 completed episodes and saved CSV paths;
+neither stderr log contains an error. However, both expected CSVs and both
+summary JSONs are absent from the actual repository. Searches including ignored
+and hidden files under OneDrive Documents found no matching development result
+files. The files are not tracked in the current Git checkout. The cause of
+their disappearance is unknown; do not attribute it to the user or OneDrive
+without evidence. The console logs are retained verbatim as
+`results/ppo_fusion_cf_control_development_seed40042.console.txt` and
+`results/ppo_fusion_cf_target_development_seed40042.console.txt`.
+
+| Arm | Logged success | Logged collision | Derived incomplete | Logged mean minimum TTC |
+|---|---:|---:|---:|---:|
+| Corrected-reward control | 33.0% | 29.8% | 36.8% | 0.8474742909402212 s |
+| Target-aware | 59.6% | 40.4% | 0.0% | 0.6152267645157733 s |
+
+Incomplete is derived as 1 minus success minus collision, using the evaluator's
+collision-exclusive success definition; it has not been recomputed from rows.
+These are log-only provisional aggregates, not a verified paired comparison.
+The target increases success by 26.6 percentage points versus control but also
+increases collision by 10.6 points and reduces mean minimum TTC. Control fails
+the frozen success and incomplete gates; target fails the absolute success and
+collision gates and the incremental collision/TTC gates. Neither qualifies for
+promotion on this evidence. V3 remains the accepted policy. No paired McNemar
+statistic can be calculated from these aggregates alone.
+
+Next: recover the original four artifacts if possible. Otherwise request explicit
+approval for a documented same-checkpoint, same-seed recovery evaluation under
+new output names, preserving these logs and checking reproduced aggregates.
+Do not silently reconstruct episode rows or present recovered console text as
+the original summary files. No rerun, new training, or protocol change was made
+during this incident investigation; no tests were needed for these read-only
+checks and documentation-only changes. Pedestrian work remains separate.
