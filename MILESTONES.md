@@ -7188,3 +7188,26 @@ left to the user's local workflow; it was not started by this audit. Commit the
 candidate training JSON when complete, keep model ZIPs local, and audit the
 candidate before releasing the paired development evaluation in section 69.5.
 No historical experiment, reward coefficient, seed, or evaluation gate changed.
+
+### 71.4 Target-aware candidate launched by request (2026-09-10)
+
+The user explicitly authorized the assistant to run the released candidate.
+Ruff (`--no-cache`) and all 186 tests passed again (5.71 s; two existing
+unbounded-Box warnings). No source code or experiment setting needed changing.
+An elevated process check found no existing candidate trainer, and final ZIP,
+summary, and candidate log directory were absent before launch. A preliminary
+restricted process query was denied; the authorized check resolved access.
+
+Started the exact section 71.3 training arguments at local 13:57:50, initial
+launcher PID 37092, using the project virtual environment in a hidden background
+process. Python `-u` enables unbuffered logging without changing PPO settings.
+Console output is retained at
+`logs/ppo_fusion_cf_target_seed42/console.stdout.log` and stderr at
+`logs/ppo_fusion_cf_target_seed42/console.stderr.log`. Initial output confirmed
+CPU execution and TensorBoard logging to the candidate's `PPO_1` directory.
+
+Status at this entry: **started, not yet complete or accepted**. Preserve all
+outputs if execution fails; do not restart over existing artifacts. No final
+candidate checkpoint audit, development evaluation, or performance claim has
+been made. Model checkpoints and local logs remain uncommitted. This launch
+does not implement the separate pedestrian scenario.
