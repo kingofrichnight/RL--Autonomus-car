@@ -13,6 +13,7 @@ from safeintent_rl.envs.reward import RouteProgressRewardWrapper
 from safeintent_rl.intent.wrapper import IntentObservationWrapper
 from safeintent_rl.safety.shield import CPAAccelerationShield, TTCSafetyShield
 from safeintent_rl.sensors import EgoTargetSpeedObservation, KinematicRiskFusionWrapper
+from safeintent_rl.sensors.predictive import PredictiveSafetyObservation
 
 FALLBACK_INTERSECTION_IDS = ("intersection-v2", "intersection-v1", "intersection-v0")
 
@@ -65,6 +66,12 @@ def make_intersection_env(
 
     loaded = load_config(config_path)
     reward_wrapper_config = loaded.pop("reward_wrapper", None)
+    predictive_config = loaded.pop("predictive_safety_observation", None)
+    if predictive_config is not None and (
+        risk_fusion or intent_model is not None or target_speed_observation
+        or safety_shield or cpa_safety_shield
+    ):
+        raise ValueError("predictive v1 must be evaluated without other feature/shield options")
     preferred_id, env_config = split_env_config(loaded)
     env_id = _available_intersection_id(preferred_id)
     env = gym.make(env_id, render_mode=render_mode, config=env_config)
@@ -77,6 +84,8 @@ def make_intersection_env(
         if wrapper_type != "RouteProgressReward":
             raise ValueError(f"Unsupported reward wrapper: {wrapper_type}")
         env = RouteProgressRewardWrapper(env, **wrapper_config)
+    if predictive_config is not None:
+        env = PredictiveSafetyObservation(env, **predictive_config)
     if risk_fusion:
         env = KinematicRiskFusionWrapper(
             env,

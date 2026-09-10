@@ -207,6 +207,9 @@ def main() -> None:
     summary.update(
         {
             "model_path": str(Path(args.model)),
+            "predictive_safety_observation": load_config(args.config).get(
+                "predictive_safety_observation"
+            ),
             "model_sha256": model_sha256,
             "config_path": str(Path(args.config)) if args.config is not None else None,
             "config_sha256": config_sha256,

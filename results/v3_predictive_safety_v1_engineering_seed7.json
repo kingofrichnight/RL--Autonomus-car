@@ -1,0 +1,16 @@
+{
+  "kind": "engineering_only_not_policy_performance",
+  "config": "configs/intersection_v3_predictive_safety_v1.yaml",
+  "config_sha256": "e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14",
+  "seed": 7,
+  "status": "passed",
+  "mean_forecast_seconds_initial_state": 0.018471524999768008,
+  "training_seconds": 1.312036999996053,
+  "observation_shape": [
+    115
+  ],
+  "training_steps": 32,
+  "finite_parameters": true,
+  "save_reload_action_match": true,
+  "temporary_checkpoint_removed": true
+}

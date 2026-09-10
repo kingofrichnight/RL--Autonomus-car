@@ -7281,3 +7281,124 @@ Do not silently reconstruct episode rows or present recovered console text as
 the original summary files. No rerun, new training, or protocol change was made
 during this incident investigation; no tests were needed for these read-only
 checks and documentation-only changes. Pedestrian work remains separate.
+
+## 74. Artifact recovery confirmed and V3-PredictiveSafety v1 implementation
+
+Date: 2026-09-10. User requests a separately named V3 successor with safety
+variables/formulas informed by additional research, preserving accepted V3.
+
+### 74.1 Resolution of section 73 artifact incident
+
+All four original evaluation artifacts became available in commit `34cedb3`.
+The subsequent read-only check verified 500 rows per CSV, collision-exclusive
+success, and agreement of recomputed aggregate metrics with both JSONs and
+retained console logs. Control has 165 successes, 149 collisions, 186 incomplete;
+target-aware has 298 successes, 202 collisions, zero incomplete. CSV SHA-256:
+
+- Control: `121c1c69c643c591740dd8d15c0f668579152bd4c2b006df118f6565a8cd6005`.
+- Target: `e22790267eac961d1943d49e0152c7a34ba59fdebb9c1c374f4a14f33b394237`.
+
+No recovery rerun was needed. Prior incident entries remain intact. Both arms
+fail necessary frozen gates (section 73); reject both as accepted improvements.
+No significance claim is needed to establish those gate failures; a full paired
+statistical report was not produced by the recovery check. V3 remains accepted.
+
+### 74.2 Research decision and scope
+
+Added `V3_PREDICTIVE_SAFETY.md` with sourced research, equations, implementation
+limits and follow-on options. Inspected primary 2025 risk-aware intersection and
+reward-design papers, predictive shielding, PID Lagrangian methods, OmniSafe,
+and the `menghan-xu/safe-rl-intersection` repository. No outside repository code
+was installed/executed, and no reported external success rates were adopted.
+
+Decision: implement action-conditioned forecasts as observations for PPO, not
+another hardcoded brake shield or blanket TTC penalty. The 2025 work motivates
+pre-collision geometric/dynamic risk; predictive shielding motivates considering
+action consequences. Our observation-only method is an adaptation, not a
+reproduction or a formal safety guarantee. Cost-critic/Lagrangian optimization
+is documented as a later independent experiment, not misrepresented as done.
+
+### 74.3 New configuration and formulas
+
+Name: **V3-PredictiveSafety v1**. Config:
+`configs/intersection_v3_predictive_safety_v1.yaml`, SHA-256
+`e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14`.
+Original V3 config SHA remains
+`433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69`.
+
+All V3 dynamics, action targets, reward coefficients and episode duration remain
+unchanged. New config adds only the documented collision-first overlap correction
+and predictor block. It does not combine the rejected fusion/intent/shield options.
+
+For each action [SLOWER, IDLE, FASTER], forecast an isolated ego for H=3 s at
+15 Hz: apply the action once, maintain target thereafter, using actual installed
+MDPVehicle proportional speed/route steering dynamics. Observed neighbors follow
+`p_i(t)=p_i(0)+v_i(0)*t` with fixed heading. Use native sorted visible coverage,
+up to 14 actors. No hidden NPC route, intent, behavior model or future spawn/RNG
+is used. A separate road geometry copy and private fixed RNG isolate forecasts.
+
+For rectangle separating axes u, define
+`g_i(t,a)=max_u(abs((p_i-p_e) dot u)-r_e(u)-r_i(u))-m(t)`, where
+`r_j(u)=(L_j*abs(long_j dot u)+W_j*abs(lat_j dot u))/2` and
+`m(t)=0.5 m + (0.25 m/s)*t`. This is a signed separating-axis gap proxy with
+a heuristic margin, not calibrated uncertainty or exact Euclidean clearance.
+
+Append target speed / 9 m/s and three values per action: minimum gap / 10 m
+(clipped -1..1), first nonpositive gap time / H (1 if none), and accumulated
+predicted travel / (9 m/s * H) (clipped 0..1). Preserve the original 105-input
+prefix, yielding 115 inputs. Predictions do not override actions or alter reward.
+The info collision-cost field is diagnostic only, not a trained safety critic.
+Training/evaluation summaries gain an additive predictor-config field (null for
+legacy runs); old files are unchanged. Watch/evaluation load the same config.
+
+No long model has been trained under this name. This is a new input architecture,
+not a renamed or fine-tuned V3 ZIP. A fresh policy and a matched target-only
+106-input corrected-V3 control must be frozen before long training. The prior
+175-input fusion control is not an interchangeable ablation baseline.
+
+### 74.4 Tests and prospective engineering smoke
+
+Ruff and all **209 tests passed in 6.68 s** before the smoke below. The 23 new
+tests cover oriented rectangle gaps, invalid parameters, input shape/bounds,
+repeatability, live RNG/routes/positions preservation, exact original-observation
+and reward agreement over a matched action sequence, braking versus accelerating
+toward a stopped vehicle, empty traffic, forbidden option mixtures/reset overrides,
+and invariance to changing hidden NPC routes/labels/behavior parameters.
+
+Engineering-only smoke, frozen before execution: seed 7; initial-state forecast
+timing over 20 calls; 32 PPO steps with rollout/batch 16, one update epoch and
+[32,32] network on CPU; finite parameters; save/reload deterministic-action match.
+Its temporary ZIP must be removed and no performance acceptance inferred.
+
+```powershell
+python -m scripts.check_predictive_safety --output results/v3_predictive_safety_v1_engineering_seed7.json
+```
+
+The checker verifies configuration hash, refuses existing evidence and preserves
+a failed report on exceptions. No old development/holdout is consumed by it.
+Engineering seed 7 is not an independent evaluation of safety or success.
+Any failure and the measured overhead will be appended before a long-run release.
+
+### 74.5 Engineering outcome
+
+The frozen smoke passed. It trained 32 steps in 1.312037 seconds, with finite
+parameters and identical deterministic action after save/reload. The observation
+shape was [115]. All temporary smoke model files were removed by the checker's
+temporary-directory context. No research model was saved or committed.
+
+Twenty forecasts of the seed-7 initial state averaged 0.018471525 seconds per
+observation. This is one-state engineering timing, not a throughput guarantee
+for dense traffic, full training, or another machine. It adds computational work
+relative to V3 and must be included in the next training-budget assessment.
+The retained report is `results/v3_predictive_safety_v1_engineering_seed7.json`.
+Its SHA-256 is `30f312f4eb93a83a774b4ef34c619f1ccef2657695cc028730a60b0c5dc910ca`.
+
+Decision: accept implementation for experiment preparation only. Do not claim
+fewer accidents, promotion over V3, a learned safety constraint, or pedestrian
+capability. No long training, development evaluation or holdout was started.
+
+The implementation was copied into the user's actual working repository after
+checking unchanged source baselines and the append-only record prefix. There,
+Ruff passed and all 209 tests passed in 6.85 seconds; the two existing native
+unbounded-Box warnings remain. Unrelated maintenance-workspace static-obstacle
+changes were deliberately not copied. No dependency versions changed.

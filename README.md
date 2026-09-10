@@ -8,6 +8,18 @@ SafeIntent-RL is a master's-level research project for studying whether inferred
 
 ## Reference-driven extension (separate from the intersection benchmark)
 
+### New V3 successor: V3-PredictiveSafety v1
+
+The separately named [V3-PredictiveSafety](V3_PREDICTIVE_SAFETY.md) engineering
+candidate preserves V3's intersection dynamics and reward coefficients, enables
+the documented collision-first correction, and appends per-action geometric
+forecasts to the original kinematics. PPO still chooses all actions; there is
+no automatic shield or labeled-action training. The new 115-input policy needs
+its own training and must not load the original 105-input V3 checkpoint.
+This is not yet a measured safety improvement or a released long training run.
+
+### Separate obstacle and pedestrian scenario track
+
 The selected [REFERENCE.md](REFERENCE.md) motivates a staged hybrid architecture:
 deterministic routing, tactical control, and a separately evaluated safety layer.
 The first implementation, `obstacle_route_v1`, has two straight lanes with one

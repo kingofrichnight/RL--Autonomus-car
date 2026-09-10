@@ -207,6 +207,9 @@ def main() -> None:
     if summary_output is not None:
         summary = {
             "algorithm": "PPO",
+            "predictive_safety_observation": load_config(args.config).get(
+                "predictive_safety_observation"
+            ),
             "config_path": str(Path(args.config)) if args.config is not None else None,
             "config_sha256": config_sha256,
             "training_seed": args.seed,
