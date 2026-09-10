@@ -7211,3 +7211,38 @@ outputs if execution fails; do not restart over existing artifacts. No final
 candidate checkpoint audit, development evaluation, or performance claim has
 been made. Model checkpoints and local logs remain uncommitted. This launch
 does not implement the separate pedestrian scenario.
+
+## 72. Candidate integrity audit and paired development release (2026-09-10)
+
+The target-aware run finished at 200704 steps (5397 seconds reported by the
+training timer, about 90 minutes). Its training summary is committed in
+`92032da`. Final ZIP SHA-256:
+`5ddbe06533e9dcce84ec2339db6226dadf6d5b2331fa0c87e0172e26f4f416fd`.
+Training summary SHA-256:
+`9b77f9b0cf94111ddeddbd1440fc0e35774784d1520d309af711c658659f9943`.
+
+The previous-turn read-only audit verified configuration and checkpoint hashes,
+ZIP integrity, CPU reload, finite policy parameters, 200704 collected steps,
+and compatibility with the configured 176-input environment. Comparing training
+summaries found only the intended differences: observation shape, target feature
+flag/scale, and model path/hash. No performance evaluation was used in this audit.
+Both final checkpoints are now eligible for the section 69.5 comparison.
+
+Before evaluation, Ruff passed and all 186 tests passed in 5.02 seconds, with
+the two existing unbounded-Box warnings. The following commands release the
+already-frozen deterministic 500-episode development comparison, not a new
+holdout. Each arm uses seeds 40042–40541 once, no shield/intent, the same corrected
+reward and fusion settings, and the hash-bound historical V3 reference.
+The section 69.5 absolute and incremental acceptance gates remain unchanged.
+No source changes or model files are part of this update.
+
+```powershell
+python -u -m scripts.evaluate_policy --model models/ppo_fusion_cf_control_seed42.zip --model-sha256 f35892f6830b1d9bc23301229ea1813c3e309a2ecd4e5293fe689cbc54c88b77 --config configs/intersection_reward_v3_collision_first.yaml --config-sha256 4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f --episodes 500 --seed 40042 --unsafe-ttc 2.0 --risk-fusion --fusion-neighbors 14 --fusion-range-scale 200.0 --fusion-relative-speed-scale 20.0 --fusion-ttc-scale 10.0 --fusion-cpa-horizon 5.0 --fusion-cpa-distance-scale 20.0 --reference-csv results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --reference-csv-sha256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4 --output results/ppo_fusion_cf_control_development_seed40042.csv --refuse-overwrite
+python -u -m scripts.evaluate_policy --model models/ppo_fusion_cf_target_seed42.zip --model-sha256 5ddbe06533e9dcce84ec2339db6226dadf6d5b2331fa0c87e0172e26f4f416fd --config configs/intersection_reward_v3_collision_first.yaml --config-sha256 4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f --episodes 500 --seed 40042 --unsafe-ttc 2.0 --risk-fusion --fusion-neighbors 14 --fusion-range-scale 200.0 --fusion-relative-speed-scale 20.0 --fusion-ttc-scale 10.0 --fusion-cpa-horizon 5.0 --fusion-cpa-distance-scale 20.0 --reference-csv results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --reference-csv-sha256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4 --target-speed-observation --target-speed-scale 9.0 --output results/ppo_fusion_cf_target_development_seed40042.csv --refuse-overwrite
+```
+
+Output names are arm-specific and refuse existing CSV/summary files. Background
+execution may run the two independent arms concurrently, using separate console
+logs; it does not change seeds, deterministic prediction, or episode order within
+each arm. No result is claimed at release. If an arm fails, preserve its logs
+and any artifacts before deciding whether a rerun is justified.
