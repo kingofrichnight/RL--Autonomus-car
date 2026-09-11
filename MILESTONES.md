@@ -8066,3 +8066,147 @@ unchanged predictor source SHA-256 is
 `2d3880359d26a6408cef8e5d7ae7dfc30ab2a9c4813a6888593935258fc86e2f`.
 The final geometry model path is confirmed ignored by Git. No staged files
 were present before the requested implementation commit.
+
+### 79.3 Actual launch (2026-09-11)
+
+Implementation commit: `fe7fec5` (geometry config, six contract tests, and the
+append-only protocol above). Training started locally at
+2026-09-11T02:35:17.3904745-04:00 using exactly section 79.2. The venv launcher
+PID was 41228 and its Python worker PID was 20516; this is one training job,
+not two independent trainers. Both final output files and the run log directory
+were absent before launch. Standard output is
+`logs/ppo_v3_predictive_geometry_v2_seed42.stdout.log`; standard error is the
+matching `.stderr.log`. The first 1024 steps were confirmed, and the 06:40 UTC
+check showed 4096 steps with empty stderr. Status: **training in progress**;
+there is no completed geometry model, development result, or promotion claim.
+
+### 79.4 Non-interventional failure diagnostic implementation
+
+Added `scripts/diagnose_predictive_failures.py` and eight focused test cases
+(nine test instances including parametrization). The diagnostic selects the
+historical candidate's nine dense incomplete seeds and 37 aggressive collision
+seeds, then replays both frozen candidate and control on those same cases:
+92 engineering replays, not new scored evaluation episodes. Selection is fixed
+in code and checked against the original complete, hash-verified 1000-episode
+stress study. No reward, action, configuration, seed, or production source is
+changed. This code is independent of the geometry training process.
+
+The original deterministic PPO action is returned unchanged to the existing
+episode evaluator. Per-decision traces record categorical action probabilities,
+original input slots, the existing nine forecast features (candidate only),
+ego state, and live actor geometry with episode-scoped first-sighting IDs.
+Live post-spawn actors are explicitly not assumed to be the same actor set
+as the native observation slots; row-alignment differences are logged. No extra
+forecast rollout is performed. These traces do not supply labels to RL.
+
+Every replay must match its frozen historical aggregate row (discrete fields
+exact, numeric tolerance inherited from `rows_match`); mismatches preserve the
+trace and a failed report, then stop. Outputs use a new directory and never
+overwrite existing records. A positive predicted margin is not proof of a safe
+counterfactual action, and this outcome-selected diagnostic cannot estimate
+overall performance. Read-only review found no blocking defect; full test gate
+and actual replay status are recorded separately. The replay experiment has
+**not yet been launched**.
+
+Review limitations: traces are pre-action only and cannot establish the final
+collision partner/contact geometry. Current Torch version is recorded, but
+historical Torch equality cannot be verified from the old stress metadata.
+Added a further initialized-PPO (not trained) engineering purity test to check
+the real policy-distribution path, aggregate episode reproduction, and Torch
+and environment RNG preservation. This brings diagnostic coverage to ten test
+instances; it is not a new policy-performance experiment.
+
+Actual-repository verification passed: Ruff and **244 tests in 38.25 seconds**,
+with the same two existing Box warnings. Coverage-count correction to the draft
+description above: the diagnostic initially had seven test functions/eight
+instances; the added real-PPO check makes eight functions/nine instances, not
+ten. No test was removed. The entire new diagnostic is still unexecuted against
+historical model checkpoints; unit/engineering tests are not its replay result.
+
+### 79.5 Completion checks and quiet continuation
+
+A task-attached follow-up named `Finish V3 geometry experiment` was created
+(`finish-v3-geometry-experiment`) to check every 30 minutes. The user requested
+no reports of minor progress; only completion, meaningful findings, failures,
+or required input should be surfaced. This is a finite continuation of this
+training/evaluation/diagnostic workflow, not authorization for additional
+training experiments. Pause the follow-up once results are recorded and locally
+committed, or if further work requires user direction. Local scheduled work
+requires the computer and app to remain running; existing permissions still
+apply and must not be expanded automatically.
+
+Before evaluation require that the actual trainer has exited, the final saved
+policy stdout marker exists, and both final ZIP and complete parseable training
+JSON exist. The JSON is saved before environment close, so its existence alone
+does not prove successful completion. Verify the final ZIP hash against the
+summary; verify all section 79.1 settings in both metadata and loaded PPO,
+including the historical implicit PPO settings. Use only the final root ZIP.
+The geometry config and all frozen source hashes must be unchanged; a mismatch
+blocks evaluation and is recorded. Re-run Ruff/full pytest before any experiment.
+
+Additional frozen source SHA-256 values:
+
+- `scripts/evaluate_policy.py`: `922b9f4a722b3c3a79a94e36753d4adb45c24a6d1faabb14c0c15604696aa55a`
+- `safeintent_rl/envs/intersection.py`: `eca1191c1f676600ea68998642f8c417f654b14e810c948cdbd614842e03d52c`
+- `safeintent_rl/evaluation/metrics.py`: `5a647b7a5616b5cc5f9a5743feb13dda386bab2e387a82d6c5af249c5342ed6b`
+- `safeintent_rl/safety/ttc.py`: `75565975fa3beb8eabf6f6af75cf26eedbdad1805e7ae568630cb0575c0ae2c0`
+
+The exact development command after replacing only the model-hash placeholder
+with the audited final model hash is:
+
+```powershell
+python -u -m scripts.evaluate_policy --model models/ppo_v3_predictive_geometry_v2_seed42.zip --model-sha256 AUDITED_FINAL_MODEL_SHA256 --config configs/intersection_v3_predictive_geometry_v2.yaml --config-sha256 a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7 --episodes 500 --seed 40042 --unsafe-ttc 2.0 --reference-csv results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --reference-csv-sha256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4 --output results/ppo_v3_predictive_geometry_v2_development_seed40042.csv --refuse-overwrite
+```
+
+Check active evaluator identity and absent CSV, summary, and console-log targets
+before launching; do not create duplicates. The existing evaluator writes its
+CSV only after all 500 episodes, then its summary. Preserve CSV-only partial
+failure output; do not overwrite or automatically rerun it. Record actual
+launch, frozen source/runtime evidence and failures in a subsequent entry.
+
+`--reference-csv` only validates/records the reference hash; it does **not**
+compute paired statistics. Independently recompute all metrics and exact
+two-sided McNemar p-values for success versus each frozen reference. Validate
+500 rows, strict exclusive success/collision, integer lengths 1–151, travel
+time length/5, finite reward, nonnegative TTC (positive infinity allowed but no
+NaN), unsafe count 0–length, and zero interventions. Incomplete means neither
+success nor collision. Keep the existing mean-TTC convention of excluding
+nonfinite episode TTC, and report the exclusion count. Verify metadata, paths,
+hashes and seeds. Historical pairing remains ordered-protocol pairing only.
+
+Reference CSV SHA-256 values in addition to original V3 in the command above:
+
+- `results/ppo_v3_predictive_control_development_seed40042.csv`: `33ce4dc8b0e0a914033095a163cb26197ea31cf15788f9c0684e4e7818d711a3`
+- `results/ppo_v3_predictive_safety_v1_development_seed40042.csv`: `c5a50b1147fafa4aa61c55f9c8784455b4ce77b57ac9617dfd7466a48daae535`
+
+Their corresponding `.summary.json` hashes (original, control, v1) are
+`51fe8e4aa86f62b2bbb5b66a7e8979655305e3a03ad571ca631d40828c7556a1`,
+`f4a3a623c75c6f643d14ac499d9dd5ce5f9b444c67ca25ba0388234d75929000`,
+and `f9521709fa74cd3a369809f9040d216384cc2ad0cb72f965b42d32acce1134eb`.
+Exact TTC reference means are .6003656548142169, .6065401801078688, and
+.6728939419963959 respectively. Counts are 294/206/0, 294/205/1, and
+364/101/35 success/collision/incomplete.
+
+Expressing the existing frozen thresholds as integer counts out of 500:
+absolute gates require success >=315, collision <=174, incomplete <=10,
+nonworse original TTC and favorable paired success vs original. The control
+comparison additionally requires success >=304, collision <=195, nonworse
+control TTC and favorable paired success vs control. The geometry-v1 comparison
+requires success >=364, collision <=101, incomplete <=10, nonworse v1 TTC and
+favorable paired success vs v1. Favorable means more rescued successes than
+regressed successes and exact two-sided p < .05. For discordant counts b,c,
+use min(1, 2*sum(comb(b+c,k), k=0..min(b,c))/2**(b+c)), or 1 if b+c=0.
+All applicable gates must pass; no thresholds may be relaxed after results.
+
+The pending diagnostic uses only the section 79.4 engineering selection, after
+a fresh test gate, preserving an absent output directory:
+
+```powershell
+python -u -m scripts.diagnose_predictive_failures --protocol-sha256 6c3851362df84a0aef76ee76dfad33bc203573aa843dde6c0d3c21dcd1142d47 --output-dir results/v3_predictive_failure_diagnostic_v1
+```
+
+Sequence it after the geometry training/development evaluation to avoid adding
+a second long simulator job during training. The original stress artifacts
+remain authoritative; these 92 replays must not be pooled with scored results.
+Commit only reviewed code, small results, and appended documentation locally,
+with an unrelated-index check. No model/log/data checkpoint commits and no push.
