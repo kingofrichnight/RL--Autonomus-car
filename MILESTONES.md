@@ -8852,3 +8852,44 @@ Retry test SHA-256:
 `a793f50bf9d40c4ef4a25b2eeb72ab2e0b27b1ed79e06de17d90ad52e2729f79`.
 The test gate is complete. Actual launch must still confirm no conflicting
 process or pre-existing retry console logs/artifacts and is recorded below.
+
+### 84.4 Actual fresh training launch
+
+Launched exactly the section 84 train command at
+**2026-09-11T19:41:31.0498369Z**, launcher PID **47628**, worker PID **20120**.
+Reviewed-access process inspection found no conflicting training/evaluation
+process, and all eleven new model/summary/run/log/evaluation targets were
+absent before launch. Start-Process used a hidden window with separate unique
+stdout/stderr logs. The implementation and passing-test record were committed
+first as `babf37d`.
+
+The retry manifest records start **19:41:33.339861 UTC**, status `running`, the
+unchanged `predictive_post_spawn_sync_v1` protocol and 45 input/lineage hashes.
+Both observed command lines match the new retry command. Stdout confirms CPU
+execution and the unique retry TensorBoard directory; initial stderr is empty.
+This establishes actual launch, not a completed model or evaluation result.
+Original interrupted artifacts remain unchanged; neither the staged original
+manifest nor the mutable new run manifest is included in the documentation
+commit. No checkpoint/log was added to Git and no push was performed.
+
+### 84.5 Active continuation verified
+
+The first 2,048 training steps were observed with no stderr output, confirming
+that optimization started. The existing heartbeat was then successfully updated
+through the supported automation tool at **2026-09-11T19:43:19.207Z**. The tool
+returned success and a read-only configuration check verified exact saved-prompt
+equality. Name: **Continue V3 safety research**; ID unchanged:
+`finish-v3-geometry-experiment`; status ACTIVE; same task
+`01a06baf-334e-7182-ab6e-6a4977dadc85`; same 30-minute interval. Creation time was
+preserved; no duplicate task, raw-configuration edit or permission change occurred.
+
+This supported retarget resolves section 83's unavailable-control/stale-prompt
+limitation. The saved prompt now explicitly follows **retry01**, preserves the
+interrupted predecessor, enforces final-model verification and fresh tests before
+the fixed evaluation, independently audits all existing gates, commits only
+reviewed small artifacts, and continues evidence-led, separately preregistered
+V3 research under the latest user authorization. It must remain quiet for
+routine progress and never confuse a development pass with replicated,
+independently evaluated success. Pause only at genuinely verified completion
+or when further meaningful progress requires user direction/new authority.
+Local continuation requires the computer powered on and the app running.
