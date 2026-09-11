@@ -7503,3 +7503,51 @@ command runs in a hidden background process, with unbuffered stdout/stderr in
 `logs/ppo_v3_predictive_control_seed42/console.stderr.log`. Initial stdout confirms
 CPU execution and TensorBoard output to `PPO_1`; no startup error was logged.
 Status: running, not complete or accepted. Candidate training has not started.
+
+### 75.5 Completed control audit and candidate release
+
+The control completed 200704 steps; its final training timer reports 4466 seconds
+(about 74 minutes). Final model SHA-256:
+`172260972c4aad6ed73ea7080ae3458282cf046819c868820754c9d637c01473`.
+Training summary SHA-256:
+`8701584bc5a6175c30b0c1ce0acbca300715bdee2083272cae8413ad67a4fb08`.
+
+Read-only audit passed: configuration hash matches section 75.2, ZIP integrity
+passed, CPU reload matches the 106-input configured environment, all policy
+state tensors are finite, and saved PPO steps/seed/environment count/network/
+learning-rate/rollout/batch/gamma/GAE/entropy match the frozen package. Training
+JSON confirms target-speed input enabled at scale 9, no fusion/intent/shield or
+predictor, corrected collision precedence, and the frozen callback settings.
+Callback metadata is recorded evidence, not an independent execution replay.
+
+Ruff and all 209 tests passed in 6.93 seconds; the two existing native Box
+warnings remain. No driving performance was evaluated. Accept the control's
+artifact integrity, not its safety or success rate. The user's staged training
+summary is preserved without restaging or committing it during this audit.
+
+The previously frozen candidate command in section 75.2 is now released: train
+`ppo_v3_predictive_safety_v1_seed42` with its hash-bound predictor configuration,
+without adding the standalone target-speed flag. Candidate ZIP, summary and log
+directory were absent at audit time. Candidate training has not started during
+this audit. Recheck existing processes/artifacts before launch and rerun tests
+if code changes. Audit the candidate before any paired development evaluation.
+
+### 75.6 Predictive candidate launch
+
+User explicitly approved starting the candidate. Ruff and all 209 tests passed
+again in 7.09 seconds, with the two existing native Box warnings. Predictor config
+hash matches the frozen section 75.2 value. The authorized process check found
+no active PPO trainer, and candidate ZIP, summary and log directory were absent.
+
+Started the exact candidate command from section 75.2 at local 20:47:20 on
+2026-09-10, initial launcher PID 31580. It runs in a hidden background process
+with unbuffered output in
+`logs/ppo_v3_predictive_safety_v1_seed42/console.stdout.log` and errors in
+`logs/ppo_v3_predictive_safety_v1_seed42/console.stderr.log`. Initial output
+confirms CPU execution and TensorBoard logging to the candidate's `PPO_1`.
+No startup error was logged. Status: started, not complete or accepted.
+
+No configuration, seed, coefficient, training budget or evaluation gate changed.
+The user's staged control summary remains untouched. No model files were
+committed and no development evaluation was started. Audit the final candidate
+checkpoint and training JSON before releasing the paired evaluation.
