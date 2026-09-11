@@ -8393,3 +8393,43 @@ historical diagnostic workflow is complete. Preserve the section 79.8
 not-retained decision and accepted original V3. Locally commit these verified
 diagnostic artifacts and append-only record; then pause this follow-up pending
 user direction. No checkpoints or logs are committed and no push is performed.
+
+## 80. User-resumed next step: opt-in observation/forecast scene alignment
+
+The user requested continuation after the completed section 79 workflow. The
+next bounded implementation isolates the documented native-observation timing
+issue before another long training run. Geometry V2's failed TTC retention gate
+and original accepted V3 remain unchanged. No cost budgets, reward coefficients,
+thresholds, seeds or evaluation rules are revised here.
+
+Added `safeintent_rl/sensors/synchronized_predictive.py` containing an explicit
+outer `SynchronizedPredictiveObservation` wrapper. Historical environment
+factory, predictive wrapper, training/evaluation scripts, configs and model
+checkpoints are untouched. The new wrapper is not enabled by default and cannot
+silently change historical evaluations. It requires the native sorted relative
+15-vehicle kinematics contract and a direct predictive-wrapper parent.
+
+At each returned decision state, replace only the first 105 kinematic entries
+with the native observer's current post-clear/post-spawn observation. Preserve
+the target-speed scalar and all nine forecast values from the existing inner
+wrapper byte-for-byte. No extra forecast, physics step, action, reward, vehicle
+mutation, randomness, expert label or learned prediction model is introduced.
+The new observation semantics require a separately trained policy; do not apply
+the wrapper to an old checkpoint and call it an equivalent evaluation.
+
+Engineering test protocol: compare complete fixed-action rollouts on seeds
+7,42,80042 using repeated actions [2,1,0,1] (at most 160 decisions, ending at
+native termination/truncation). Require identical executed-action info, rewards,
+termination flags, vehicle poses/velocities/actions/routes/driver labels and
+environment RNG. Require identical target/forecast entries and refreshed native
+inputs equal to the current observer. A controlled post-step spawn fixture must
+expose an actual changed native input while proving exactly one forecast call.
+Reject stochastic/incompatible observation contracts. This is software
+verification, not scored policy evaluation or a success-rate experiment.
+
+The initial test run had four constructor failures and one passing rejection
+test: the first contract guard incorrectly assumed `include_obstacles=False`.
+Read-only inspection showed the frozen native configuration uses True. The
+guard was corrected to require that existing value; no environment setting was
+changed. Preserve this failed implementation check in the record. Verification
+of the corrected implementation follows below.
