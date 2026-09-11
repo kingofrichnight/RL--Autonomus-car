@@ -7987,3 +7987,82 @@ seeds, deadlines or evaluation rules were changed; no installation or new
 training occurred. This assistant did not stage, commit or push. Next actionable
 implementation is observation-contract tests and a separately named repair,
 not another blanket TTC shield or a larger model trained on lossy inputs.
+
+## 79. V3-PredictiveGeometry v2 implementation and frozen run (2026-09-11)
+
+User authorizes implementation, local execution and local Git commits, while
+deferring CARLA. No push or model-checkpoint commit is authorized/needed.
+This first experiment isolates the verified y-coordinate clipping issue from
+section 78. Recurrent/cost/deadline changes and snapshot alignment are separate
+future factors and are not bundled into this experiment.
+
+New config: `configs/intersection_v3_predictive_geometry_v2.yaml`, SHA-256
+`a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7`.
+It is identical to predictor v1 except explicit observation.features_range:
+x/y [-200,200] m and vx/vy [-80,80] m/s. The sole effective change is y from
+[-4,4] to [-200,200]. Observation size remains 115; target speed and nine
+forecasts remain identical for the same underlying state. No existing config
+or production source is edited. A fresh PPO is required; no fine-tuning or
+inference-time reinterpretation of an old checkpoint is allowed.
+
+Six new geometry contract tests passed in 15.00 seconds and Ruff passed in the
+maintenance checkout. They test native normalization, identical non-y inputs,
+target/forecast values, rewards, executed-action info, environment RNG and
+vehicle dynamics across complete fixed-action rollouts on seeds 7,42,80042.
+Initial tests failed on the native reset's independently sampled, unexecuted
+action placeholder. Only that reset-info field is now excluded; all executed
+action fields remain exact checks. This is a test-fixture correction, not a
+change to the experiment. Full actual-repository test gate follows before launch.
+
+### 79.1 Frozen training and comparison protocol
+
+Training uses fresh PPO MlpPolicy, seed 42, 200000 requested / 200704 expected
+collected steps, one environment, learning rate .0003, n_steps 1024, batch 64,
+network [256,256], gamma .99, GAE .95, entropy .01. Historical implicit settings
+remain 10 epochs, clip .2, normalized advantages, value coefficient .5, gradient
+clip .5, no target-KL. Internal validation offset 70000, 50 episodes every 10000
+steps; checkpoints every 25000. Only the final root model is eligible, never
+callback-best. No shield, intent, fusion or standalone target-speed flag.
+The predictor remains 3 s / 15 Hz, margin .5 m, uncertainty growth .25 m/s,
+14 neighbors, clearance scale 10 and speed scale 9. Duration 30 s, policy 5 Hz,
+traffic, reward and native deadline behavior are unchanged.
+
+Current runtime audit: Python 3.12.9, SB3 2.9.0, Torch 2.13 CPU, NumPy 2.5.2,
+Gymnasium 1.3.0, HighwayEnv 1.12.1; Torch threads are 8 intra / 8 inter and CUDA
+unavailable. Thread settings are not changed. Historical thread counts were
+not recorded, so equality of past thread settings is not asserted.
+
+After final-model integrity audit and a fresh full test gate, evaluate exactly
+500 deterministic episodes on consumed development seeds 40042–40541 with the
+same 2.0 s TTC metric. Preserve source hashes and verify raw reference rows.
+References are the original V3, corrected 106-input control and predictive v1
+development results already stored; do not overwrite or unnecessarily rerun them.
+The historical CSVs lack seed columns: pair using their documented ordered-reset
+protocol and metadata, not a claim of independently recorded row seed IDs.
+
+Keep every section 75.3 gate unchanged. Additionally, a geometry repair is
+retained as an improvement over predictive v1 only if success is at least 72.8%,
+collision at most 20.2%, incomplete at most 2%, mean minimum TTC no worse than
+v1's recorded development value, and paired success improves with exact two-sided
+McNemar p < .05. These stricter retention conditions are fixed before training;
+mixed or failed results are retained as evidence, not promoted. This remains a
+single-training-seed development experiment, not final generalization evidence.
+
+### 79.2 Exact training command and output guards
+
+```powershell
+python -u -m scripts.train_ppo --config configs/intersection_v3_predictive_geometry_v2.yaml --config-sha256 a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7 --timesteps 200000 --seed 42 --learning-rate 0.0003 --n-steps 1024 --batch-size 64 --n-envs 1 --env-seed-stride 1000 --eval-seed-offset 70000 --eval-episodes 50 --evaluation-freq 10000 --checkpoint-freq 25000 --summary-output results/ppo_v3_predictive_geometry_v2_seed42.training.json --output models/ppo_v3_predictive_geometry_v2_seed42 --refuse-overwrite
+```
+
+Final ZIP, training summary and entire model-stem log directory must be absent.
+Check duplicate active trainers before launching. The initial process check
+found only geometry unit tests, not a trainer; all three output paths were absent.
+Keep models/checkpoints ignored. Record final tests and actual launch separately.
+
+Actual-repository pre-training gate passed: Ruff and 235 tests in 27.27 seconds,
+with the same two existing Box warnings. Training source SHA-256 is
+`6dd20e7059bb0fd33f9516d3bb942003e8b2e0c386386252b9cb4e3c6d3dccc8`;
+unchanged predictor source SHA-256 is
+`2d3880359d26a6408cef8e5d7ae7dfc30ab2a9c4813a6888593935258fc86e2f`.
+The final geometry model path is confirmed ignored by Git. No staged files
+were present before the requested implementation commit.
