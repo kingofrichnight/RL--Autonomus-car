@@ -8341,3 +8341,55 @@ Console paths are `logs/v3_predictive_failure_diagnostic_v1.stdout.log` and its
 matching `.stderr.log`. Status: **historical diagnostic running**, not a
 completed replay result. Geometry evaluation results above are final and are
 not altered by this diagnostic.
+
+### 79.10 Historical diagnostic complete and independently verified
+
+The 11:44 UTC follow-up found the diagnostic complete with empty stderr and
+the final `92/92 matched` marker. Runtime was 184.021145 seconds. Independently
+verified every artifact hash and recorded source hash, all 92 distinct
+arm/scenario/seed selections, each historical-versus-replayed aggregate row,
+trace episode lengths and contiguous decision indices. All 92 replay rows
+reproduce their historical counterparts. Report SHA-256:
+`6709f894606fd49693967c17cd873e67489a82b1967a02cfdf94c66eb1e6adc1`.
+Six diagnostic artifacts total approximately 3.29 MB, including four compressed
+traces (largest approximately 1.29 MB), the episode ledger, and report. They are
+small research results, not model checkpoints or a training dataset.
+
+| Selected historical group | Replays | Decisions | Native/live row-mismatch decisions | Zero-target decisions | Stopped decisions |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Predictive V1, dense incomplete | 9 | 1359 | 156 | 1177 | 1060 |
+| Predictive V1, aggressive collisions | 37 | 1539 | 273 | 600 | 400 |
+| Control, same dense seeds | 9 | 300 | 61 | 39 | 16 |
+| Control, same aggressive seeds | 37 | 1238 | 218 | 87 | 48 |
+
+Dense V1 failures had 17283 y-boundary slots among 17544 present NPC slots;
+aggressive V1 failures had 12860 among 14024. These observations confirm severe
+historical y-input saturation in these selected trajectories, not its frequency
+across an unbiased population. Native/live mismatches are consistent with the
+already documented observation-versus-post-spawn timing difference; the trace
+does not assign actor identities to native slots or prove a unique cause for
+each mismatch.
+
+Among dense V1 failures, 384 stopped decisions had positive predicted FASTER
+clearance margin, and FASTER was not selected in 380. Aggressive failures had
+40 such decisions, with FASTER not selected in 34. All three predicted action
+margins were nonpositive on 322 dense and 598 aggressive decisions. These are
+pre-action samples, not the historical post-step stopped-time metric. A positive
+forecast margin is not a counterfactual safety certificate: no alternative
+action rollout or collision-partner identification was performed. Control has
+no forecast inputs, so its forecast counters are not comparable evidence.
+
+Interpretation: the recorded dense failures include persistent waiting even
+when the limited forecast represents a positive-margin acceleration option;
+the model can also encounter predicted conflicts under all three actions.
+Future work should separately investigate observation/forecast consistency and
+temporal decision state, while checking prediction error before changing reward
+or safety formulas. This is a proposed direction, not a new approved protocol.
+No causal attribution or performance improvement is claimed from these
+outcome-selected replays, and no new training was started.
+
+The finite geometry training, development evaluation, independent audit and
+historical diagnostic workflow is complete. Preserve the section 79.8
+not-retained decision and accepted original V3. Locally commit these verified
+diagnostic artifacts and append-only record; then pause this follow-up pending
+user direction. No checkpoints or logs are committed and no push is performed.
