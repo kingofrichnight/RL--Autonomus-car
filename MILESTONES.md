@@ -8433,3 +8433,25 @@ Read-only inspection showed the frozen native configuration uses True. The
 guard was corrected to require that existing value; no environment setting was
 changed. Preserve this failed implementation check in the record. Verification
 of the corrected implementation follows below.
+
+Corrected focused tests passed (five instances). Actual-repository verification
+passed Ruff and **258 tests in 85.19 seconds**, with the same two existing
+unbounded-Box warnings. The frozen source/config/model/training-summary hashes
+from the geometry audit are unchanged. All three complete seeded engineering
+rollouts exercised a real input difference while preserving the checked
+dynamics, rewards, terminations, target/forecast values and RNG. The forced
+spawn check confirmed only one forecast call and idempotent read-only refresh.
+
+Wrapper SHA-256:
+`758d665d2c635d88693b1c71845b547d735580221830392c3f328724f68eb200`.
+Test SHA-256:
+`a0779818894ee417f0a63650c3f5afaed91dee03f634456a79e35ab0660fb48b`.
+
+Explicit engineering use is
+`SynchronizedPredictiveObservation(make_intersection_env(GEOMETRY_CONFIG))`.
+This wrapper is deliberately not wired into any existing training/evaluation
+CLI. The next training experiment needs an explicit versioned entry point and
+metadata identifying synchronization, plus a pre-recorded matched training and
+evaluation protocol. Do not imply that this implementation has trained a model
+or improved success/TTC. No new long training run, scored evaluation or automatic
+follow-up was launched in this step; the prior follow-up remains paused.
