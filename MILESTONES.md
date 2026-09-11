@@ -8254,3 +8254,90 @@ launch. Console paths are
 matching `.stderr.log`. Status: **development evaluation running**. This is the
 fixed 500-episode consumed development comparison, not untouched holdout or
 evidence of an improvement yet. The queued diagnostic remains unstarted.
+
+### 79.7 Independent development audit implementation (2026-09-11)
+
+The evaluator has exited with a final saved-results marker and empty stderr;
+CSV and summary were written at approximately 10:59:58 UTC. Added a standalone
+standard-library audit, `scripts/audit_geometry_development.py`, with focused
+tests. It reads without changing any original CSV, independently validates
+typed rows and recomputes every summary metric, verifies all frozen references,
+model/config/source fingerprints and evaluation metadata, and computes exact
+paired success comparisons and every pre-registered gate. It explicitly keeps
+the legacy finite-only mean-TTC convention and reports exclusions. No new
+simulation or evaluation is performed by this audit. It refuses an existing
+audit output and does not use the evaluator's aggregation implementation.
+
+This is a post-result verification tool, not a revised acceptance protocol.
+Its thresholds are copied unchanged from section 79.5. Tests include exact
+McNemar direction/no-discordance, TTC-gate failure despite improved outcome
+counts, malformed observations and nonfinite-TTC handling. The spreadsheet
+skill's read-only scientific-data guidance is used to preserve raw observations
+and separate verification from source records. No workbook is created.
+
+Ruff and all **253 tests passed in 38.33 seconds**, with the same two existing
+Box warnings. The independent audit completed successfully using bundled Python
+and the standard library. All 2000 rows across the four development CSVs passed
+validation and independently reconciled with their summaries. All model,
+configuration, source and reference hashes matched; no TTC rows were excluded.
+
+### 79.8 Verified geometry development result: mixed, not retained
+
+Fixed development seeds 40042–40541, 500 episodes per policy, no safety shield:
+
+| Policy | Success | Collision | Incomplete | Mean minimum TTC (s) |
+| --- | ---: | ---: | ---: | ---: |
+| Original V3 | 294 (58.8%) | 206 (41.2%) | 0 (0%) | 0.6003656548142169 |
+| Corrected 106-input control | 294 (58.8%) | 205 (41.0%) | 1 (0.2%) | 0.6065401801078688 |
+| Predictive V1 | 364 (72.8%) | 101 (20.2%) | 35 (7.0%) | 0.6728939419963959 |
+| Geometry V2 | 394 (78.8%) | 98 (19.6%) | 8 (1.6%) | 0.6666153731858254 |
+
+Geometry V2 mean reward 5.15308204815753, mean length 51.468, mean travel time
+10.2936 s, mean unsafe-TTC events 19.208, and zero safety interventions. Compared
+with V1, success increased 6.0 percentage points, collision decreased numerically
+0.6 points, and incomplete decreased 5.4 points. Mean minimum TTC decreased
+0.0062785688105705 s. No significance claim is made for the collision or TTC
+differences. Mean unsafe-TTC events increased from 18.618 to 19.208.
+
+Paired success checks (ordered reset-protocol pairing, not independent CSV seed
+IDs): against original V3, 122 rescues / 22 regressions, exact two-sided
+p=5.44807980630921e-18; against control, 121/21,
+p=2.8177061253295323e-18; against V1, 67/37, p=0.004232546845609295.
+All three success comparisons meet their frozen favorable-pair criterion.
+
+**Decision: not retained under the frozen full gate set.** All absolute and
+control-relative gates pass; all geometry-vs-V1 gates pass except nonworse mean
+minimum TTC. Do not relax that threshold after seeing the results. Preserve the
+checkpoint and results as a useful mixed ablation, but do not promote Geometry
+V2 or replace accepted original V3. This is one training seed on a consumed
+development set; improved development success alone is not generalization or
+real-world safety evidence. A future investigation may address this trade-off,
+but no further training or changed protocol is authorized by this follow-up.
+
+Geometry CSV SHA-256:
+`e145084f4ccce3d419c34886bd9434c0b5a817fb6fa3c1ceab616a89e1929030`.
+Geometry summary SHA-256:
+`227675bacf3f113209d970ec28763ccb57a86e352cfcd546f4ee8f6b1b5ecc61`.
+Audit source SHA-256:
+`80d98ac72d453b172a729f6eac2b5eef9f962172bdb7d1d3a66af75833c274d0`.
+The separate `results/ppo_v3_predictive_geometry_v2_development_seed40042.audit.json`
+retains recomputed metrics, counts, comparisons, gates and source fingerprints.
+Original CSV/JSON evidence was neither edited nor regenerated.
+
+### 79.9 Queued historical failure diagnostic preflight
+
+The fresh 253-test gate above precedes the section 79.5 diagnostic command.
+Diagnostic source SHA-256 is
+`516c8c358ad66b4d0f093c6c7c30347bd8389ea0cc20c27cdf6815f1d9bbfee2`.
+The frozen 92 replays compare historical predictive V1 and corrected control
+on the selected V1 failures. They do not evaluate Geometry V2 and cannot be
+used to revise its scored results. No simulator training/evaluation runs are
+to overlap this diagnostic. Record launch and results separately.
+
+The diagnostic launched at 2026-09-11T07:13:24.6091399-04:00 (11:13 UTC),
+launcher PID 44204, using exactly the section 79.5 command. No simulator job
+was active, and its output directory and console-log targets were absent.
+Console paths are `logs/v3_predictive_failure_diagnostic_v1.stdout.log` and its
+matching `.stderr.log`. Status: **historical diagnostic running**, not a
+completed replay result. Geometry evaluation results above are final and are
+not altered by this diagnostic.
