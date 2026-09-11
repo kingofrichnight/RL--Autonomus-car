@@ -7806,3 +7806,77 @@ Console is retained in `logs/v3_predictive_stress_v1/recovery_01.log`. The
 engineering replay of dense seed 80135 passed before continuing with seed 80136.
 The completed light prefix was copied without rerunning. Recovery is running;
 no completion claim is made at this checkpoint. No commits were performed.
+
+### 77.6 Completed stress study and verified result (2026-09-11)
+
+Recovery completed successfully: dense seeds 80136–80141 plus all aggressive,
+cautious and mixed seeds, 306 new scored episodes. Together with the preserved
+194-episode candidate prefix and the 500 completed control episodes, the study
+contains exactly 1,000 scored episodes. The successful dense seed 80135 replay
+is an engineering check only, not an additional scored episode. The original
+interrupted candidate artifacts remain unchanged; the interruption cause remains
+unknown. The authoritative candidate directory is `candidate_recovery_01` under
+`results/v3_predictive_stress_v1`, not the original partial `candidate` directory.
+
+Final artifact analysis returned `status: verified`, `episodes: 1000`. It checked
+episode hashes, ordered seeds, exclusive outcomes, timing bounds, recomputed
+summaries, effective configs, and frozen model/config/source provenance across
+both arms. An additional byte-level check confirmed that the original light and
+dense prefix hashes match the recovery record and their bytes are unchanged at
+the start of the recovered files. No protocol or experimental source changes
+were needed during recovery. The pre-recovery gate was Ruff plus 229 passing
+tests (13.16 seconds; two existing Box warnings), as recorded in 77.5.
+
+Each arm/scenario has 100 episodes, seeds 80042–80141. Entries below are
+success / collision / incomplete percentages (also episode counts):
+
+| Scenario | Corrected V3 control | V3-PredictiveSafety v1 |
+|---|---:|---:|
+| Light | 57 / 43 / 0 | 67 / 27 / 6 |
+| Dense | 59 / 41 / 0 | 69 / 22 / 9 |
+| Aggressive | 50 / 50 / 0 | 59 / 37 / 4 |
+| Cautious | 70 / 30 / 0 | 78 / 20 / 2 |
+| Mixed | 58 / 42 / 0 | 74 / 23 / 3 |
+
+Candidate mean stopped times are 1.756, 2.476, 1.914, 0.908 and 1.236 seconds
+in that order; control values are 0.004, 0.364, 0.160, 0.144 and 0.262 seconds.
+The candidate improves observed success and collision rates in all five cases,
+but unfinished episodes remain 2–9%. Dense traffic exposes the most incompletion
+(9%); aggressive traffic remains the most collision-prone (37%). Stopping metrics
+are consistent with conservatism but do not alone prove individual failure causes.
+
+Exact paired-success McNemar p-values in scenario order are 0.00634765625,
+0.04138946533203125, 0.14961278438568115, 0.09625244140625 and
+0.0004024505615234375. These are exploratory and not multiplicity-adjusted or
+promotion criteria. Equal-weight descriptive totals are control 294 successes,
+206 collisions, zero incomplete; candidate 347 successes, 129 collisions and
+24 incomplete. The reused 100 seeds across scenarios must not be treated as
+500 independent seeds per arm. These tests cover traffic spawning and driver
+profile mixtures only, not pedestrians, obstacles, weather or rerouting.
+
+Decision: candidate remains rejected as-is under its earlier development gate;
+this stress study does not relax the 2% incompletion ceiling or supersede the
+previous evaluation. Accepted original V3 is unchanged. Diagnose dense waiting
+and aggressive collisions before any separately named follow-up experiment.
+No further training was launched.
+
+Readable report: `STRESS_TEST_RESULTS.md`. Verified artifact:
+`results/v3_predictive_stress_v1/verified_summary.json`, SHA-256
+`61ebf55be7ad25deeb5af7776fecffe19e6647401db7b19669970c526330ba97`.
+Analysis command:
+
+```powershell
+python -m scripts.analyze_predictive_stress --root results/v3_predictive_stress_v1 --candidate-dir results/v3_predictive_stress_v1/candidate_recovery_01 --output results/v3_predictive_stress_v1/verified_summary.json
+```
+
+That output now exists; independent reruns must use a new output path. During
+the final read-only audit, an inline Python prefix check hit PowerShell quoting
+syntax errors before execution; a native PowerShell byte/hash check then passed.
+Repository HEAD was observed at `af3a083` during handoff, with prior stress files
+already committed externally. This assistant performed no staging, commits or
+pushes; the final documentation additions are left for the user to commit.
+
+Final handoff check after documentation sync: Ruff passed; all 229 tests passed
+in 9.39 seconds with the same two existing unbounded Box warnings.
+`git diff --check` passed. Only `MILESTONES.md` and the new
+`STRESS_TEST_RESULTS.md` remained uncommitted at that check.
