@@ -7551,3 +7551,258 @@ No configuration, seed, coefficient, training budget or evaluation gate changed.
 The user's staged control summary remains untouched. No model files were
 committed and no development evaluation was started. Audit the final candidate
 checkpoint and training JSON before releasing the paired evaluation.
+
+### 75.7 Completed predictive-candidate integrity audit (2026-09-11)
+
+The candidate completed 200704 steps, with a final training timer of 11070 seconds
+(about 3 hours 5 minutes), versus 4466 seconds for the matched control. This is
+about 2.48 times the recorded training duration at the same environment-step
+budget; it is not an isolated predictor microbenchmark or hardware-normalized
+performance comparison. Console logs report both final ZIP and summary saved;
+stderr contains no recorded error. The summary is tracked in the repository.
+
+Final candidate model SHA-256:
+`935dbd281c4f59326fdbd40a53038713629d7f74b7a48aa22566d88dce83b406`.
+Training summary SHA-256:
+`306b3931c0cca58b4c480b420ebb39ab8a5c36de733d1add09e30f66cc15f91e`.
+Configuration matches the frozen SHA-256:
+`e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14`.
+
+Read-only audit passed ZIP integrity, CPU reload with the configured 115-input
+environment, finite policy tensors, 200704 steps, seed 42, one environment,
+rollout 1024, batch 64, learning rate 0.0003, gamma 0.99, GAE 0.95, entropy 0.01,
+and network [256,256]. Summary comparison against the audited control found
+only the planned predictor config, config path/hash, observation shape,
+standalone target-input flag/scale, and model path/hash differences.
+The false standalone target-speed flag is correct: the predictor includes target
+speed internally. Recorded predictor parameters exactly match the YAML block.
+
+Ruff and all 209 tests passed in 7.11 seconds, with the two existing native Box
+warnings. No driving evaluation was run during this audit and no success-rate
+inference is made from training reward. Both final artifacts are now eligible
+for the frozen section 75.3 paired development comparison. Prepare explicit
+hash-bound evaluation commands and check output/duplicate-process guards before
+launch. No new training, evaluation, reward change or gate relaxation occurred.
+
+## 76. Released paired V3-PredictiveSafety development evaluation (2026-09-11)
+
+User explicitly requested starting the evaluations. Both final checkpoints passed
+their audits (75.5 and 75.7). Before launch, Ruff and all 209 tests passed in
+6.93 seconds, with two existing Box warnings. Both model hashes, both config
+hashes and the V3 reference CSV hash were rechecked against the frozen package.
+
+Exact released commands:
+
+```powershell
+python -u -m scripts.evaluate_policy --model models/ppo_v3_predictive_control_seed42.zip --model-sha256 172260972c4aad6ed73ea7080ae3458282cf046819c868820754c9d637c01473 --config configs/intersection_reward_v3_collision_first.yaml --config-sha256 4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f --target-speed-observation --target-speed-scale 9.0 --episodes 500 --seed 40042 --unsafe-ttc 2.0 --reference-csv results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --reference-csv-sha256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4 --output results/ppo_v3_predictive_control_development_seed40042.csv --refuse-overwrite
+python -u -m scripts.evaluate_policy --model models/ppo_v3_predictive_safety_v1_seed42.zip --model-sha256 935dbd281c4f59326fdbd40a53038713629d7f74b7a48aa22566d88dce83b406 --config configs/intersection_v3_predictive_safety_v1.yaml --config-sha256 e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14 --episodes 500 --seed 40042 --unsafe-ttc 2.0 --reference-csv results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv --reference-csv-sha256 aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4 --output results/ppo_v3_predictive_safety_v1_development_seed40042.csv --refuse-overwrite
+```
+
+Each independent arm runs once, deterministically, on the ordered 500 seeds
+40042–40541. These are consumed development seeds, not a new holdout. No shield,
+intent or legacy risk-fusion flag is enabled. The control has the standalone
+target-speed scalar; the candidate includes it in its predictor configuration.
+Section 75.3 gates remain frozen. Output CSVs, their summary JSONs and log
+directories must be absent; reject duplicate active processes before starting.
+Concurrent execution changes compute sharing, not episode ordering or protocol.
+
+The evaluator prints its aggregate output only after completion; a blank stdout
+log during execution is not sufficient evidence of failure. Keep separate logs
+for both arms and preserve all artifacts on any failure. No rates or improvement
+are claimed at launch. This entry records commands before execution.
+
+Both launches succeeded at local 00:30:39 on 2026-09-11, initial launcher PIDs
+20872 (control) and 39516 (candidate). Both processes were present on the startup
+check and neither stderr log contained an error. Logs are in arm-specific
+directories under `logs/`, named after each output CSV stem, as
+`console.stdout.log` and `console.stderr.log`. Status: running; no result yet.
+No model/checkpoint or existing result was modified by this launch.
+
+### 76.1 Completed evaluation: summary-level audit (2026-09-11)
+
+Both console logs report completion and saved episode CSVs. Both CSVs and both
+summary JSONs are present; neither stderr log contains a recorded error. Parsed
+console JSON equals each saved summary. Checkpoint/config/reference file hashes
+match the frozen commands, and both summaries report 500 episodes on seeds
+40042–40541, no shield/intent/fusion, and unsafe-TTC threshold 2.0 seconds.
+
+| Arm | Success | Collision | Incomplete (derived) | Mean minimum TTC | Mean travel time |
+|---|---:|---:|---:|---:|---:|
+| Target-visible V3 control | 58.8% | 41.0% | 0.2% | 0.6065401801 s | 7.662 s |
+| V3-PredictiveSafety v1 | 72.8% | 20.2% | 7.0% | 0.6728939420 s | 11.0012 s |
+
+Rates above are from verified summaries; incomplete is computed as 1 minus
+success minus collision under the evaluator's collision-exclusive success rule.
+Episode rows were not independently recomputed in this status check, and no
+paired significance statistic was calculated. Mean unsafe-TTC event counts are
+16.204 (control) and 18.618 (candidate); longer episodes complicate comparison
+of raw counts. Both report zero safety interventions.
+
+The candidate improves success by 14.0 percentage points and reduces collision
+by 20.8 points versus its matched control, with higher mean minimum TTC. However,
+7.0% incomplete exceeds the frozen 2.0% ceiling. Reject the candidate as-is under
+the all-gates rule; retain it as a promising diagnostic direction, not an accepted
+replacement for V3. Control also fails its absolute success/collision gates.
+No gate is relaxed, and no generalization or real-world safety claim is made.
+
+Artifact SHA-256 values:
+
+- Control CSV: `33ce4dc8b0e0a914033095a163cb26197ea31cf15788f9c0684e4e7818d711a3`.
+- Control summary: `f4a3a623c75c6f643d14ac499d9dd5ce5f9b444c67ca25ba0388234d75929000`.
+- Candidate CSV: `c5a50b1147fafa4aa61c55f9c8784455b4ce77b57ac9617dfd7466a48daae535`.
+- Candidate summary: `f9521709fa74cd3a369809f9040d216384cc2ad0cb72f965b42d32acce1134eb`.
+
+Next: independently verify episode-level metrics and paired outcomes, then
+diagnose the candidate's incomplete episodes before changing rewards or training.
+Do not assume incompletion proves unnecessary waiting without examining traces.
+Preserve these outputs. No rerun, new training, code change or evaluation was
+performed in this read-only status audit; only this append-only record changed.
+
+## 77. Frozen five-situation stress study (2026-09-11)
+
+User requests running all five proposed situations for both frozen policies and
+explicitly reserves committing changes until completion. No commits or pushes
+will be performed for this work. This is an exploratory distribution-shift study,
+not a replacement for the original development benchmark or a new acceptance
+holdout. No training, model selection, reward tuning or deadline change is allowed.
+
+### 77.1 Prospective scenarios and controls
+
+Protocol: `configs/v3_predictive_stress_v1.json`. For each arm and each scenario,
+run 100 deterministic episodes on ordered seeds 80042–80141 (1000 episodes total).
+Reuse the same seeds across scenarios and arms; matched seeds do not imply
+identical future traffic after policy trajectories or scenario factors diverge.
+These seeds are diagnostic only and cannot subsequently be treated as untouched.
+
+| Scenario | Spawn probability | Cautious / normal / aggressive probabilities |
+|---|---:|---|
+| light | 0.2 | 0.30 / 0.45 / 0.25 |
+| dense | 0.9 | 0.30 / 0.45 / 0.25 |
+| aggressive | 0.6 | 0.10 / 0.10 / 0.80 |
+| cautious | 0.6 | 0.80 / 0.10 / 0.10 |
+| mixed | 0.6 | 0.30 / 0.45 / 0.25 |
+
+Initial vehicle count stays 10: light/dense changes ongoing spawning only, not
+initial traffic population. Other dynamics, reward, predictor parameters and
+the native 30-second duration stay fixed. Majority profiles are probabilistic,
+not exactly 80% in every episode; realized profile counts are retained per row.
+The stored `safeintent_yield_probability` is not consulted by this project's
+controller, so no new yielding model is claimed. Actual profile changes affect
+desired speed, acceleration limits, following distance and time-gap settings.
+
+Control remains final `ppo_v3_predictive_control_seed42.zip`, SHA-256
+`172260972c4aad6ed73ea7080ae3458282cf046819c868820754c9d637c01473`,
+with corrected V3 config hash `4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f`
+and target-speed scalar (106 inputs). Candidate remains final
+`ppo_v3_predictive_safety_v1_seed42.zip`, SHA-256
+`935dbd281c4f59326fdbd40a53038713629d7f74b7a48aa22566d88dce83b406`,
+with predictor config hash `e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14`
+(115 inputs). No shield, intent inference or legacy fusion is added.
+
+### 77.2 Isolated implementation and measurements
+
+`scripts/evaluate_predictive_stress.py` checks protocol/config/model hashes,
+loads each frozen checkpoint on CPU, and creates temporary effective scenario
+YAMLs without modifying original files. Effective configurations and source /
+package fingerprints are retained in the final report. Environment factory gains
+only an optional driver-probability override; default callers remain unchanged.
+
+Newline-delimited JSON episode records are flushed after each episode, preserving
+completed evidence if execution fails. Every row explicitly records seed, exclusive
+success/collision/incomplete, reward, steps, travel time, stopped time, zero-target
+time, minimum TTC, unsafe-TTC event count, maximum NPC population, final route
+progress and realized profile counts. Stopped time counts post-step ego speeds
+below 0.5 m/s at the unchanged 5 Hz policy frequency; it is sampled stopped time,
+not proof that waiting was unnecessary. Minimum TTC uses the historical evaluator
+convention and threshold 2.0 s; nonfinite episode minima become JSON null and are
+excluded from finite-TTC means. Profile labels are logged after action selection,
+never provided to the learned policy.
+
+Each arm refuses an existing output directory. Each completed scenario has a
+summary and episode-file hash; the arm report retains failures and elapsed time.
+Logs print progress every 10 episodes to make execution visible. Both arms may
+run concurrently; scenarios within each arm run in the frozen order. No retries
+or output replacement are automatic. A failed experiment remains in the record.
+
+The initial 15 added tests and Ruff passed, covering frozen counts/seeds/deadline,
+invalid profile probabilities, original-config preservation, default-override
+rollout equality, exclusive NPC profile application, incomplete/null-TTC summary
+semantics, failure-report preservation and overwrite refusal. Full-suite results
+and launch confirmation will follow before any outcome claims.
+
+### 77.3 Test gate and exact execution commands
+
+Ruff and all 224 tests passed in the actual repository in 7.35 seconds (the two
+existing native Box warnings remain). Protocol SHA-256:
+`6c3851362df84a0aef76ee76dfad33bc203573aa843dde6c0d3c21dcd1142d47`.
+
+```powershell
+python -u -m scripts.evaluate_predictive_stress --arm control --protocol configs/v3_predictive_stress_v1.json --protocol-sha256 6c3851362df84a0aef76ee76dfad33bc203573aa843dde6c0d3c21dcd1142d47 --output-dir results/v3_predictive_stress_v1/control
+python -u -m scripts.evaluate_predictive_stress --arm candidate --protocol configs/v3_predictive_stress_v1.json --protocol-sha256 6c3851362df84a0aef76ee76dfad33bc203573aa843dde6c0d3c21dcd1142d47 --output-dir results/v3_predictive_stress_v1/candidate
+```
+
+Both output directories must be absent before starting. Local console logs use
+`logs/v3_predictive_stress_v1/{control,candidate}.{stdout,stderr}.log`.
+Keep every scenario result regardless of performance; there is no stress-score
+promotion rule. The original candidate's failed 2% incomplete gate is unchanged.
+
+Both arm processes started successfully on 2026-09-11: control at local 01:26:40
+(initial launcher PID 13184), candidate at 01:26:41 (PID 37572). Incremental
+episode files and progress messages are being produced; no startup errors were
+logged. No experiment source or protocol is changed while these jobs run.
+
+### 77.4 Read-only completion verifier
+
+Added `scripts/analyze_predictive_stress.py` separately from the running evaluator.
+It requires complete reports for both arms; verifies episode-file fingerprints,
+exact counts and seed ordering, exclusive outcomes, time/stopped ledgers, full
+effective configs, frozen model/config/protocol hashes, source fingerprints and
+agreement of recomputed versus saved summaries. It reports per-scenario paired
+success rescues/regressions and exact two-sided McNemar p-values as exploratory,
+not multiplicity-adjusted inference or a promotion rule. No episodes are rerun.
+
+Four analysis-unit tests passed. Initial Ruff found two overlong lines in this
+new verifier; they were corrected and Ruff passed. Neither this formatting fix
+nor the analysis implementation changes the running experiment or its source
+fingerprints. User retains responsibility for committing the completed changes.
+
+### 77.5 Interrupted candidate process and explicit recovery plan
+
+At local 01:42 on 2026-09-11 the control had completed all 500 episodes, but the
+candidate process was absent (confirmed by authorized process enumeration).
+Candidate stdout last reported dense 90/100; its flushed data contains all 100
+light episodes and 94 dense episodes, last seed 80135. No candidate final report
+exists and stderr is empty. Cause is unknown; do not describe this as a model
+crash or a completed run. The initial candidate files remain untouched.
+
+The user's continued request to finish all situations is handled with a separate
+`scripts/recover_predictive_stress.py`, not by silently restarting the study.
+It checks the frozen sources via the completed control report, model/config/
+protocol fingerprints and saved prefix validity, copies original prefix bytes
+to a new output directory, and replays the last saved partial-scenario episode
+as an engineering reproduction check (not another scored episode). All metrics
+must agree within 1e-9 floating tolerance, with exact discrete fields. Failure
+stops recovery and preserves its report. On agreement, evaluate only the missing
+306 candidate episodes: dense seeds 80136–80141 and all 100 seeds for aggressive,
+cautious and mixed. The control and complete light scenario are not rerun.
+
+Recovery results use `results/v3_predictive_stress_v1/candidate_recovery_01`.
+The report records prefix hashes/counts, replay checks, recovery-code fingerprint
+and recovery-only elapsed time. The final verifier accepts an explicit candidate
+directory and retains recovery provenance. Original experimental functions and
+their source hashes are unchanged. Initial recovery-code lint issues (one long
+line and import formatting) were fixed before execution; five verifier/recovery
+unit tests passed. Full-suite verification is required again before resuming.
+
+Recovery test gate passed: Ruff and 229 tests in 13.16 seconds, with two existing
+Box warnings. Launched the following command after confirming no active stress
+process and no recovery output/log destination:
+
+```powershell
+python -u -m scripts.recover_predictive_stress --source-dir results/v3_predictive_stress_v1/candidate --output-dir results/v3_predictive_stress_v1/candidate_recovery_01 --control-report results/v3_predictive_stress_v1/control/report.json --protocol-sha256 6c3851362df84a0aef76ee76dfad33bc203573aa843dde6c0d3c21dcd1142d47
+```
+
+Console is retained in `logs/v3_predictive_stress_v1/recovery_01.log`. The
+engineering replay of dense seed 80135 passed before continuing with seed 80136.
+The completed light prefix was copied without rerunning. Recovery is running;
+no completion claim is made at this checkpoint. No commits were performed.

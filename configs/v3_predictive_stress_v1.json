@@ -1,0 +1,33 @@
+{
+  "name": "v3_predictive_stress_v1",
+  "episodes_per_scenario": 100,
+  "first_seed": 80042,
+  "duration": 30,
+  "stopped_speed_threshold": 0.5,
+  "unsafe_ttc_threshold": 2.0,
+  "scenarios": [
+    {"name": "light", "spawn_probability": 0.2, "driver_probabilities": [0.3, 0.45, 0.25]},
+    {"name": "dense", "spawn_probability": 0.9, "driver_probabilities": [0.3, 0.45, 0.25]},
+    {"name": "aggressive", "spawn_probability": 0.6, "driver_probabilities": [0.1, 0.1, 0.8]},
+    {"name": "cautious", "spawn_probability": 0.6, "driver_probabilities": [0.8, 0.1, 0.1]},
+    {"name": "mixed", "spawn_probability": 0.6, "driver_probabilities": [0.3, 0.45, 0.25]}
+  ],
+  "arms": {
+    "control": {
+      "model": "models/ppo_v3_predictive_control_seed42.zip",
+      "model_sha256": "172260972c4aad6ed73ea7080ae3458282cf046819c868820754c9d637c01473",
+      "config": "configs/intersection_reward_v3_collision_first.yaml",
+      "config_sha256": "4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f",
+      "target_speed_observation": true,
+      "observation_shape": [106]
+    },
+    "candidate": {
+      "model": "models/ppo_v3_predictive_safety_v1_seed42.zip",
+      "model_sha256": "935dbd281c4f59326fdbd40a53038713629d7f74b7a48aa22566d88dce83b406",
+      "config": "configs/intersection_v3_predictive_safety_v1.yaml",
+      "config_sha256": "e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14",
+      "target_speed_observation": false,
+      "observation_shape": [115]
+    }
+  }
+}

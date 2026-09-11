@@ -1,0 +1,74 @@
+{
+  "effective_config": {
+    "env_id": "intersection-v2",
+    "duration": 30,
+    "simulation_frequency": 15,
+    "policy_frequency": 5,
+    "spawn_probability": 0.2,
+    "initial_vehicle_count": 10,
+    "collision_reward": -10.0,
+    "arrived_reward": 5.0,
+    "high_speed_reward": 0.05,
+    "normalize_reward": false,
+    "reward_wrapper": {
+      "type": "RouteProgressReward",
+      "progress_weight": 2.0,
+      "time_penalty": 0.005,
+      "arrival_distance": 25.0,
+      "collision_first": true
+    },
+    "observation": {
+      "type": "Kinematics",
+      "vehicles_count": 15,
+      "features": [
+        "presence",
+        "x",
+        "y",
+        "vx",
+        "vy",
+        "cos_h",
+        "sin_h"
+      ],
+      "absolute": false,
+      "normalize": true,
+      "order": "sorted"
+    },
+    "action": {
+      "type": "DiscreteMetaAction",
+      "longitudinal": true,
+      "lateral": false,
+      "target_speeds": [
+        0,
+        4.5,
+        9
+      ]
+    }
+  },
+  "scenario": {
+    "name": "light",
+    "spawn_probability": 0.2,
+    "driver_probabilities": [
+      0.3,
+      0.45,
+      0.25
+    ]
+  },
+  "status": "complete",
+  "summary": {
+    "episodes": 100,
+    "success_count": 57,
+    "success_rate": 0.57,
+    "collision_count": 43,
+    "collision_rate": 0.43,
+    "incomplete_count": 0,
+    "incomplete_rate": 0.0,
+    "mean_travel_time": 7.499999999999999,
+    "mean_stopped_time": 0.004,
+    "mean_zero_target_time": 0.052000000000000005,
+    "mean_unsafe_ttc_events": 14.72,
+    "mean_max_npcs": 9.96,
+    "mean_reward": 1.7630198947430389,
+    "mean_min_ttc": 0.6595833864963658
+  },
+  "episodes_sha256": "05af6edf5b4381e4f1c7099913357d2f762fd6c1f2368bae4b3c526fa6d90a90"
+}

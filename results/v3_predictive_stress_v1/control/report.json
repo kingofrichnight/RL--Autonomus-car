@@ -1,0 +1,467 @@
+{
+  "arm": "control",
+  "protocol": {
+    "name": "v3_predictive_stress_v1",
+    "episodes_per_scenario": 100,
+    "first_seed": 80042,
+    "duration": 30,
+    "stopped_speed_threshold": 0.5,
+    "unsafe_ttc_threshold": 2.0,
+    "scenarios": [
+      {
+        "name": "light",
+        "spawn_probability": 0.2,
+        "driver_probabilities": [
+          0.3,
+          0.45,
+          0.25
+        ]
+      },
+      {
+        "name": "dense",
+        "spawn_probability": 0.9,
+        "driver_probabilities": [
+          0.3,
+          0.45,
+          0.25
+        ]
+      },
+      {
+        "name": "aggressive",
+        "spawn_probability": 0.6,
+        "driver_probabilities": [
+          0.1,
+          0.1,
+          0.8
+        ]
+      },
+      {
+        "name": "cautious",
+        "spawn_probability": 0.6,
+        "driver_probabilities": [
+          0.8,
+          0.1,
+          0.1
+        ]
+      },
+      {
+        "name": "mixed",
+        "spawn_probability": 0.6,
+        "driver_probabilities": [
+          0.3,
+          0.45,
+          0.25
+        ]
+      }
+    ],
+    "arms": {
+      "control": {
+        "model": "models/ppo_v3_predictive_control_seed42.zip",
+        "model_sha256": "172260972c4aad6ed73ea7080ae3458282cf046819c868820754c9d637c01473",
+        "config": "configs/intersection_reward_v3_collision_first.yaml",
+        "config_sha256": "4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f",
+        "target_speed_observation": true,
+        "observation_shape": [
+          106
+        ]
+      },
+      "candidate": {
+        "model": "models/ppo_v3_predictive_safety_v1_seed42.zip",
+        "model_sha256": "935dbd281c4f59326fdbd40a53038713629d7f74b7a48aa22566d88dce83b406",
+        "config": "configs/intersection_v3_predictive_safety_v1.yaml",
+        "config_sha256": "e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14",
+        "target_speed_observation": false,
+        "observation_shape": [
+          115
+        ]
+      }
+    }
+  },
+  "protocol_sha256": "6c3851362df84a0aef76ee76dfad33bc203573aa843dde6c0d3c21dcd1142d47",
+  "status": "complete",
+  "scenarios": {
+    "light": {
+      "effective_config": {
+        "env_id": "intersection-v2",
+        "duration": 30,
+        "simulation_frequency": 15,
+        "policy_frequency": 5,
+        "spawn_probability": 0.2,
+        "initial_vehicle_count": 10,
+        "collision_reward": -10.0,
+        "arrived_reward": 5.0,
+        "high_speed_reward": 0.05,
+        "normalize_reward": false,
+        "reward_wrapper": {
+          "type": "RouteProgressReward",
+          "progress_weight": 2.0,
+          "time_penalty": 0.005,
+          "arrival_distance": 25.0,
+          "collision_first": true
+        },
+        "observation": {
+          "type": "Kinematics",
+          "vehicles_count": 15,
+          "features": [
+            "presence",
+            "x",
+            "y",
+            "vx",
+            "vy",
+            "cos_h",
+            "sin_h"
+          ],
+          "absolute": false,
+          "normalize": true,
+          "order": "sorted"
+        },
+        "action": {
+          "type": "DiscreteMetaAction",
+          "longitudinal": true,
+          "lateral": false,
+          "target_speeds": [
+            0,
+            4.5,
+            9
+          ]
+        }
+      },
+      "scenario": {
+        "name": "light",
+        "spawn_probability": 0.2,
+        "driver_probabilities": [
+          0.3,
+          0.45,
+          0.25
+        ]
+      },
+      "status": "complete",
+      "summary": {
+        "episodes": 100,
+        "success_count": 57,
+        "success_rate": 0.57,
+        "collision_count": 43,
+        "collision_rate": 0.43,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 7.499999999999999,
+        "mean_stopped_time": 0.004,
+        "mean_zero_target_time": 0.052000000000000005,
+        "mean_unsafe_ttc_events": 14.72,
+        "mean_max_npcs": 9.96,
+        "mean_reward": 1.7630198947430389,
+        "mean_min_ttc": 0.6595833864963658
+      },
+      "episodes_sha256": "05af6edf5b4381e4f1c7099913357d2f762fd6c1f2368bae4b3c526fa6d90a90"
+    },
+    "dense": {
+      "effective_config": {
+        "env_id": "intersection-v2",
+        "duration": 30,
+        "simulation_frequency": 15,
+        "policy_frequency": 5,
+        "spawn_probability": 0.9,
+        "initial_vehicle_count": 10,
+        "collision_reward": -10.0,
+        "arrived_reward": 5.0,
+        "high_speed_reward": 0.05,
+        "normalize_reward": false,
+        "reward_wrapper": {
+          "type": "RouteProgressReward",
+          "progress_weight": 2.0,
+          "time_penalty": 0.005,
+          "arrival_distance": 25.0,
+          "collision_first": true
+        },
+        "observation": {
+          "type": "Kinematics",
+          "vehicles_count": 15,
+          "features": [
+            "presence",
+            "x",
+            "y",
+            "vx",
+            "vy",
+            "cos_h",
+            "sin_h"
+          ],
+          "absolute": false,
+          "normalize": true,
+          "order": "sorted"
+        },
+        "action": {
+          "type": "DiscreteMetaAction",
+          "longitudinal": true,
+          "lateral": false,
+          "target_speeds": [
+            0,
+            4.5,
+            9
+          ]
+        }
+      },
+      "scenario": {
+        "name": "dense",
+        "spawn_probability": 0.9,
+        "driver_probabilities": [
+          0.3,
+          0.45,
+          0.25
+        ]
+      },
+      "status": "complete",
+      "summary": {
+        "episodes": 100,
+        "success_count": 59,
+        "success_rate": 0.59,
+        "collision_count": 41,
+        "collision_rate": 0.41,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 8.206,
+        "mean_stopped_time": 0.364,
+        "mean_zero_target_time": 0.66,
+        "mean_unsafe_ttc_events": 16.51,
+        "mean_max_npcs": 16.23,
+        "mean_reward": 1.937916067264455,
+        "mean_min_ttc": 0.5834266378249795
+      },
+      "episodes_sha256": "17a47296ab9f827ada11a49f2a6c8933f69b0e2442b5c8620e1087f6348fdb95"
+    },
+    "aggressive": {
+      "effective_config": {
+        "env_id": "intersection-v2",
+        "duration": 30,
+        "simulation_frequency": 15,
+        "policy_frequency": 5,
+        "spawn_probability": 0.6,
+        "initial_vehicle_count": 10,
+        "collision_reward": -10.0,
+        "arrived_reward": 5.0,
+        "high_speed_reward": 0.05,
+        "normalize_reward": false,
+        "reward_wrapper": {
+          "type": "RouteProgressReward",
+          "progress_weight": 2.0,
+          "time_penalty": 0.005,
+          "arrival_distance": 25.0,
+          "collision_first": true
+        },
+        "observation": {
+          "type": "Kinematics",
+          "vehicles_count": 15,
+          "features": [
+            "presence",
+            "x",
+            "y",
+            "vx",
+            "vy",
+            "cos_h",
+            "sin_h"
+          ],
+          "absolute": false,
+          "normalize": true,
+          "order": "sorted"
+        },
+        "action": {
+          "type": "DiscreteMetaAction",
+          "longitudinal": true,
+          "lateral": false,
+          "target_speeds": [
+            0,
+            4.5,
+            9
+          ]
+        }
+      },
+      "scenario": {
+        "name": "aggressive",
+        "spawn_probability": 0.6,
+        "driver_probabilities": [
+          0.1,
+          0.1,
+          0.8
+        ]
+      },
+      "status": "complete",
+      "summary": {
+        "episodes": 100,
+        "success_count": 50,
+        "success_rate": 0.5,
+        "collision_count": 50,
+        "collision_rate": 0.5,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 7.486000000000001,
+        "mean_stopped_time": 0.16,
+        "mean_zero_target_time": 0.39399999999999996,
+        "mean_unsafe_ttc_events": 16.46,
+        "mean_max_npcs": 15.05,
+        "mean_reward": 0.42912153227571176,
+        "mean_min_ttc": 0.5581396220411172
+      },
+      "episodes_sha256": "5982a83f4763687ce120c0349e40bfadca728fd5970b3a4f34eb5e7660771792"
+    },
+    "cautious": {
+      "effective_config": {
+        "env_id": "intersection-v2",
+        "duration": 30,
+        "simulation_frequency": 15,
+        "policy_frequency": 5,
+        "spawn_probability": 0.6,
+        "initial_vehicle_count": 10,
+        "collision_reward": -10.0,
+        "arrived_reward": 5.0,
+        "high_speed_reward": 0.05,
+        "normalize_reward": false,
+        "reward_wrapper": {
+          "type": "RouteProgressReward",
+          "progress_weight": 2.0,
+          "time_penalty": 0.005,
+          "arrival_distance": 25.0,
+          "collision_first": true
+        },
+        "observation": {
+          "type": "Kinematics",
+          "vehicles_count": 15,
+          "features": [
+            "presence",
+            "x",
+            "y",
+            "vx",
+            "vy",
+            "cos_h",
+            "sin_h"
+          ],
+          "absolute": false,
+          "normalize": true,
+          "order": "sorted"
+        },
+        "action": {
+          "type": "DiscreteMetaAction",
+          "longitudinal": true,
+          "lateral": false,
+          "target_speeds": [
+            0,
+            4.5,
+            9
+          ]
+        }
+      },
+      "scenario": {
+        "name": "cautious",
+        "spawn_probability": 0.6,
+        "driver_probabilities": [
+          0.8,
+          0.1,
+          0.1
+        ]
+      },
+      "status": "complete",
+      "summary": {
+        "episodes": 100,
+        "success_count": 70,
+        "success_rate": 0.7,
+        "collision_count": 30,
+        "collision_rate": 0.3,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 8.292,
+        "mean_stopped_time": 0.144,
+        "mean_zero_target_time": 0.336,
+        "mean_unsafe_ttc_events": 15.59,
+        "mean_max_npcs": 14.29,
+        "mean_reward": 3.831247566514284,
+        "mean_min_ttc": 0.6902952176089934
+      },
+      "episodes_sha256": "47661548dc739628da079c75eaaf2e762757dd446dfb7beed186614c9fde9b71"
+    },
+    "mixed": {
+      "effective_config": {
+        "env_id": "intersection-v2",
+        "duration": 30,
+        "simulation_frequency": 15,
+        "policy_frequency": 5,
+        "spawn_probability": 0.6,
+        "initial_vehicle_count": 10,
+        "collision_reward": -10.0,
+        "arrived_reward": 5.0,
+        "high_speed_reward": 0.05,
+        "normalize_reward": false,
+        "reward_wrapper": {
+          "type": "RouteProgressReward",
+          "progress_weight": 2.0,
+          "time_penalty": 0.005,
+          "arrival_distance": 25.0,
+          "collision_first": true
+        },
+        "observation": {
+          "type": "Kinematics",
+          "vehicles_count": 15,
+          "features": [
+            "presence",
+            "x",
+            "y",
+            "vx",
+            "vy",
+            "cos_h",
+            "sin_h"
+          ],
+          "absolute": false,
+          "normalize": true,
+          "order": "sorted"
+        },
+        "action": {
+          "type": "DiscreteMetaAction",
+          "longitudinal": true,
+          "lateral": false,
+          "target_speeds": [
+            0,
+            4.5,
+            9
+          ]
+        }
+      },
+      "scenario": {
+        "name": "mixed",
+        "spawn_probability": 0.6,
+        "driver_probabilities": [
+          0.3,
+          0.45,
+          0.25
+        ]
+      },
+      "status": "complete",
+      "summary": {
+        "episodes": 100,
+        "success_count": 58,
+        "success_rate": 0.58,
+        "collision_count": 42,
+        "collision_rate": 0.42,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 7.893999999999998,
+        "mean_stopped_time": 0.262,
+        "mean_zero_target_time": 0.43599999999999994,
+        "mean_unsafe_ttc_events": 15.85,
+        "mean_max_npcs": 14.65,
+        "mean_reward": 1.810191784486675,
+        "mean_min_ttc": 0.6149078710414577
+      },
+      "episodes_sha256": "acac64f1b79bdd3c439fa55cdf84b38b3256d67c99ab52f72d60a2f5be0f6a90"
+    }
+  },
+  "versions": {
+    "numpy": "2.5.2",
+    "highway-env": "1.12.1",
+    "stable-baselines3": "2.9.0"
+  },
+  "source_sha256": {
+    "scripts/evaluate_predictive_stress.py": "ed8e18328e88a9aa082f4bd7d45f05e3af17c11d8579e30c9e2cdffd8a291e5a",
+    "safeintent_rl/envs/intersection.py": "eca1191c1f676600ea68998642f8c417f654b14e810c948cdbd614842e03d52c",
+    "safeintent_rl/envs/driver_behavior.py": "e45179f38c1d0e32a55566dc55440d5d1a2ce0a68aebde1b8ed7e8fc8a80eedf",
+    "safeintent_rl/sensors/predictive.py": "2d3880359d26a6408cef8e5d7ae7dfc30ab2a9c4813a6888593935258fc86e2f",
+    "safeintent_rl/envs/reward.py": "87b3e297274806190e912df2e5175e83b8030e7939441a6ec3959a18da9f9285"
+  },
+  "elapsed_seconds": 315.0153840999992
+}

@@ -34,6 +34,7 @@ def make_intersection_env(
     render_mode: str | None = None,
     seed: int | None = None,
     driver_behaviors: bool = True,
+    driver_probabilities: tuple[float, float, float] | None = None,
     safety_shield: bool = False,
     ttc_threshold: float = 2.0,
     cpa_safety_shield: bool = False,
@@ -77,7 +78,11 @@ def make_intersection_env(
     env = gym.make(env_id, render_mode=render_mode, config=env_config)
 
     if driver_behaviors:
-        env = DriverBehaviorWrapper(env)
+        env = (DriverBehaviorWrapper(env) if driver_probabilities is None
+               else DriverBehaviorWrapper(env, probabilities=driver_probabilities))
+    elif driver_probabilities is not None:
+        env.close()
+        raise ValueError("driver_probabilities requires driver_behaviors")
     if reward_wrapper_config is not None:
         wrapper_config = dict(reward_wrapper_config)
         wrapper_type = wrapper_config.pop("type", "RouteProgressReward")
