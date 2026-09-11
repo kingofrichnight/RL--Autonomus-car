@@ -8529,3 +8529,27 @@ All 42 recorded preflight input/source fingerprints were verified before launch.
 Runner SHA-256 is
 `9ab2dfbbb90b89f425cdca8e52f7c61f11e24f481efb2f5e0a8b87dc82fe4823`.
 The full test gate is passed; actual launch is recorded separately below.
+
+### 81.2 Actual synchronized training launch
+
+Launched exactly the section 81 train command at
+2026-09-11T11:47:00.1166432-04:00 (15:47 UTC), launcher PID 12808. No existing
+training/evaluation job or new-model/run/summary/log targets were present.
+The runner's manifest records start 15:47:03.964106 UTC, status running, and
+`predictive_post_spawn_sync_v1`; stdout confirms CPU execution and the unique
+TensorBoard log directory. Initial stderr is empty. Implementation/protocol
+commits are `850d72b` and `326a625` (the code was committed concurrently before
+the separate passing-test note). No completed checkpoint or result is claimed.
+
+Console logs: `logs/ppo_v3_predictive_sync_v1_seed42.train.stdout.log` and the
+matching `.stderr.log`. The mutable `results/ppo_v3_predictive_sync_v1_seed42.train.run.json`
+is left uncommitted until its final audited status. Final model remains ignored.
+
+The existing paused task follow-up was updated, not duplicated: name `Finish V3
+synchronized comparison`, automation ID `finish-v3-geometry-experiment`, every
+30 minutes, active for this finite section 81 comparison only. It must remain
+quiet for routine progress, validate completion, run a fresh test gate before
+the fixed evaluation, independently verify/report all gates including failures,
+append results and commit only scoped small artifacts, then pause. It does not
+authorize another training run, redoing the 92 historical replays, or CARLA.
+Local follow-ups require the computer and app to remain running.
