@@ -8518,3 +8518,14 @@ passed. The lint issues were corrected; no experimental outputs existed.
 Full reviewed-access verification follows, including an eight-step tiny-network
 engineering train/save/load test of the protocol stamp. That unit-test policy
 is not a research result and is never used for scored evaluation.
+
+### 81.1 Pre-training gate
+
+Ruff passed and all **265 tests passed in 85.70 seconds**, with the same two
+existing Box warnings. The real eight-step engineering test successfully
+trained, saved and reloaded the protocol-stamped tiny policy. Adapter cleanup,
+fixed arguments, failed-run preservation and overwrite rejection also passed.
+All 42 recorded preflight input/source fingerprints were verified before launch.
+Runner SHA-256 is
+`9ab2dfbbb90b89f425cdca8e52f7c61f11e24f481efb2f5e0a8b87dc82fe4823`.
+The full test gate is passed; actual launch is recorded separately below.
