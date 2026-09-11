@@ -8553,3 +8553,111 @@ the fixed evaluation, independently verify/report all gates including failures,
 append results and commit only scoped small artifacts, then pause. It does not
 authorize another training run, redoing the 92 historical replays, or CARLA.
 Local follow-ups require the computer and app to remain running.
+
+## 82. Matched-information sector observation prototype (2026-09-11)
+
+The user proposed RGB/depth, LiDAR/semantic LiDAR, radar, GNSS, IMU and
+collision/lane-invasion sensors, then approved continuing the staged plan.
+The full sensor suite is deferred to CARLA. The current task implements only
+a separately named **V3-SectorFeatures v1** engineering prototype; it does not
+start or alter a long experiment. Section 81 synchronized training was still
+running at the initial check (29,696 logged steps, empty stderr, run manifest
+status running). That progress is not a completed checkpoint or result.
+
+Read the README and chronological record before implementation; all prior
+research entries remain intact. The main runner fingerprints every package
+Python file, so even adding a never-imported file under `safeintent_rl` would
+invalidate its frozen source set. The isolated prototype is therefore in
+`scripts/sector_observation_v1.py`, with a new test file and the design document
+`V3_SECTOR_OBSERVATION_V1.md`. No historical package source, runner, config,
+model, reward, seed, action, observation contract or result is edited. The live
+run manifest was already staged externally and is preserved untouched.
+
+### 82.1 Design, formulas and limitations fixed before engineering tests
+
+HighwayEnv's native 2-D LiDAR observes different actor coverage than the sorted
+14-actor kinematics. This prototype instead computes an explicitly LiDAR-like
+polar representation **only from the supplied synchronized 115-value input**.
+There are no road queries, extra actors, independent sensor measurements,
+semantic labels, noise, controller overrides or additional model forecasts.
+It is feature engineering, not realistic sensor fusion or an accepted policy.
+
+The 115 float32 values are retained exactly; 16 sectors with three features
+each give a new 163-value observation. For present neighbor rows, decode
+`p=200*[x,y]`, `v=80*[vx,vy]`; these are already relative to ego. Ego row zero
+is used only for heading `theta=atan2(sin_h,cos_h)`, not subtracted again.
+Set `r=||p||`, `c=-(p.v)/r`, `Delta=2*pi/16`, and
+`k=floor(((atan2(p_y,p_x)-theta+Delta/2) mod 2*pi)/Delta)`.
+Each half-open sector retains the nearest actor center, with equal-distance
+ties selecting the first native row. Its features are
+`[1, r/(200*sqrt(2)), clip(c/(80*sqrt(2)),-1,1)]`; positive c means approach.
+Empty sectors emit `[0,1,0]`. A coincident center is assigned sector zero with
+range and closing speed zero, retaining presence=1. The diagonal scales come
+from the existing coordinate bounds, not a new sensor range or visibility rule.
+
+This is not surface clearance, ray casting, occlusion handling or genuine free
+space detection. An empty sector only lacks a retained actor. Normalization
+clipping cannot be reversed; no rear visibility or extra information is added.
+The original kinematics/target/forecasts remain unchanged. Current speed-only
+actions do not enable lateral avoidance, pedestrians or rerouting. CARLA's
+semantic LiDAR includes ground-truth object labels; collision/lane events are
+outcomes rather than advance knowledge. See the design document for official
+HighwayEnv and CARLA references and the complete normalization contract.
+
+The protocol identifier is `predictive_post_spawn_sector_v1`. Existing policy
+input sizes are incompatible: a future policy needs separate training and new
+artifact names. Keeping the 256-wide actor/critic networks would still add
+24,576 first-layer weights; any later claim must acknowledge this capacity
+change, with a zero-padded capacity control an optional separately specified
+future experiment, not silently bundled into the current one.
+
+### 82.2 Implementation boundary
+
+The opt-in wrapper directly wraps `SynchronizedPredictiveObservation`, validates
+its contract and geometry ranges after resets as well as at construction,
+and appends the deterministic transform without modifying physics, rewards,
+termination, info, RNG or the original input prefix. It rejects malformed or
+nonfinite inputs, invalid presence/ego heading and out-of-bound coordinates.
+No trainer/CLI/default factory registration is provided in this engineering
+stage. The existing finite heartbeat still finishes section 81 only.
+
+First audit section 81's final training and fixed evaluation. Before a later
+sector run, append exact commands, unique model/output names, source/config
+hashes and retention rules, with fresh tests. The intended comparison keeps
+the existing dynamics, reward, PPO settings, training seed/budget and consumed
+development seeds unchanged. Do not infer permission to relax failed gates,
+overwrite prior outputs, silently increase visibility or promise a success rate.
+Engineering checks and any failures are recorded separately below.
+
+### 82.3 Verified engineering checks; training remains gated
+
+Ruff passed. All **33 new focused tests passed in 10.73 seconds** on the first
+run; the complete repository suite then passed **298 tests in 92.33 seconds**,
+with only the same two existing unbounded-Box warnings in the obstacle-route
+interface test. No failed test or unsuccessful research run occurred in this
+implementation. Tests cover sector orientation/wrap, approaching/receding and
+tangential motion, nearest/tied actors, empty and coincident centers, extreme
+valid coordinates, invalid contracts and read-only input preservation.
+
+Three short paired engineering rollouts (seeds 7, 42 and 80042, at most 12
+fixed actions each) preserve the complete 115-input prefix, physics, rewards,
+termination/info and RNG while producing valid 163-input observations. These
+are not a scored driving evaluation or evidence of improved safety. Direct
+augmentation also succeeds with additional observation/forecast/step calls
+forbidden. Independent read-only review found no blocking implementation issue;
+its clipping/free-space and increased-capacity caveats are recorded above.
+
+After syncing only the four owned source/test/document files, the running
+section 81 runner's exact `fingerprint_inputs()` dictionary still matched all
+**42** entries in its original training manifest. The append-only guard verified
+that the previous MILESTONES text was preserved in full. Prototype source SHA:
+`f0a78c5befe3c8e0edcc101ee49e7b2bb18c80be3afc6840e359653f99762919`;
+test source SHA:
+`308d30e1e2b24a340aae1a5030b65219cb94f7febe08f2bff67d4cd0f1d751f2`.
+
+The user also asked to run the previously described 500-episode evaluation.
+That remains the unchanged section 81 evaluation, eligible only after the
+running synchronized training finishes, its complete checkpoint/run record is
+verified and fresh tests pass. No partial checkpoint evaluation, additional
+training, new seed set or change to the finite follow-up was launched here.
+The live manifest's existing external staging remains untouched.
