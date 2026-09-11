@@ -8455,3 +8455,66 @@ metadata identifying synchronization, plus a pre-recorded matched training and
 evaluation protocol. Do not imply that this implementation has trained a model
 or improved success/TTC. No new long training run, scored evaluation or automatic
 follow-up was launched in this step; the prior follow-up remains paused.
+
+## 81. Synchronized PPO controlled training protocol (user requested next)
+
+New model name: `ppo_v3_predictive_sync_v1_seed42`. This experiment isolates
+the section 80 post-spawn input synchronization relative to Geometry V2.
+Use the same geometry config and its frozen SHA-256, rewards, traffic, 115
+inputs, three actions and predictive formulas. Original V3, Geometry V2 and
+their source/config/model artifacts remain unchanged. No safety shield,
+supervised labels, intent model or additional reward term is introduced.
+
+Added `scripts/run_synchronized_predictive.py` as an explicit fixed-protocol
+entry point. It invokes the unchanged historical training/evaluation mains with
+process-local environment-factory adapters that are restored in finally.
+Training's PPO constructor adds a saved observation-protocol stamp; evaluation
+requires that stamp and completed, matching training evidence before loading
+the new scene semantics. Both internal validation and development evaluation
+use the synchronized wrapper. Old CLIs and files are not edited. The original
+training/evaluation algorithms and aggregation implementations are reused.
+
+All section 79.1 training parameters remain fixed: fresh PPO MlpPolicy,
+200000 requested/200704 expected collected steps, seed 42, one environment,
+LR .0003, n_steps 1024, batch 64, network [256,256], gamma .99, GAE .95,
+entropy .01, 10 epochs, clip .2, value coefficient .5, gradient clip .5,
+normalized advantages and no target KL. Internal validation uses seed offset
+70000, 50 episodes every 10000 steps, checkpoints every 25000. Only the final
+root model is eligible. Runtime versions and Torch threads 8/8 are pinned to
+the prior experiment. No warm start or callback-best selection.
+
+The runner checks frozen inputs and reference hashes before creating a run
+record, records all package Python source fingerprints, requires absent output
+artifacts/log directory, stamps the new summary, and preserves a failed run
+record on execution failure. A completed run record and final marker, not the
+underlying historical main's earlier save marker alone, establish completion.
+Both completed and failed runs refuse overwrite/restart using the same name.
+
+Exact commands (no tunable protocol overrides):
+
+```powershell
+python -u -m scripts.run_synchronized_predictive train --refuse-overwrite
+python -u -m scripts.run_synchronized_predictive evaluate --refuse-overwrite
+```
+
+The second command is only eligible after the first finishes successfully,
+artifact/model-parameter validation and a fresh full test gate. It uses exactly
+500 deterministic development episodes, seeds 40042–40541, TTC threshold 2 s,
+and the synchronized observation protocol. Preserve consumed-set limitations.
+
+Retention: keep all section 79.5 absolute/control/V1 gates unchanged, including
+mean minimum TTC >= .6728939419963959 and favorable exact paired success vs
+original, corrected control and V1. Additionally require no regression against
+Geometry V2 in success (>=394/500), collision (<=98/500), or incomplete
+(<=8/500). Report paired success versus Geometry V2, but do not require a
+significant success increase against it: this experiment targets the safety
+trade-off while preserving its completion gains. These additional gates are
+fixed before training, not based on the new results. No automatic promotion
+from a single training seed, and no changing thresholds after outcomes.
+
+Initial implementation checks found four lint issues (import ordering and
+assigned lambdas) and one pytest temp-fixture access error; four focused tests
+passed. The lint issues were corrected; no experimental outputs existed.
+Full reviewed-access verification follows, including an eight-step tiny-network
+engineering train/save/load test of the protocol stamp. That unit-test policy
+is not a research result and is never used for scored evaluation.
