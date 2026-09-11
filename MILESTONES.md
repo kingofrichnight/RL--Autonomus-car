@@ -8893,3 +8893,63 @@ routine progress and never confuse a development pass with replicated,
 independently evaluated success. Pause only at genuinely verified completion
 or when further meaningful progress requires user direction/new authority.
 Local continuation requires the computer powered on and the app running.
+
+## 85. Fresh synchronized retry training completed (2026-09-11)
+
+Retry01 finished at **2026-09-11T23:10:14.028089Z** with **200,704 collected
+steps**, as required by the 200K requested/1,024-rollout protocol. The final
+`Synchronized train complete` marker and complete run record are present;
+both original retry processes have exited and stderr is empty. This is a
+successful training execution, not yet a measured driving improvement.
+
+Verified final artifacts:
+
+- Model `models/ppo_v3_predictive_sync_v1_retry01_seed42.zip`, 2,340,003 bytes,
+  SHA-256 `8a363a7b5e7caef621d6b616890175c10d457531b4d4a213d05fc2011244f395`.
+- Summary `results/ppo_v3_predictive_sync_v1_retry01_seed42.training.json`,
+  SHA-256 `e858bc356e2f430e409ae96d53c62f164204376ed0799fa75f43fe3524d0edfa`.
+- Completed run record `results/ppo_v3_predictive_sync_v1_retry01_seed42.train.run.json`,
+  SHA-256 `de38b7ab02ceb7378ec07de76b3b2c95b8a25306a8ba437e42a06c9f58b97dba`.
+
+All **45** source/input/lineage fingerprints match the completed record and
+the unchanged original snapshot. Model/summary fingerprints, the
+`predictive_post_spawn_sync_v1` protocol stamp, 115 inputs/3 actions, all frozen
+PPO parameters, 1,960 optimization updates and finite policy weights passed
+verification. Independent read-only review also passed ZIP CRC, exact argument
+matching, 43 summary settings, predictor/reward settings and frozen runtime.
+The selected final root model is distinct from the internal callback-best
+archive, which has 140,000 steps; that earlier model is not selected or scored.
+
+The interruption and its stale original manifest remain preserved. No partial
+checkpoint was resumed and no sensor/sector observation was enabled. Fresh
+Ruff/full pytest must pass before the unchanged 500-episode evaluation; its
+test gate and actual launch are recorded separately below. Do not derive a
+success/collision rate or policy acceptance from training reward alone.
+
+### 85.1 Fresh pre-evaluation test gate
+
+After completed-checkpoint verification, Ruff passed and all **328 tests passed
+in 87.35 seconds**, with only the same two existing unbounded-Box warnings.
+No failed checks occurred. This is the fresh gate for the section 84 retry
+evaluation, not reuse of the earlier pre-training test result.
+
+The eligible command remains exactly:
+
+```powershell
+python -u -m scripts.run_synchronized_retry evaluate --refuse-overwrite
+```
+
+It fixes the final model hash above, geometry config, synchronized observation,
+500 deterministic episodes, seeds 40042--40541 and unsafe TTC threshold 2.0.
+There is no shield, extra sensor input or changed reward. Actual launch still
+requires a final active-process and absent-output/log check; do not duplicate
+it or rerun after partial outputs. The successful training summary/completed
+run record may now be committed, while the original interrupted manifest's
+external staging and all local model/log artifacts remain untouched.
+
+The first pre-commit `git diff --check` returned exit 2 because the Windows
+runner's CRLF line endings on changed JSON lines were treated as trailing
+whitespace. This is not a failed PPO/test result. Preserve the verified artifact
+bytes and SHA-256 values; use a one-command `core.whitespace` override retaining
+the normal whitespace checks and adding `cr-at-eol`. No artifact normalization,
+persistent Git configuration or permission setting is changed.
