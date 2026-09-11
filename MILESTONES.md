@@ -8210,3 +8210,47 @@ a second long simulator job during training. The original stress artifacts
 remain authoritative; these 92 replays must not be pooled with scored results.
 Commit only reviewed code, small results, and appended documentation locally,
 with an unrelated-index check. No model/log/data checkpoint commits and no push.
+
+### 79.6 Training complete and pre-evaluation audit (2026-09-11)
+
+The 10:32 UTC follow-up confirmed training completed at 200704 collected steps.
+Both original training processes had exited; stdout contains the final saved
+summary and saved-policy markers, stderr is empty, and both artifacts were
+written at approximately 10:28 UTC. The detached process exit code was not
+retained; completion evidence is the final marker plus audited artifacts,
+not an asserted captured exit code.
+
+Final model SHA-256:
+`f3bfeaa9826f989ab1934b71a46a92a97cef159c8a800c56b23b4530c17636d2`.
+The ZIP matches the training JSON, the geometry config matches its frozen hash,
+and all six source hashes in sections 79.2 and 79.5 are unchanged. Every training
+summary field equals predictive v1's summary except the four expected
+config/model path/hash fields. Loading the final PPO on CPU confirmed all
+explicit and implicit section 79.1 parameters, 115 observations and three
+actions. Runtime remains Python 3.12.9, SB3 2.9.0, Torch 2.13.0, NumPy 2.5.2,
+Gymnasium 1.3.0, HighwayEnv 1.12.1, Torch threads 8/8.
+
+The first pre-evaluation test attempt passed Ruff but had 221 passing tests and
+23 setup errors in 59.80 seconds: Windows denied pytest access to its existing
+`AppData/Local/Temp/pytest-of-hades` directory inside the restricted shell.
+No assertion failed; this is not a passing full test gate. An unchanged-suite
+rerun with reviewed normal local command access follows. No permission settings,
+test code, experiment settings, or historical artifacts were changed.
+
+The reviewed-access rerun passed Ruff and all **244 tests in 55.27 seconds**,
+with only the same two existing Box warnings. All three frozen reference CSVs
+and their summaries match the six section 79.5 hashes. Training summary SHA-256
+is `6ab05310433ca6186874861f66bc2bc35e54a7474e7bbaa572b14d6220ebb861`.
+The full pre-evaluation gate is now passed. The next action is exactly the
+section 79.5 command with audited model SHA-256
+`f3bfeaa9826f989ab1934b71a46a92a97cef159c8a800c56b23b4530c17636d2`;
+record actual evaluation launch separately. No development outcome exists yet.
+
+Evaluation launched at 2026-09-11T06:36:28.0385194-04:00 (10:36 UTC), launcher
+PID 40044, with exactly the audited command above. No trainer/evaluator was
+active and both result targets and both console-log targets were absent before
+launch. Console paths are
+`logs/ppo_v3_predictive_geometry_v2_development_seed40042.stdout.log` and its
+matching `.stderr.log`. Status: **development evaluation running**. This is the
+fixed 500-episode consumed development comparison, not untouched holdout or
+evidence of an improvement yet. The queued diagnostic remains unstarted.

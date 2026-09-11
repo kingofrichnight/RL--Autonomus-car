@@ -1,0 +1,65 @@
+{
+  "algorithm": "PPO",
+  "predictive_safety_observation": {
+    "horizon": 3.0,
+    "margin": 0.5,
+    "uncertainty_growth": 0.25,
+    "clearance_scale": 10.0,
+    "speed_scale": 9.0,
+    "max_neighbors": 14
+  },
+  "config_path": "configs\\intersection_v3_predictive_geometry_v2.yaml",
+  "config_sha256": "a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7",
+  "training_seed": 42,
+  "internal_evaluation_seed_offset": 70000,
+  "timesteps_requested": 200000,
+  "timesteps_collected": 200704,
+  "learning_rate": 0.0003,
+  "n_steps": 1024,
+  "batch_size": 64,
+  "n_envs": 1,
+  "env_seed_stride": 1000,
+  "training_seed_offsets": [
+    0
+  ],
+  "training_initial_seeds": [
+    42
+  ],
+  "rollout_size": 1024,
+  "eval_episodes": 50,
+  "evaluation_freq_timesteps": 10000,
+  "evaluation_callback_frequency": 10000,
+  "checkpoint_freq_timesteps": 25000,
+  "checkpoint_callback_frequency": 25000,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "ent_coef": 0.01,
+  "policy_network": [
+    256,
+    256
+  ],
+  "observation_shape": [
+    115
+  ],
+  "safety_shield": false,
+  "ttc_threshold": 2.0,
+  "risk_fusion": false,
+  "target_speed_observation": false,
+  "target_speed_scale": null,
+  "collision_first_reward": true,
+  "fusion_neighbors": 0,
+  "fusion_features_per_neighbor": 0,
+  "fusion_range_scale": null,
+  "fusion_relative_speed_scale": null,
+  "fusion_ttc_scale": null,
+  "fusion_cpa_horizon": null,
+  "fusion_cpa_distance_scale": null,
+  "intent_model_path": null,
+  "intent_model_sha256": null,
+  "intent_neighbors": 0,
+  "intent_history_length": null,
+  "intent_history_tracking_neighbors": null,
+  "intent_device": null,
+  "model_path": "models\\ppo_v3_predictive_geometry_v2_seed42.zip",
+  "model_sha256": "f3bfeaa9826f989ab1934b71a46a92a97cef159c8a800c56b23b4530c17636d2"
+}
