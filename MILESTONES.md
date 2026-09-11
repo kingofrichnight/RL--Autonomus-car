@@ -8953,3 +8953,33 @@ whitespace. This is not a failed PPO/test result. Preserve the verified artifact
 bytes and SHA-256 values; use a one-command `core.whitespace` override retaining
 the normal whitespace checks and adding `cr-at-eol`. No artifact normalization,
 persistent Git configuration or permission setting is changed.
+
+### 85.2 Fixed development evaluation launched
+
+The CRLF-aware working/index checks passed without rewriting result bytes.
+Verified training records and the fresh test gate were committed as `95a07fb`;
+the final model remains ignored. After confirming no active research process
+and no existing evaluation CSV, summary, run record or console log targets,
+launched the exact section 85.1 command once at
+**2026-09-11T23:23:28.4707628Z**, launcher PID **1792**, worker PID **14736**.
+
+The new evaluation record starts at **23:23:31.986390 UTC**, status `running`,
+mode `evaluate`, with the correct unchanged observation protocol and 45 source
+fingerprints. Its arguments explicitly bind final model SHA `8a363a7b...44f395`,
+geometry config SHA `a9629f60...e7`, 500 episodes, first seed 40042, unsafe TTC
+threshold 2.0 and the frozen original-V3 reference hash. The last episode seed
+is 40541 under the preserved sequential reset protocol. Both actual process
+command lines match the retry evaluation; initial stderr is empty.
+
+Console logs are `logs/ppo_v3_predictive_sync_v1_retry01_seed42.evaluate.stdout.log`
+and the matching stderr. The evaluator buffers rows and prints/writes results
+at completion, so absent interim output alone is not a stall. Do not restart
+the command or change source while it runs. Completion still requires actual
+process exit, final `Synchronized evaluate complete` marker, complete manifest,
+artifact/source hashes and independent 500-row metric/paired-gate audit. No
+evaluation success rate, gate pass or policy promotion is claimed yet.
+
+The active continuation follows this evaluation and subsequent audited research
+under sections 84--85. The interrupted original experiment is never a fallback
+scoring target. Preserve concurrent user/app commits and all live run manifests;
+commit their completed audited versions later, never models or logs.
