@@ -1,0 +1,55 @@
+{
+  "status": "interrupted",
+  "record_type": "external_observation_not_runner_completion",
+  "checked_utc": "2026-09-11T19:09:28.9469432Z",
+  "training_stem": "ppo_v3_predictive_sync_v1_seed42",
+  "original_process_ids": [12808, 45488],
+  "original_processes_present": false,
+  "python_process_count_at_2026_09_11T19_08_36Z": 0,
+  "last_logged_timesteps": 69632,
+  "last_stdout_write_utc": "2026-09-11T17:24:53.9675938Z",
+  "stderr_bytes": 0,
+  "runner_manifest_status_observed": "running",
+  "runner_manifest_status_is_stale": true,
+  "runner_manifest_preserved": true,
+  "completion_marker_present": false,
+  "final_model_exists": false,
+  "final_training_summary_exists": false,
+  "development_evaluation_csv_exists": false,
+  "process_exit_code": null,
+  "windows_event": {
+    "id": 1074,
+    "provider": "User32",
+    "time_utc": "2026-09-11T17:24:54.3451183Z",
+    "initiator": "StartMenuExperienceHost.exe",
+    "shutdown_type": "power off",
+    "reason": "Other (Unplanned)",
+    "reason_code": "0x0"
+  },
+  "cause_assessment": "A Windows power-off request immediately follows the last training log write and is the likely interruption cause; a process exit code was not captured.",
+  "frozen_input_hashes_checked": 42,
+  "changed_frozen_inputs": [],
+  "evidence_sha256": {
+    "results/ppo_v3_predictive_sync_v1_seed42.train.run.json": "4a884209aaeb320255416eedbf9d170bbecaee946a6e9fa998005618f1ec60a7",
+    "logs/ppo_v3_predictive_sync_v1_seed42.train.stdout.log": "31d3f69f7f28d86019abe148b223ee5a575f7ffd60c972128c9445cc25c49514",
+    "logs/ppo_v3_predictive_sync_v1_seed42.train.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/ppo_v3_predictive_sync_v1_seed42/checkpoints/rl_model_25000_steps.zip": "039f7805fc2bab1f7378ab42740740201b2179af619a14cdeb817d987c1f4efb",
+    "logs/ppo_v3_predictive_sync_v1_seed42/checkpoints/rl_model_50000_steps.zip": "b07881fb9dd12e6454ab30aa9b23a662ea937cfdaec41ade27233d13ed76690a"
+  },
+  "recovery": {
+    "latest_saved_checkpoint_steps": 50000,
+    "exact_continuation_supported": false,
+    "missing_restart_state": ["environment", "partial_rollout_buffer", "rng_streams", "callbacks"],
+    "recommended": "A separately authorized and recorded fresh seed-42 retry with a unique stem and unchanged scientific settings, preserving this interrupted attempt.",
+    "retry_launched": false,
+    "evaluation_launched": false,
+    "user_direction_required": true
+  },
+  "follow_up": {
+    "id": "finish-v3-geometry-experiment",
+    "stored_status_observed": "ACTIVE",
+    "pause_tool_available": false,
+    "configuration_modified": false,
+    "boundary": "No restart or evaluation of this interrupted attempt. Pause through the supported tool when available; do not repeat unchanged interruption notifications."
+  }
+}

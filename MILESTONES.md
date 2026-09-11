@@ -8661,3 +8661,72 @@ running synchronized training finishes, its complete checkpoint/run record is
 verified and fresh tests pass. No partial checkpoint evaluation, additional
 training, new seed set or change to the finite follow-up was launched here.
 The live manifest's existing external staging remains untouched.
+
+## 83. Synchronized training interruption observed (2026-09-11)
+
+The user requested continued execution without stopping. On inspection at
+19:07--19:09 UTC, neither original process (launcher 12808, worker 45488) was
+present. Repeated normal process checks and reviewed-access CIM checks found
+no Python training process. Stdout ended at **69,632 logged steps**, with last
+write 17:24:53.9675938 UTC. Stderr remained empty. There is no `Synchronized
+train complete` marker, final root model, training summary or development CSV.
+The original run manifest still says `running`, but that status is stale and
+must not be interpreted as a live process or successful completion.
+
+Windows System event 1074 (User32) records a **power off** request initiated by
+StartMenuExperienceHost.exe at 17:24:54.3451183 UTC (13:24:54 local EDT), less
+than one second after the last stdout write. Its reason is Other (Unplanned),
+code 0x0. This is the likely interruption cause; no process exit code was
+captured, and no Python exception was logged. The OS boot-time property alone
+did not establish a new boot, so no stronger claim about reboot timing is made.
+All 42 previously recorded frozen input hashes still match.
+
+This is an **interrupted, unsuccessful execution**, not a failed measured-policy
+safety gate and not a new driving result. No completed 500-episode evaluation
+is possible under the section 81 final-checkpoint protocol. Preserve every
+original artifact, including the stale manifest and its existing external
+staging. A separate small `results/ppo_v3_predictive_sync_v1_seed42.interruption.json`
+records process absence, hashes, timestamps, event evidence and recovery limits.
+The raw training logs and checkpoints remain local and ignored by Git.
+
+### 83.1 Recovery boundary and checkpoint assessment
+
+Only the 25,000- and 50,000-step periodic checkpoints exist. Their SHA-256
+values are respectively
+`039f7805fc2bab1f7378ab42740740201b2179af619a14cdeb817d987c1f4efb` and
+`b07881fb9dd12e6454ab30aa9b23a662ea937cfdaec41ade27233d13ed76690a`.
+The callback-best policy is not eligible as the frozen final model.
+
+Independent read-only ZIP/metadata and source review found that the 50K ZIP
+retains the policy, optimizer and protocol stamp, but not the environment,
+partial rollout buffer, RNG streams or callback state needed for exact restart.
+It was saved 848 steps into a 1,024-step rollout, with 480 PPO updates recorded.
+Loading into a fresh environment resets/reseeds rather than restoring that
+interaction state. A nominal 150K continuation would collect to 200,528 steps,
+not the required 200,704, and would not recreate the interrupted trajectory.
+The existing runner exposes no resume protocol and requires fresh training.
+
+The scientifically preferred recovery is a **fresh seed-42 retry under a unique
+new stem**, with identical scientific settings, new frozen command/source
+provenance and explicit linkage to this interrupted attempt. Resuming 50K would
+instead be a separately specified warm-start experiment. Neither is silently
+launched here; the user must approve the recovery choice before further long
+execution. Run fresh lint/tests before any authorized retry. No code, settings,
+rewards, seeds, checkpoint selection or evaluation protocol was changed.
+
+### 83.2 Follow-up state and verification
+
+The existing follow-up configuration is still stored as ACTIVE. Tool discovery
+in this turn did not expose `automation_update`, so it could not be paused via
+the supported interface. No raw automation-file or permission-setting edit was
+made. Pause this finite follow-up through the supported tool when available.
+Until recovery direction is given, do not restart the old job, evaluate its
+partial/checkpoint-best models, start the sensor experiment, or repeat unchanged
+interruption notifications. Report a new meaningful state only.
+
+This entry and its evidence JSON are documentation-only: the last code gate
+remains 298 passing tests in section 82.3. No test suite was represented as a
+new pre-training gate and no further training/evaluation was started. Evidence
+JSON parsing, on-disk hash reconciliation and append-only preservation are
+checked before a scoped local documentation/evidence commit; checkpoints,
+logs, the externally staged live manifest and unrelated work are excluded.
