@@ -7880,3 +7880,110 @@ Final handoff check after documentation sync: Ruff passed; all 229 tests passed
 in 9.39 seconds with the same two existing unbounded Box warnings.
 `git diff --check` passed. Only `MILESTONES.md` and the new
 `STRESS_TEST_RESULTS.md` remained uncommitted at that check.
+
+## 78. Prediction audit and RL successor research (2026-09-11)
+
+User defers CARLA, requests more research into improving the V3 predictor and a
+more advanced RL-based successor. This entry records research and a read-only
+configuration check, not an implemented successor or a new scored experiment.
+Accepted V3, predictive v1, previous negative results and all gates are preserved.
+The complete earlier research history remains unchanged. Current repository HEAD
+at audit was `f715d4f`; the user had committed the section 77 completion report.
+
+### 78.1 Verified observation issue
+
+Ruff passed and all 229 tests passed in 10.49 seconds, with the two existing
+unbounded-Box warnings, before a configuration-only reset on consumed seed 80042.
+No policy decisions or scored episodes were run. The unchanged predictive YAML
+produced shape 115, clip=true, see_behind=false and effective normalization ranges
+x=[-200,200], y=[-4,4], vx/vy=[-80,80]. Units are metres and metres/second.
+Its observation dictionary omits features_range. Installed AbstractEnv.configure
+uses shallow replacement, so native intersection ranges are not inherited and
+the straight-road kinematics defaults apply. Different y values above 4 m collapse
+to +1 in that feature; other features need not be identical. The geometric
+predictor partly compensates using raw positions but compresses them into nine
+aggregate features. This is a verified information-loss mechanism, not evidence
+that it alone caused a particular collision or timeout. No configuration changed.
+
+Installed IntersectionEnv.step computes its base observation before actor
+removal/spawning; the prediction wrapper then queries live actors after those
+operations. The blocks can therefore use different actor sets. This static
+ordering finding requires a snapshot-alignment test and episode traces before
+causal claims. Native sorted selection uses lane-projected distance with rear
+exclusion, not predicted collision risk. None of these facts invalidates the
+already recorded outcomes under their frozen settings; they limit interpretation.
+
+### 78.2 Existing failed-episode analysis
+
+Authoritative candidate artifacts remain under
+`results/v3_predictive_stress_v1/candidate_recovery_01/`.
+Dense incomplete seeds: 80044, 80050, 80059, 80083, 80085, 80102, 80121, 80125, 80126.
+All nine targeted zero speed for 25.6–27.4 s (mean 26.356 s); sampled stopped time
+averages 23.756 s, with final route progress 33.2–48.0%. Persistent stopping is
+established; unnecessary waiting is not. Of 37 aggressive collisions, 24 have no
+sampled stopped time and 7 have at least 5 s stopped. Aggressive seed 80110 collides
+with minimum recorded radial TTC 2.114 s and zero unsafe-TTC events. Preserve TTC
+as the historical metric; it is not a rectangle collision probability. These
+are analyses of saved rows, not replays, new training or additional scored data.
+
+The predictor applies one action then holds its target for 3 s; it does not model
+subsequent policy actions. NPC trajectories use fixed velocity and heading.
+Forecast aggregation omits conflict-clearance intervals. Native speed-change
+actions choose an index relative to actual speed, not merely previous target.
+Current MLP has no memory/time input. Native deadline truncation is bootstrapped
+by SB3, correctly for an external cutoff, while evaluation penalizes incompletion.
+A finite-task-deadline formulation must be a prospective change, not a silent
+termination patch or a claim of an SB3 defect.
+
+### 78.3 Recommended research sequence (not released for training)
+
+Full design, mathematical objectives, limitations and primary links are in
+`V3_RL_RESEARCH_NEXT.md`:
+
+1. V3-PredictiveGeometry v2: an isolated explicit normalization comparison,
+   retaining PPO/reward/actions/traffic/predictor settings. Symmetric x/y ±200 m
+   with unchanged velocity scales is a proposal, not an applied configuration.
+   New feature semantics require a separately trained checkpoint.
+2. Separately test common-snapshot observation/prediction alignment. Do not
+   bundle it with geometry and then attribute results to either component alone.
+3. Hash-bound failed-seed diagnostic replay, after tests, to distinguish incorrect
+   forecasts from policy choices despite useful forecasts. No replay is launched.
+4. More advanced V3-RecurrentConstrainedPPO: causal LSTM memory plus reward,
+   collision-cost and incompletion-cost critics learned through RL. Compare
+   memory-only and constraint-only ablations before interpreting their combination.
+
+Proposed episode costs are Cc=I(collision) and
+Ci=I(deadline without success/collision). Maximize expected V3 return subject to
+E[Cc]<=dc and E[Ci]<=di. Budgets remain to be preregistered; old acceptance gates
+are not changed. Separate Lagrange multipliers increase when the corresponding
+completed-episode cost exceeds its budget. One candidate advantage is
+(Ar-lambda_c*Ac-lambda_i*Ai)/(1+lambda_c+lambda_i). Event costs must fire once,
+not be interpreted as collision probabilities after discounting. Remaining time
+and task-deadline bootstrapping require explicit tests and matched controls.
+Retaining the fixed V3 collision reward alongside an adaptive constraint is an
+intentional additional objective. No formula guarantees feasible safe passage.
+
+The policy and critics learn from rewards/costs and interaction, not expert
+actions or hidden driver-class labels. Fixed geometry features are not RL.
+MultiPath/Trajectron++ are useful prediction references, but their trajectory
+losses are not RL and are not selected as mandatory components under the user's
+RL-only learning preference. The recommended successor combines established
+ideas; no scientific novelty or success percentage is claimed before evaluation.
+
+Core primary sources inspected:
+
+- [HighwayEnv observation contract](https://highway-env.farama.org/v1.9.1/observations/).
+- [Gymnasium time limits](https://gymnasium.farama.org/tutorials/gymnasium_basics/handling_time_limits/).
+- [Recurrent model-free RL](https://arxiv.org/abs/2110.05038).
+- [SB3-Contrib recurrent PPO](https://sb3-contrib.readthedocs.io/en/master/modules/ppo_recurrent.html).
+- [Constrained Policy Optimization](https://proceedings.mlr.press/v70/achiam17a.html).
+- [PID Lagrangian RL](https://proceedings.mlr.press/v119/stooke20a.html).
+- [MultiPath](https://arxiv.org/abs/1910.05449) and
+  [Trajectron++](https://arxiv.org/abs/2001.03093).
+- [Previously selected uncertainty-aware DRL](https://arxiv.org/abs/2405.13969).
+
+Only documentation is added. No production code, reward coefficients, configs,
+seeds, deadlines or evaluation rules were changed; no installation or new
+training occurred. This assistant did not stage, commit or push. Next actionable
+implementation is observation-contract tests and a separately named repair,
+not another blanket TTC shield or a larger model trained on lossy inputs.
