@@ -1,0 +1,275 @@
+{
+  "status": "verified",
+  "protocol_sha256": "6c3851362df84a0aef76ee76dfad33bc203573aa843dde6c0d3c21dcd1142d47",
+  "episodes": 1000,
+  "scenarios": {
+    "light": {
+      "control": {
+        "episodes": 100,
+        "success_count": 57,
+        "success_rate": 0.57,
+        "collision_count": 43,
+        "collision_rate": 0.43,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 7.499999999999999,
+        "mean_stopped_time": 0.004,
+        "mean_zero_target_time": 0.052000000000000005,
+        "mean_unsafe_ttc_events": 14.72,
+        "mean_max_npcs": 9.96,
+        "mean_reward": 1.7630198947430389,
+        "mean_min_ttc": 0.6595833864963658,
+        "incomplete_seeds": []
+      },
+      "candidate": {
+        "episodes": 100,
+        "success_count": 67,
+        "success_rate": 0.67,
+        "collision_count": 27,
+        "collision_rate": 0.27,
+        "incomplete_count": 6,
+        "incomplete_rate": 0.06,
+        "mean_travel_time": 10.126,
+        "mean_stopped_time": 1.7560000000000002,
+        "mean_zero_target_time": 2.342,
+        "mean_unsafe_ttc_events": 16.23,
+        "mean_max_npcs": 11.71,
+        "mean_reward": 3.811108154800691,
+        "mean_min_ttc": 0.7547418422954045,
+        "incomplete_seeds": [
+          80062,
+          80065,
+          80083,
+          80085,
+          80101,
+          80137
+        ]
+      },
+      "paired_success": {
+        "rescues": 11,
+        "regressions": 1,
+        "exact_two_sided_mcnemar_p": 0.00634765625,
+        "interpretation": "exploratory, not multiplicity-adjusted or a promotion gate"
+      }
+    },
+    "dense": {
+      "control": {
+        "episodes": 100,
+        "success_count": 59,
+        "success_rate": 0.59,
+        "collision_count": 41,
+        "collision_rate": 0.41,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 8.206,
+        "mean_stopped_time": 0.364,
+        "mean_zero_target_time": 0.66,
+        "mean_unsafe_ttc_events": 16.51,
+        "mean_max_npcs": 16.23,
+        "mean_reward": 1.937916067264455,
+        "mean_min_ttc": 0.5834266378249795,
+        "incomplete_seeds": []
+      },
+      "candidate": {
+        "episodes": 100,
+        "success_count": 69,
+        "success_rate": 0.69,
+        "collision_count": 22,
+        "collision_rate": 0.22,
+        "incomplete_count": 9,
+        "incomplete_rate": 0.09,
+        "mean_travel_time": 10.985999999999999,
+        "mean_stopped_time": 2.4759999999999995,
+        "mean_zero_target_time": 3.11,
+        "mean_unsafe_ttc_events": 18.54,
+        "mean_max_npcs": 19.52,
+        "mean_reward": 4.360382749057111,
+        "mean_min_ttc": 0.661411244107064,
+        "incomplete_seeds": [
+          80044,
+          80050,
+          80059,
+          80083,
+          80085,
+          80102,
+          80121,
+          80125,
+          80126
+        ]
+      },
+      "paired_success": {
+        "rescues": 15,
+        "regressions": 5,
+        "exact_two_sided_mcnemar_p": 0.04138946533203125,
+        "interpretation": "exploratory, not multiplicity-adjusted or a promotion gate"
+      }
+    },
+    "aggressive": {
+      "control": {
+        "episodes": 100,
+        "success_count": 50,
+        "success_rate": 0.5,
+        "collision_count": 50,
+        "collision_rate": 0.5,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 7.486000000000001,
+        "mean_stopped_time": 0.16,
+        "mean_zero_target_time": 0.39399999999999996,
+        "mean_unsafe_ttc_events": 16.46,
+        "mean_max_npcs": 15.05,
+        "mean_reward": 0.42912153227571176,
+        "mean_min_ttc": 0.5581396220411172,
+        "incomplete_seeds": []
+      },
+      "candidate": {
+        "episodes": 100,
+        "success_count": 59,
+        "success_rate": 0.59,
+        "collision_count": 37,
+        "collision_rate": 0.37,
+        "incomplete_count": 4,
+        "incomplete_rate": 0.04,
+        "mean_travel_time": 10.144,
+        "mean_stopped_time": 1.9140000000000001,
+        "mean_zero_target_time": 2.7340000000000004,
+        "mean_unsafe_ttc_events": 18.89,
+        "mean_max_npcs": 18.33,
+        "mean_reward": 2.186935803718024,
+        "mean_min_ttc": 0.6460255886840439,
+        "incomplete_seeds": [
+          80053,
+          80070,
+          80082,
+          80102
+        ]
+      },
+      "paired_success": {
+        "rescues": 20,
+        "regressions": 11,
+        "exact_two_sided_mcnemar_p": 0.14961278438568115,
+        "interpretation": "exploratory, not multiplicity-adjusted or a promotion gate"
+      }
+    },
+    "cautious": {
+      "control": {
+        "episodes": 100,
+        "success_count": 70,
+        "success_rate": 0.7,
+        "collision_count": 30,
+        "collision_rate": 0.3,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 8.292,
+        "mean_stopped_time": 0.144,
+        "mean_zero_target_time": 0.336,
+        "mean_unsafe_ttc_events": 15.59,
+        "mean_max_npcs": 14.29,
+        "mean_reward": 3.831247566514284,
+        "mean_min_ttc": 0.6902952176089934,
+        "incomplete_seeds": []
+      },
+      "candidate": {
+        "episodes": 100,
+        "success_count": 78,
+        "success_rate": 0.78,
+        "collision_count": 20,
+        "collision_rate": 0.2,
+        "incomplete_count": 2,
+        "incomplete_rate": 0.02,
+        "mean_travel_time": 9.702,
+        "mean_stopped_time": 0.9080000000000001,
+        "mean_zero_target_time": 1.39,
+        "mean_unsafe_ttc_events": 15.99,
+        "mean_max_npcs": 15.68,
+        "mean_reward": 5.264451569636509,
+        "mean_min_ttc": 0.7453718084229602,
+        "incomplete_seeds": [
+          80059,
+          80102
+        ]
+      },
+      "paired_success": {
+        "rescues": 13,
+        "regressions": 5,
+        "exact_two_sided_mcnemar_p": 0.09625244140625,
+        "interpretation": "exploratory, not multiplicity-adjusted or a promotion gate"
+      }
+    },
+    "mixed": {
+      "control": {
+        "episodes": 100,
+        "success_count": 58,
+        "success_rate": 0.58,
+        "collision_count": 42,
+        "collision_rate": 0.42,
+        "incomplete_count": 0,
+        "incomplete_rate": 0.0,
+        "mean_travel_time": 7.893999999999998,
+        "mean_stopped_time": 0.262,
+        "mean_zero_target_time": 0.43599999999999994,
+        "mean_unsafe_ttc_events": 15.85,
+        "mean_max_npcs": 14.65,
+        "mean_reward": 1.810191784486675,
+        "mean_min_ttc": 0.6149078710414577,
+        "incomplete_seeds": []
+      },
+      "candidate": {
+        "episodes": 100,
+        "success_count": 74,
+        "success_rate": 0.74,
+        "collision_count": 23,
+        "collision_rate": 0.23,
+        "incomplete_count": 3,
+        "incomplete_rate": 0.03,
+        "mean_travel_time": 9.772,
+        "mean_stopped_time": 1.236,
+        "mean_zero_target_time": 1.76,
+        "mean_unsafe_ttc_events": 18.24,
+        "mean_max_npcs": 16.67,
+        "mean_reward": 4.670717949793767,
+        "mean_min_ttc": 0.6701905122211328,
+        "incomplete_seeds": [
+          80050,
+          80083,
+          80102
+        ]
+      },
+      "paired_success": {
+        "rescues": 18,
+        "regressions": 2,
+        "exact_two_sided_mcnemar_p": 0.0004024505615234375,
+        "interpretation": "exploratory, not multiplicity-adjusted or a promotion gate"
+      }
+    }
+  },
+  "arm_report_sha256": {
+    "control": "0d499b8feafb80ce40105a89d4d5f43e1288614390b2b25e81e9bd62fec61721",
+    "candidate": "6938f68d2bcfe5e2bbd0fe133af1406454a9d5713b06b31b61d3a854e7f35a16"
+  },
+  "candidate_directory": "results\\v3_predictive_stress_v1\\candidate_recovery_01",
+  "recovery": {
+    "source_dir": "results\\v3_predictive_stress_v1\\candidate",
+    "source_prefix_sha256": {
+      "light": "85e434b274396387686495401a520c108d903b96ada9ef928181c0a6eaeee4f5",
+      "dense": "51c870363fb0787783cd1836cbb29921be2e8031f5e5e4d98af01c632799545f"
+    },
+    "copied_episode_counts": {
+      "light": 100,
+      "dense": 94,
+      "aggressive": 0,
+      "cautious": 0,
+      "mixed": 0
+    },
+    "script_sha256": "c7e12ff25dca50b41a895a8aefece0bf76955bf1093ed79a95add27eb0c1466d",
+    "replay_checks": [
+      {
+        "scenario": "dense",
+        "seed": 80135,
+        "matched": true
+      }
+    ],
+    "reason": "Original process absent after 194 saved rows; stderr empty; cause unknown",
+    "elapsed_time_scope": "recovery process only; original incomplete runtime unavailable"
+  }
+}
