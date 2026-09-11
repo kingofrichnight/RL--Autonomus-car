@@ -8730,3 +8730,125 @@ new pre-training gate and no further training/evaluation was started. Evidence
 JSON parsing, on-disk hash reconciliation and append-only preservation are
 checked before a scoped local documentation/evidence commit; checkpoints,
 logs, the externally staged live manifest and unrelated work are excluded.
+
+## 84. Authorized fresh synchronized retry and continued research (2026-09-11)
+
+Following the recorded power-off interruption and explicit recovery question,
+the user approved a fresh retry and requested continued training, results
+collection and local commits until the research succeeds. This supersedes the
+section 83 wait-for-recovery-choice boundary. It does **not** authorize hiding
+failures, overwriting attempts, weakening gates, selecting favorable seeds or
+checkpoints, inventing performance, paid/external compute or pushing Git.
+
+The immediate target remains all previously fixed section 79.5 and 81 gates:
+at least 394/500 successes, at most 98/500 collisions and 8/500 incomplete,
+mean minimum TTC at least .6728939419963959, and the already specified favorable
+paired success comparisons against original V3, corrected control and V1.
+Retain every other original gate and report paired success against Geometry V2
+without adding a significance requirement against it. These are development
+retention rules, not proof of generalization or real-world safety. One passing
+training seed on a consumed set is not automatic promotion: any later
+replication/fresh-evaluation stage needs a separately recorded fixed design.
+Original V3 remains the accepted policy in the meantime.
+
+### 84.1 Fresh retry implementation and exact protocol
+
+The new entry point is `scripts/run_synchronized_retry.py`; it delegates to the
+unchanged historical synchronized runner through a scoped, finally-restored
+process-local adapter. Only its output-path globals and provenance callback are
+replaced. No parallel threads should share that adapter. The model observation
+protocol remains `predictive_post_spawn_sync_v1`, with 115 inputs and three
+speed actions; it does not enable the section 82 sector prototype.
+
+The retry asserts the complete original 42-entry source/input dictionary, pins
+the original runner and preserved interrupted manifest, and includes that
+manifest, the section 83 interruption evidence and the retry source in its own
+fingerprints. Those fingerprints are rechecked at completion and matched before
+evaluation by the original runner. The prior source mapping is copied rather
+than mutated. Original model-parameter checks, protocol stamp, exclusive run
+records, output overwrite guards and failure preservation remain in force.
+
+Names and exact commands:
+
+```powershell
+python -u -m scripts.run_synchronized_retry train --refuse-overwrite
+python -u -m scripts.run_synchronized_retry evaluate --refuse-overwrite
+```
+
+- Stem: `ppo_v3_predictive_sync_v1_retry01_seed42`.
+- Final local model: `models/ppo_v3_predictive_sync_v1_retry01_seed42.zip`.
+- Training summary: `results/ppo_v3_predictive_sync_v1_retry01_seed42.training.json`.
+- Run records: `results/ppo_v3_predictive_sync_v1_retry01_seed42.train.run.json`
+  and matching `.evaluate.run.json`.
+- Evaluation: `results/ppo_v3_predictive_sync_v1_retry01_development_seed40042.csv`
+  and matching `.summary.json`.
+- Training log directory: `logs/ppo_v3_predictive_sync_v1_retry01_seed42/`.
+- Console logs: `logs/ppo_v3_predictive_sync_v1_retry01_seed42.train.stdout.log`
+  and matching stderr; evaluation uses separate matching `.evaluate.*.log` files.
+
+All scientific settings are identical to section 81: geometry config SHA
+`a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7`,
+fresh PPO seed 42, 200,000 requested/200,704 expected collected steps,
+LR .0003, n_steps 1024, batch 64, one environment, seed stride 1000,
+validation offset 70000, 50 validation episodes every 10000 steps and
+checkpoints every 25000. The 256/256 architecture, gamma .99, GAE .95,
+entropy .01, all remaining model parameters, dependency versions, CPU and
+Torch threads 8/8 stay fixed. No resume, callback-best selection or warm start.
+This retry is execution recovery, not an extra independent training seed.
+
+Only after successful process exit, final runner marker, complete run record,
+matching final model/summary/source hashes and model checks may fresh Ruff/full
+pytest be followed by the evaluation command. It remains 500 deterministic
+episodes on consumed development seeds 40042--40541 with unsafe TTC threshold
+2 seconds. Reconcile raw outcomes/metrics and paired tests independently using
+the existing audit helpers, not the hard-coded Geometry V2 audit main. No old
+69,632-step progress or 50K checkpoint becomes an eligible final result.
+
+### 84.2 Continued-work limits and follow-up
+
+Run one research training/evaluation at a time. Preserve and record all failures
+and mixed results, including interruption records. After this retry's audited
+results and scoped commits, use the evidence to choose the next isolated
+improvement (the section 82 sector prototype is prepared but not released).
+Append each new formula, config/seed choice, comparison, budget and numerical
+acceptance rule before its run; verify fresh tests first. Do not silently make
+the environment easier, add visibility, increase training budget or conflate
+an exploratory consumed-set improvement with independent confirmation.
+
+The user requests quiet continuation, not notices for every unchanged poll or
+minor metric. Report meaningful results, completion, failure or required input.
+Do not endlessly rerun identical poor experiments hoping for a favorable sample.
+No CARLA expansion or large-checkpoint/log/data commits. Preserve unrelated
+working-tree and index changes, especially the externally staged original run
+manifest. Never push. Permission/resource limits still apply.
+
+The root currently lacks the scheduling update tool, but the read-only review
+agent verified that the supported tool is available in its context. After the
+new process launches, that agent is authorized to retarget the **existing**
+`finish-v3-geometry-experiment` heartbeat to this current retry and continued
+research scope, keeping the same task and quiet 30-minute interval. Do not
+duplicate the follow-up or edit its raw configuration. The actual update and
+launch are recorded separately after tests; neither is claimed complete here.
+
+### 84.3 Passed pre-training gate
+
+Ruff passed; all **30 retry-specific tests passed in 8.98 seconds**, and the
+full suite passed **328 tests in 53.06 seconds**, with only the two existing
+unbounded-Box warnings. The first checks passed; no failed research run or test
+failure occurred during this implementation. Deliberately simulated failure
+fixtures verify failed-run preservation and are not actual training failures.
+
+Tests confirm scientific argument identity except output paths, finally-based
+adapter restoration, exactly-once delegation, immutable source mappings,
+rejection of modified/added/removed historical inputs and changed lineage,
+protocol/predecessor checks, new runner fingerprinting, and refusal of all seven
+existing model/summary/log-directory/run-record/evaluation artifact targets.
+Independent read-only review found no remaining blocking implementation issue.
+
+Preflight verified **45** source/lineage fingerprints, Python 3.12.9, all frozen
+dependency versions and Torch threads 8/8. Retry source SHA-256:
+`bb9dfa47723325176b2727ef74fbbed0b7157dc343479e9712e7f7e003def577`.
+Retry test SHA-256:
+`a793f50bf9d40c4ef4a25b2eeb72ab2e0b27b1ed79e06de17d90ad52e2729f79`.
+The test gate is complete. Actual launch must still confirm no conflicting
+process or pre-existing retry console logs/artifacts and is recorded below.
