@@ -9264,3 +9264,29 @@ training or evaluation stage requires another fresh Ruff/full pytest gate.
 The preregistration, new runner/tests and append-only record are committed before
 launch. Models/logs/live run records are excluded. Actual process launch and
 follow-up retargeting will be recorded below; neither is implied by passing tests.
+
+### 87.6 Actual padding-control training launch
+
+Preregistration, code, tests and the full passing gate were committed as
+`88e334f`. Reviewed-access process inspection found no active research training/
+evaluation, all23 prospective batch artifact/log/lock targets were absent, and
+the final runner fingerprint matched. Launched exactly the first section87.1
+command at **2026-09-12T00:13:55.9548674Z** (September11 local time), launcher
+PID **32336**, worker PID **15560**, with a hidden window and unique stdout/stderr.
+
+The run record starts **2026-09-12T00:13:58.241868Z**, status `running`, arm
+`padding`, mode `train`, protocol `predictive_post_spawn_padding_v1`, with56
+source fingerprints and no predecessors. Its lock identifies worker15560.
+Both observed command lines match the preregistered padding train command.
+Stdout confirms CPU and the unique TensorBoard directory, stderr is empty, and
+the first1024 collected steps were observed. This is a real running training
+process, not a completed policy or success-rate result.
+
+Recorded initial policy SHA-256:
+`ca35bda9cfe2f2afce2eb0cf71d2abd74fb6808d2f935b7e20a5b31c1d054c19`,
+with216580 parameters. The sector arm must reproduce this initial fingerprint
+before learning. No sector training or either development evaluation has begun.
+Next comes verified padding completion and a fresh full gate, then sector
+training, then the two fixed evaluations. Do not score padding early or select
+its callback-best model. Preserve its mutable run record and ignored model/log
+artifacts; this launch note is the only new documentation committed while it runs.
