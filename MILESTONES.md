@@ -9290,3 +9290,29 @@ Next comes verified padding completion and a fresh full gate, then sector
 training, then the two fixed evaluations. Do not score padding early or select
 its callback-best model. Preserve its mutable run record and ignored model/log
 artifacts; this launch note is the only new documentation committed while it runs.
+
+### 87.7 Continued batch follow-up verified
+
+The existing `finish-v3-geometry-experiment` heartbeat was retargeted through
+the supported automation tool at **2026-09-12T00:15:41.112Z**. Exact saved-prompt
+equality was independently verified. It retains the name **Continue V3 safety
+research**, ACTIVE status,30-minute interval, same task
+`01a06baf-334e-7182-ab6e-6a4977dadc85` and original creation time. No duplicate
+automation, raw configuration edit or permission change occurred.
+
+The prompt now follows the launched padding stage, enforces the fixed four-stage
+order, final-model/source/predecessor/initialization checks and fresh full tests
+before every subsequent stage. It requires independent audits and all unchanged
+historical plus preregistered sector-versus-padding gates, append-only records,
+scoped local commits, no model/log commits or Git push, and quiet ordinary
+progress. Completed retry01 and the original interrupted attempt are not restart
+targets. After the complete batch audit, any further research must be separately
+preregistered; no criterion relaxation, unplanned visibility or repeated identical
+poor runs. Original V3 is not automatically replaced by a development result.
+
+The OpenAI Docs skill guided this supported update and preservation of the
+notification intent. Official scheduled-task guidance confirms that local
+follow-up requires the computer powered on and the app running:
+https://learn.chatgpt.com/docs/automations?surface=app . No power setting was changed.
+The running model itself and its mutable manifest remain local/uncommitted;
+the launch record was committed as `11dcee4`.
