@@ -55,6 +55,8 @@ ARMS = {
 }
 ORDER = (("zero", "train"), ("clock", "train"), ("zero", "evaluate"), ("clock", "evaluate"))
 PINNED = {
+    "V3_CLOCK_LAUNCHER_GUARD_V1.md":
+        "86d8ba8d8f447ec825407aecb9456c3b47336fe6493cce3bbc20ff1482979508",
     DESIGN: "3266b72e0687e309816375a63377e7f4a7d3fe9d9c4e8461840b8fde7153973c",
     PREPARATION: "f25260c79a2a8bbb535a8130b52d6526c2100093f5e6bb399dc028a7fa37f2a9",
     ANALYSIS: "ac193ba5925672de86149547865e977d1d94d74824c0d45107c50be3f2d03c32",
@@ -369,6 +371,35 @@ def check_predecessors(root, arm, mode, release, digest):
     return dependencies
 
 
+def _windows_command_parts(command):
+    """Parse only the Windows executable prefix; preserve the opaque argument tail.
+
+    CPython3.12.9 PC/launcher.c skip_me/invoke_child replace argv[0] and its
+    separator, not the remaining text. Do not shlex, requote or normalize that
+    tail (which may contain escaped quotes, empty arguments or multiline code).
+    This validates the executable prefix, not arbitrary Python argument syntax.
+    See the bounded V3_CLOCK_LAUNCHER_GUARD_V1.md engineering amendment.
+    """
+    _require(isinstance(command, str) and command and "\0" not in command,
+             "Cannot inspect a Python command")
+    match = re.fullmatch(r'(?:"([^"\r\n]+)"|([^ \t"\r\n]+))[ \t]+(.+)', command, re.DOTALL)
+    _require(match is not None, "Malformed Python executable prefix or missing arguments")
+    token = match[1] if match[1] is not None else match[2]
+    tail = match[3].lstrip(" \t")
+    _require(bool(tail), "Missing Python arguments")
+    return token, tail
+
+
+def _process_path(value):
+    _require(isinstance(value, str) and value and "\0" not in value,
+             "Cannot inspect a Python executable path")
+    path = Path(value)
+    _require(path.is_absolute(), "Python executable path must be absolute")
+    path = path.resolve(strict=True)
+    _require(path.is_file(), "Python executable path must name a file")
+    return path
+
+
 def no_active_research(root):
     """Fail closed if Windows cannot enumerate competing research workers."""
     script = (
@@ -382,23 +413,40 @@ def no_active_research(root):
     rows = json.loads(result.stdout or "[]")
     if isinstance(rows, dict):
         rows = [rows]
-    own_pids = {os.getpid()}
-    own_rows = [r for r in rows if int(r["ProcessId"]) == os.getpid()]
-    _require(len(own_rows) == 1, "Process enumeration omitted or duplicated the current worker")
-    current = own_rows[0]
-    parent = next((r for r in rows if int(r["ProcessId"]) == os.getppid()), None)
-    # Windows venv redirector can wait as a parent with the exact same command.
-    # Exempt only that proven launcher, never arbitrary Python ancestors.
-    launcher = Path(root) / ".venv" / "Scripts" / "python.exe"
-    if (current and parent and int(current.get("ParentProcessId", -1)) == os.getppid()
-            and current.get("CommandLine") == parent.get("CommandLine")
-            and parent.get("ExecutablePath")
-            and Path(parent["ExecutablePath"]).resolve() == launcher.resolve()):
-        own_pids.add(os.getppid())
+    _require(isinstance(rows, list), "Malformed Python process census")
+    by_pid = {}
+    for row in rows:
+        _require(isinstance(row, dict)
+                 and type(row.get("ProcessId")) is int and row["ProcessId"] > 0
+                 and type(row.get("ParentProcessId")) is int and row["ParentProcessId"] >= 0,
+                 "Malformed Python process identity")
+        _require(row["ProcessId"] not in by_pid, "Duplicate Python process identity")
+        command = row.get("CommandLine")
+        _require(isinstance(command, str) and command.strip() and "\0" not in command,
+                 "Cannot inspect a Python process")
+        by_pid[row["ProcessId"]] = row
+    pid, ppid = os.getpid(), os.getppid()
+    _require(pid != ppid and pid in by_pid and ppid in by_pid,
+             "Process enumeration omitted the current worker or its direct venv launcher")
+    current, parent = by_pid[pid], by_pid[ppid]
+    _require(current["ParentProcessId"] == ppid
+             and parent["ParentProcessId"] not in (pid, ppid), "Invalid direct process ancestry")
+    launcher = _process_path(str(Path(root) / ".venv" / "Scripts" / "python.exe"))
+    base = _process_path(sys._base_executable)
+    _require(_process_path(sys.executable) == launcher
+             and base == _process_path(str(Path(sys.base_prefix) / "python.exe"))
+             and base != launcher, "Frozen venv/base interpreter identity differs")
+    current_token, current_tail = _windows_command_parts(current["CommandLine"])
+    parent_token, parent_tail = _windows_command_parts(parent["CommandLine"])
+    _require(_process_path(current.get("ExecutablePath")) == _process_path(current_token) == base
+             and _process_path(parent.get("ExecutablePath"))
+             == _process_path(parent_token) == launcher,
+             "Current worker/launcher executable identity differs")
+    _require(current_tail == parent_tail, "Current worker/launcher argument tails differ")
+    own_pids = {pid, ppid}
     pattern = r"(?:train_ppo|evaluate_policy|run_\w*(?:comparison|diagnostic|predictive|retry))"
     for row in rows:
-        _require(isinstance(row.get("CommandLine"), str), "Cannot inspect a Python process")
-        if int(row["ProcessId"]) not in own_pids and re.search(pattern, row["CommandLine"]):
+        if row["ProcessId"] not in own_pids and re.search(pattern, row["CommandLine"]):
             raise RuntimeError(f"Research worker already active: PID {row['ProcessId']}")
 
 

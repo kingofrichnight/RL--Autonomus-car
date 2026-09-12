@@ -672,36 +672,332 @@ def test_full_gate_runs_only_mocked_ruff_then_pytest_and_fails_closed(
         assert calls[1][0] == [sys.executable, "-m", "pytest", "-p", "no:cacheprovider"]
 
 
-@pytest.mark.parametrize("case", ["self", "redirector", "competitor", "wrong_parent_path",
-                                 "different_parent_command", "uninspectable", "missing_self"])
-def test_process_preflight_excludes_only_self_and_proven_venv_redirector(
-        tmp_path, monkeypatch, case):
-    command = "python -m scripts.run_clock_comparison_v1 zero train"
-    rows = [{"ProcessId": 10, "ParentProcessId": 5, "CommandLine": command,
-             "ExecutablePath": str(tmp_path / "runtime/python.exe")}]
-    if case != "self":
-        rows.append({"ProcessId": 5, "ParentProcessId": 1, "CommandLine": command,
-                     "ExecutablePath": str(tmp_path / ".venv/Scripts/python.exe")})
-    if case == "competitor":
-        rows.append({"ProcessId": 20, "ParentProcessId": 1, "CommandLine": "python train_ppo.py",
-                     "ExecutablePath": "other/python.exe"})
-    elif case == "wrong_parent_path":
-        rows[-1]["ExecutablePath"] = str(tmp_path / "other/python.exe")
-    elif case == "different_parent_command":
-        rows[-1]["CommandLine"] += " extra"
-    elif case == "uninspectable":
-        rows[-1]["CommandLine"] = None
-    elif case == "missing_self":
-        rows = []
+@pytest.mark.parametrize("prefix,executable", [
+    (r"C:\Python312\python.exe", r"C:\Python312\python.exe"),
+    ('"C:\\Program Files\\Python312\\python.exe"', r"C:\Program Files\Python312\python.exe"),
+])
+@pytest.mark.parametrize("separator", [" ", "\t", " \t  \t"])
+@pytest.mark.parametrize("tail", [
+    "-m scripts.run_clock_comparison_v1 zero train",
+    '-c "print(\'quoted words\')" ""',
+    '-c "print(\'x\')" "C:\\folder with spaces\\\\"',
+    '-c "print(\\\"escaped\\\")"',
+    '-c "first line\r\nsecond line"  \t\r\n',
+])
+def test_windows_command_parser_preserves_complete_opaque_tail(prefix, executable, separator, tail):
+    assert runner._windows_command_parts(prefix + separator + tail) == (executable, tail)
+
+
+@pytest.mark.parametrize("command", [
+    None, 42, True, b"python.exe -m module", "", " ", "\t",
+    " python.exe -m module", "\tpython.exe -m module",
+    "python.exe", '"python.exe"', "python.exe ", '"python.exe" \t',
+    '"" -m module', '"python.exe -m module', '"python.exe"junk -m module',
+    'py"thon.exe -m module', "python.exe\r-m module", "python.exe\n-m module",
+    '"py\rthon.exe" -m module', '"py\nthon.exe" -m module',
+    "py\0thon.exe -m module", "python.exe -m mod\0ule",
+])
+def test_windows_command_parser_rejects_missing_or_malformed_executable_prefix(command):
+    with pytest.raises(ValueError):
+        runner._windows_command_parts(command)
+
+
+def test_process_path_requires_existing_absolute_file_and_resolves_lexical_parent(tmp_path):
+    directory = tmp_path / "Program Files" / "unused"
+    directory.mkdir(parents=True)
+    executable = directory.parent / "python.exe"
+    executable.write_bytes(b"non-executable synthetic identity file")
+    assert runner._process_path(str(directory / ".." / executable.name)) == executable.resolve()
+    assert executable.read_bytes() == b"non-executable synthetic identity file"
+
+
+@pytest.mark.parametrize("value", [None, 42, True, "", "python.exe", "folder/python.exe",
+                                   "C:python.exe", "\0", '"C:\\Python312\\python.exe"'])
+def test_process_path_rejects_uninspectable_or_relative_executables(value):
+    with pytest.raises((ValueError, OSError)):
+        runner._process_path(value)
+
+
+@pytest.mark.parametrize("kind", ["missing", "directory"])
+def test_process_path_rejects_absent_executable_or_directory(tmp_path, kind):
+    path = tmp_path / "python.exe"
+    if kind == "directory":
+        path.mkdir()
+    with pytest.raises((ValueError, OSError)):
+        runner._process_path(str(path))
+
+
+@pytest.fixture
+def process_census(tmp_path, monkeypatch):
+    root = tmp_path / "repository with spaces"
+    launcher = root / ".venv/Scripts/python.exe"
+    base = tmp_path / "Program Files/Python312/python.exe"
+    other = tmp_path / "Other Python/python.exe"
+    for path in (launcher, base, other):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"synthetic file identity only; never execute")
+    tail = ("-B -m scripts.run_clock_comparison_v1 zero train "
+            f"--release-sha256 {RELEASE_HASH} --refuse-overwrite")
+    current = {"ProcessId": 10, "ParentProcessId": 5, "ExecutablePath": str(base),
+               "CommandLine": f'"{base}" {tail}'}
+    parent = {"ProcessId": 5, "ParentProcessId": 1, "ExecutablePath": str(launcher),
+              "CommandLine": f'"{launcher}" {tail}'}
+    fixture = SimpleNamespace(root=root, launcher=launcher, base=base, other=other,
+                              tail=tail, current=current, parent=parent,
+                              rows=[current, parent], calls=[])
+
+    def command(arguments, **kwargs):
+        fixture.calls.append((arguments, kwargs))
+        return SimpleNamespace(stdout=json.dumps(fixture.rows), returncode=0, stderr="")
+
     monkeypatch.setattr(runner.os, "getpid", lambda: 10)
     monkeypatch.setattr(runner.os, "getppid", lambda: 5)
-    monkeypatch.setattr(runner.subprocess, "run",
-                        lambda *args, **kwargs: SimpleNamespace(stdout=json.dumps(rows)))
-    if case in ("self", "redirector"):
-        runner.no_active_research(tmp_path)
+    monkeypatch.setattr(sys, "executable", str(launcher))
+    monkeypatch.setattr(sys, "_base_executable", str(base))
+    monkeypatch.setattr(sys, "base_prefix", str(base.parent))
+    monkeypatch.setattr(runner.subprocess, "run", command)
+    return fixture
+
+
+@pytest.mark.parametrize("tail", [
+    None,
+    '-c "print(\'quoted words\')" ""',
+    '-c "print(\'x\')" "C:\\folder with spaces\\\\"',
+    '-c "print(\\\"escaped\\\")"',
+    '-c "line one\r\nline two"  \t\r\n',
+])
+def test_process_census_accepts_only_realistic_venv_prefix_rewrite(process_census, tail):
+    fixture = process_census
+    tail = fixture.tail if tail is None else tail
+    fixture.current["CommandLine"] = f'"{fixture.base}"\t{tail}'
+    fixture.parent["CommandLine"] = f'"{fixture.launcher}" \t  {tail}'
+    before = copy.deepcopy(fixture.rows)
+    assert fixture.current["CommandLine"] != fixture.parent["CommandLine"]
+    runner.no_active_research(fixture.root)
+    assert fixture.rows == before and len(fixture.calls) == 1
+    command, kwargs = fixture.calls[0]
+    assert command[:4] == ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command"]
+    assert "Get-CimInstance Win32_Process" in command[4]
+    assert kwargs == {"cwd": fixture.root, "check": True, "capture_output": True, "text": True}
+    assert all(path.read_bytes() == b"synthetic file identity only; never execute"
+               for path in (fixture.launcher, fixture.base, fixture.other))
+
+
+@pytest.mark.parametrize("tail", [
+    "", "-B -m scripts.run_clock_comparison_v1 clock train",
+    "-B -m scripts.run_clock_comparison_v1 zero evaluate",
+    "-B  -m scripts.run_clock_comparison_v1 zero train",
+    '-B -m scripts.run_clock_comparison_v1 "zero" train',
+])
+def test_process_census_rejects_changed_or_missing_argument_tail(process_census, tail):
+    fixture = process_census
+    fixture.parent["CommandLine"] = f'"{fixture.launcher}" {tail}'
+    with pytest.raises(ValueError):
+        runner.no_active_research(fixture.root)
+
+
+@pytest.mark.parametrize("source", ["current", "parent"])
+def test_process_census_rejects_old_identical_whole_command_mock(process_census, source):
+    fixture = process_census
+    command = getattr(fixture, source)["CommandLine"]
+    fixture.current["CommandLine"] = fixture.parent["CommandLine"] = command
+    with pytest.raises(ValueError, match="executable identity differs"):
+        runner.no_active_research(fixture.root)
+
+
+def test_process_census_preserves_multiline_tail_instead_of_comparing_first_line(process_census):
+    fixture = process_census
+    fixture.current["CommandLine"] = f'"{fixture.base}" -c "line one\r\nline two"'
+    fixture.parent["CommandLine"] = f'"{fixture.launcher}" -c "line one\r\nchanged line"'
+    with pytest.raises(ValueError, match="tails differ"):
+        runner.no_active_research(fixture.root)
+
+
+@pytest.mark.parametrize("mutation", ["extra_argument", "missing_argument", "changed_digest",
+                                      "trailing_space", "trailing_tab", "trailing_crlf",
+                                      "empty_argument", "changed_interior_space"])
+def test_process_census_does_not_normalize_away_any_argument_tail_difference(
+        process_census, mutation):
+    fixture = process_census
+    tail = fixture.tail
+    if mutation == "missing_argument":
+        tail = tail.removesuffix(" --refuse-overwrite")
+    elif mutation == "changed_digest":
+        tail = tail.replace(RELEASE_HASH, "b" * 64)
+    elif mutation == "changed_interior_space":
+        tail = tail.replace("zero train", "zero\ttrain")
     else:
-        with pytest.raises((RuntimeError, ValueError)):
-            runner.no_active_research(tmp_path)
+        tail += {"extra_argument": " --extra", "trailing_space": " ",
+                 "trailing_tab": "\t", "trailing_crlf": "\r\n", "empty_argument": ' ""'}[mutation]
+    fixture.parent["CommandLine"] = f'"{fixture.launcher}" {tail}'
+    with pytest.raises(ValueError, match="tails differ"):
+        runner.no_active_research(fixture.root)
+
+
+@pytest.mark.parametrize("row_name", ["current", "parent"])
+@pytest.mark.parametrize("mutation", ["wrong_executable", "missing_executable", "null_executable",
+                                      "relative_executable", "absent_executable", "wrong_token",
+                                      "bare_token", "unquoted_space_path", "empty_command",
+                                      "null_command", "nul_command", "malformed_prefix"])
+def test_process_census_rejects_unproven_executable_and_command_identity(
+        process_census, row_name, mutation):
+    fixture = process_census
+    row = getattr(fixture, row_name)
+    if mutation == "missing_executable":
+        row.pop("ExecutablePath")
+    elif mutation in ("wrong_executable", "null_executable", "relative_executable",
+                       "absent_executable"):
+        row["ExecutablePath"] = {
+            "wrong_executable": str(fixture.other), "null_executable": None,
+            "relative_executable": "python.exe", "absent_executable": str(fixture.root / "gone"),
+        }[mutation]
+    elif mutation == "wrong_token":
+        row["CommandLine"] = f'"{fixture.other}" {fixture.tail}'
+    elif mutation == "bare_token":
+        row["CommandLine"] = "python.exe " + fixture.tail
+    elif mutation == "unquoted_space_path":
+        row["CommandLine"] = row["ExecutablePath"] + " " + fixture.tail
+    elif mutation == "malformed_prefix":
+        row["CommandLine"] = f'"{row["ExecutablePath"]}"extra {fixture.tail}'
+    else:
+        row["CommandLine"] = {"empty_command": "", "null_command": None,
+                              "nul_command": row["CommandLine"] + "\0"}[mutation]
+    with pytest.raises((ValueError, OSError)):
+        runner.no_active_research(fixture.root)
+
+
+@pytest.mark.parametrize("mutation", ["sys_executable", "sys_base_executable", "base_prefix",
+                                      "base_equals_venv", "missing_launcher", "missing_base",
+                                      "parent_missing", "current_missing", "same_pid",
+                                      "wrong_child_parent", "parent_is_child", "parent_is_itself"])
+def test_process_census_requires_direct_ancestry_and_frozen_interpreter_origins(
+        process_census, monkeypatch, mutation):
+    fixture = process_census
+    if mutation == "sys_executable":
+        monkeypatch.setattr(sys, "executable", str(fixture.other))
+    elif mutation == "sys_base_executable":
+        monkeypatch.setattr(sys, "_base_executable", str(fixture.other))
+    elif mutation == "base_prefix":
+        monkeypatch.setattr(sys, "base_prefix", str(fixture.other.parent))
+    elif mutation == "base_equals_venv":
+        monkeypatch.setattr(sys, "_base_executable", str(fixture.launcher))
+        monkeypatch.setattr(sys, "base_prefix", str(fixture.launcher.parent))
+    elif mutation == "missing_launcher":
+        fixture.launcher.unlink()
+    elif mutation == "missing_base":
+        fixture.base.unlink()
+    elif mutation == "parent_missing":
+        fixture.rows = [fixture.current]
+    elif mutation == "current_missing":
+        fixture.rows = [fixture.parent]
+    elif mutation == "same_pid":
+        monkeypatch.setattr(runner.os, "getppid", lambda: 10)
+    elif mutation == "wrong_child_parent":
+        fixture.current["ParentProcessId"] = 9
+    else:
+        fixture.parent["ParentProcessId"] = 10 if mutation == "parent_is_child" else 5
+    with pytest.raises((ValueError, OSError)):
+        runner.no_active_research(fixture.root)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("ProcessId", True), ("ProcessId", 10.0), ("ProcessId", "10"),
+    ("ProcessId", 0), ("ProcessId", -1), ("ProcessId", None),
+    ("ParentProcessId", True), ("ParentProcessId", 5.0), ("ParentProcessId", "5"),
+    ("ParentProcessId", -1), ("ParentProcessId", None),
+])
+def test_process_census_rejects_boolean_coerced_or_invalid_identifiers(
+        process_census, field, value):
+    process_census.current[field] = value
+    with pytest.raises(ValueError):
+        runner.no_active_research(process_census.root)
+
+
+@pytest.mark.parametrize("case", ["duplicate_self", "duplicate_parent", "duplicate_other",
+                                 "missing_pid", "missing_ppid", "not_a_row", "empty",
+                                 "null", "string", "number", "boolean", "single_object"])
+def test_process_census_rejects_ambiguous_or_incomplete_enumeration(process_census, case):
+    fixture = process_census
+    if case.startswith("duplicate"):
+        source = fixture.current if case == "duplicate_self" else fixture.parent
+        if case == "duplicate_other":
+            source = {"ProcessId": 20, "ParentProcessId": 0, "CommandLine": "python notes.py"}
+            fixture.rows.append(source)
+        fixture.rows.append(copy.deepcopy(source))
+    elif case in ("missing_pid", "missing_ppid"):
+        fixture.current.pop("ProcessId" if case == "missing_pid" else "ParentProcessId")
+    elif case == "not_a_row":
+        fixture.rows.append("not a process record")
+    else:
+        fixture.rows = {"empty": [], "null": None, "string": "bad census", "number": 1,
+                        "boolean": True, "single_object": fixture.current}[case]
+    with pytest.raises(ValueError):
+        runner.no_active_research(fixture.root)
+
+
+@pytest.mark.parametrize("command", [None, "", " \t\r\n", "python notes.py\0", 42])
+def test_process_census_rejects_uninspectable_other_python_even_when_not_research(
+        process_census, command):
+    fixture = process_census
+    fixture.rows.append({"ProcessId": 20, "ParentProcessId": 0, "CommandLine": command})
+    with pytest.raises(ValueError):
+        runner.no_active_research(fixture.root)
+
+
+@pytest.mark.parametrize("program", ["train_ppo.py", "evaluate_policy.py",
+                                     "run_clock_comparison_v1", "run_sector_timeout_diagnostic_v1",
+                                     "run_synchronized_predictive", "run_synchronized_retry"])
+def test_process_census_still_rejects_each_competing_research_worker(process_census, program):
+    fixture = process_census
+    fixture.rows.append({"ProcessId": 20, "ParentProcessId": 0,
+                         "ExecutablePath": str(fixture.other),
+                         "CommandLine": f'"{fixture.other}" -m scripts.{program}'})
+    with pytest.raises(RuntimeError, match="PID 20"):
+        runner.no_active_research(fixture.root)
+
+
+def test_process_census_does_not_exempt_an_arbitrary_python_ancestor(process_census):
+    fixture = process_census
+    fixture.rows.append({"ProcessId": 1, "ParentProcessId": 0,
+                         "ExecutablePath": str(fixture.launcher),
+                         "CommandLine": fixture.parent["CommandLine"]})
+    with pytest.raises(RuntimeError, match="PID 1"):
+        runner.no_active_research(fixture.root)
+
+
+def test_process_census_allows_inspectable_nonresearch_python_without_identity_exemption(
+        process_census):
+    fixture = process_census
+    fixture.rows.append({"ProcessId": 20, "ParentProcessId": 0,
+                         "ExecutablePath": str(fixture.other), "CommandLine": "python notes.py"})
+    runner.no_active_research(fixture.root)
+
+
+@pytest.mark.parametrize("failure", ["subprocess", "invalid_json", "empty_output"])
+def test_process_census_fails_closed_when_enumeration_fails(process_census, monkeypatch, failure):
+    primary = runner.subprocess.CalledProcessError(1, ["fabricated census"])
+
+    def command(*args, **kwargs):
+        if failure == "subprocess":
+            raise primary
+        return SimpleNamespace(stdout="{" if failure == "invalid_json" else "")
+
+    monkeypatch.setattr(runner.subprocess, "run", command)
+    with pytest.raises((ValueError, runner.subprocess.CalledProcessError)) as caught:
+        runner.no_active_research(process_census.root)
+    if failure == "subprocess":
+        assert caught.value is primary
+
+
+def test_runner_and_independent_auditor_bind_the_exact_launcher_amendment():
+    from scripts import audit_clock_comparison_v1 as auditor
+
+    amendment = "V3_CLOCK_LAUNCHER_GUARD_V1.md"
+    root = Path(__file__).resolve().parents[1]
+    assert runner.PINNED[amendment] == auditor.PINNED[amendment] == runner.sha(root / amendment)
+    assert runner.PINNED[runner.DESIGN] == (
+        "3266b72e0687e309816375a63377e7f4a7d3fe9d9c4e8461840b8fde7153973c"
+    )
 
 
 @pytest.fixture

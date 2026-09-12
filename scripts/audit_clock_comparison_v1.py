@@ -59,6 +59,8 @@ RECORDED_ONLY_MODELS = {
 }
 ORIGINAL_CSV_SHA = "aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4"
 PINNED = {
+    "V3_CLOCK_LAUNCHER_GUARD_V1.md":
+        "86d8ba8d8f447ec825407aecb9456c3b47336fe6493cce3bbc20ff1482979508",
     DESIGN: "3266b72e0687e309816375a63377e7f4a7d3fe9d9c4e8461840b8fde7153973c",
     PREPARATION: "f25260c79a2a8bbb535a8130b52d6526c2100093f5e6bb399dc028a7fa37f2a9",
     ANALYSIS: "ac193ba5925672de86149547865e977d1d94d74824c0d45107c50be3f2d03c32",
@@ -67,9 +69,9 @@ PINNED = {
     "tests/test_clock_observation_v1.py":
         "a59a6fc03593a60f1dc725dd208262c8a5331123cc598044142ae75c7525f958",
     "scripts/run_clock_comparison_v1.py":
-        "b93965c70559379449bc0232712bd3d973bfac8ef582cbdd3382e262cb7bcfa8",
+        "175c4a12d82f1e8f8cdf209924bc44ba506bd3759ebff0ab5689e0213b653bdd",
     "tests/test_clock_comparison_v1.py":
-        "566ee4bc5517add1a73e1594db8b3ce1961be1bd8693ffefde00acf6baa8402b",
+        "5cdb87b4164e7f91e5486a2e96a7f272417ab7938fa8d6b020320fbee088b7d7",
 }
 NEW_SOURCES = {name for name in PINNED if name.endswith(".py")} | {
     "scripts/audit_clock_comparison_v1.py", "tests/test_clock_comparison_audit_v1.py",
