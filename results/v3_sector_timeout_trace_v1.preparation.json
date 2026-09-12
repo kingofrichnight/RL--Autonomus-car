@@ -1,0 +1,54 @@
+{
+  "status": "engineering_preparation_verified_replay_unreleased",
+  "date": "2026-09-12",
+  "source_head_before_preparation": "5a494aa23adcf3ba149aede7d5205594f065dd2c",
+  "design_path": "V3_SECTOR_TIMEOUT_DIAGNOSTIC_V1.md",
+  "design_sha256": "4846e927192fed546e569d90a98b410d7d665c97b3742d08f97d0363a5abb087",
+  "snapshot": {
+    "directory": "logs/v3_sector_timeout_diagnostic_v1_snapshot_20260912T0949Z",
+    "archive": "snapshot.zip",
+    "archive_bytes": 11445831,
+    "archive_sha256": "68b9c311587cf9fe801d0a879f23f6251be209e6946a72037012385543173406",
+    "manifest_sha256": "1f5f638d020b464c88cee753546fffe83a8e7d7a0e155e29b9d63e86a26b29f2",
+    "member_count": 235,
+    "uncompressed_bytes": 15698716,
+    "tracked_working_files": 232,
+    "additional_final_models": 3,
+    "completed_utc": "2026-09-12T09:56:09.424128+00:00",
+    "verified_before_tracing_implementation": true,
+    "independent_member_readback": "passed",
+    "limits": "Local working-tree contents, including pending documents and three final models; not Git object/index history, installed virtualenv, all ignored/untracked files or an off-device backup."
+  },
+  "final_preparation_file_sha256": {
+    "scripts/preserve_timeout_baseline_v1.py": "a1530df7544a86c5c665182b416e25578ed0da07ce3a7730c2c6a8c61e2953cc",
+    "scripts/sector_timeout_trace_v1.py": "be4e23b57faf3593136b910b5f54b8ca73a206be2e1359f81c37a0211b67f94d",
+    "tests/test_timeout_baseline_snapshot.py": "a47fd932fd84fcfbaedbe75c334667e7159157b7cf18f8e958998203ff07ee2d",
+    "tests/test_sector_timeout_trace_v1.py": "5ddb2cdbb7793166458806f276992b6c12a44757c5c0c049336473093126c1b2"
+  },
+  "independent_tracing_protocol_review": "passed_for_preparation_only",
+  "verification": {
+    "interpreter": "repository .venv/Scripts/python.exe",
+    "full_ruff": "passed",
+    "full_pytest_passed": 570,
+    "full_pytest_seconds": 60.26,
+    "full_pytest_warnings": 2,
+    "warnings": "Existing obstacle-route Box observation-space infinite-bound warnings only",
+    "focused_snapshot_tests": 23,
+    "focused_snapshot_seconds": 0.29,
+    "focused_trace_tests": 31,
+    "focused_trace_seconds": 9.04,
+    "completed_batch_frozen_source_hashes_rechecked": 56,
+    "development_issues": "New-source/test line-length lint findings corrected; initial snapshot tests hit temporary-fixture permission errors, then all passed with reviewed normal temporary-directory access. No snapshot or research execution failure."
+  },
+  "research_replays_executed": 0,
+  "research_training_steps_executed": 0,
+  "engineering_scope": "Seed7 short fixed-action parity checks and one tiny fresh CPU PPO initialization with zero learn steps; no selected research cases or saved checkpoints used for engineering tests.",
+  "unreleased_next_stage": {
+    "arm_order": ["geometry", "padding", "sector"],
+    "selected_seed_count": 37,
+    "maximum_diagnostic_episodes": 111,
+    "remaining": "Implement a separate hash-bound runner, freeze exact tolerances/output paths/source/dependency inventory, test exclusive ledger/failure preservation and eight-metric reproduction, obtain independent review and fresh full tests before any selected replay.",
+    "unchanged": "Preserve each historical observation protocol, inner bootstrap seed40042, selected seed resets, CPU, original dynamics/rewards/deadline and TTC2.0. No extra observation/forecast/RNG/inference, new training, policy promotion or automatic retries."
+  },
+  "documentation": "README and the entire overlapping append-only MILESTONES working change remain unstaged. Commit reviewed owned preparation files only; no model/log/archive/raw trace or Git push."
+}
