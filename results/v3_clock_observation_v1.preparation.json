@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "experiment": "v3_clock_observation_v1",
+  "status": "preparation_complete_not_a_training_release",
+  "recorded_utc": "2026-09-12T13:35:56Z",
+  "scope": "Synthetic, non-driving wrapper tests and fresh policy initialization only. No research training, development evaluation, replay, checkpoint loading or model saving.",
+  "design": {
+    "path": "V3_CLOCK_OBSERVATION_V1.md",
+    "sha256": "3266b72e0687e309816375a63377e7f4a7d3fe9d9c4e8461840b8fde7153973c"
+  },
+  "source_sha256": {
+    "scripts/clock_observation_v1.py": "c441bcbbcdac563a29675010430260f9bb3f52810ca73dce5e9558995d46c136",
+    "tests/test_clock_observation_v1.py": "a59a6fc03593a60f1dc725dd208262c8a5331123cc598044142ae75c7525f958",
+    "scripts/run_sector_comparison_v1.py": "e825ed428fe5ea228e4527f9e3e5daa82f9798f7f3da4064106a87cb115609aa",
+    "safeintent_rl/sensors/synchronized_predictive.py": "758d665d2c635d88693b1c71845b547d735580221830392c3f328724f68eb200",
+    "safeintent_rl/sensors/predictive.py": "2d3880359d26a6408cef8e5d7ae7dfc30ab2a9c4813a6888593935258fc86e2f",
+    "configs/intersection_v3_predictive_geometry_v2.yaml": "a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7"
+  },
+  "observation": {
+    "parent_values": 115,
+    "parent_prefix_bytes": 460,
+    "shape": [
+      116
+    ],
+    "dtype": "float32",
+    "duration_seconds": 30,
+    "clock_formula": "float32(min(1.0, max(0.0, (30.0 - env.unwrapped.time) / 30.0)))",
+    "zero_value": 0,
+    "protocols": {
+      "zero": "predictive_post_spawn_clock_zero_v1",
+      "clock": "predictive_post_spawn_clock_remaining_v1"
+    },
+    "sector_features": 0,
+    "existing_termination_and_truncation_preserved": true,
+    "native_floating_time_cutoff_preserved": true,
+    "timeout_terminal_observation_bootstrap_preserved": true
+  },
+  "initialization": {
+    "fixture": "tests/test_clock_observation_v1.py:fabricated_parent",
+    "hash_function": "scripts.run_sector_comparison_v1.initial_policy_fingerprint",
+    "hash_encoding": "SHA256 over sorted policy.state_dict entries: UTF-8 JSON [name,str(dtype),shape] and contiguous CPU C-order tensor bytes, each preceded by its 8-byte little-endian length.",
+    "seed": 42,
+    "policy": "MlpPolicy",
+    "net_arch": [
+      256,
+      256
+    ],
+    "actions": 3,
+    "settings": {
+      "learning_rate": 0.0003,
+      "n_steps": 1024,
+      "batch_size": 64,
+      "n_envs": 1,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "ent_coef": 0.01,
+      "vf_coef": 0.5,
+      "max_grad_norm": 0.5,
+      "clip_range": 0.2,
+      "normalize_advantage": true,
+      "target_kl": null,
+      "clip_range_vf": null
+    },
+    "arms": {
+      "zero": {
+        "parameter_count": 192516,
+        "sha256": "d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec",
+        "num_timesteps": 0,
+        "n_updates": 0
+      },
+      "clock": {
+        "parameter_count": 192516,
+        "sha256": "d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec",
+        "num_timesteps": 0,
+        "n_updates": 0
+      }
+    },
+    "identical_initial_tensors": true,
+    "dedicated_measurement": {
+      "exit_code": 0,
+      "wall_time_seconds": 4.24,
+      "reset_calls": 0,
+      "step_calls": 0,
+      "learn_calls": 0,
+      "predict_calls": 0,
+      "checkpoint_load_calls": 0,
+      "checkpoint_save_calls": 0,
+      "source_hashes_unchanged": true
+    },
+    "limitations": "Initialization parity controls dimensions and initial tensors, not equal effective capacity or initial action probabilities with different clock inputs."
+  },
+  "runtime": {
+    "executable": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Scripts/python.exe",
+    "python": "3.12.9",
+    "device": "cpu",
+    "torch_threads": [
+      8,
+      8
+    ],
+    "versions": {
+      "stable-baselines3": "2.9.0",
+      "torch": "2.13.0",
+      "numpy": "2.5.2",
+      "gymnasium": "1.3.0",
+      "highway-env": "1.12.1"
+    }
+  },
+  "verification": {
+    "independent_static_review": "passed",
+    "focused_tests": {
+      "passed": 101,
+      "failed": 0,
+      "seconds": 3.44
+    },
+    "full_gate": {
+      "root": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car",
+      "ruff_command": ".venv/Scripts/python.exe -m ruff check .",
+      "ruff_exit_code": 0,
+      "pytest_command": ".venv/Scripts/python.exe -m pytest -p no:cacheprovider",
+      "pytest_exit_code": 0,
+      "passed": 927,
+      "failed": 0,
+      "warnings": 2,
+      "seconds": 61.9,
+      "warning_scope": "Existing tests/test_obstacle_route.py::test_gym_interface infinite Box bounds warnings."
+    },
+    "failures_preserved_in_milestones": "98.4 and 98.5: initial full-gate E501 prevented pytest; first measurement JSON NumPy int64 serialization failed; second initialization measurement rejected concurrent formatting-only source change. Final gate and stable measurement passed.",
+    "historical_analysis": {
+      "path": "results/v3_sector_timeout_diagnostic_v1.analysis.json",
+      "sha256": "ac193ba5925672de86149547865e977d1d94d74824c0d45107c50be3f2d03c32",
+      "input_sha256_verified": 531
+    },
+    "snapshot": {
+      "path": "logs/v3_sector_timeout_diagnostic_v1_snapshot_20260912T0949Z",
+      "archive_sha256": "68b9c311587cf9fe801d0a879f23f6251be209e6946a72037012385543173406",
+      "manifest_sha256": "1f5f638d020b464c88cee753546fffe83a8e7d7a0e155e29b9d63e86a26b29f2",
+      "members_verified": 235
+    },
+    "source_inventory": {
+      "baseline_commit": "251300c649460443d960fa7fe4b346b26e08ad04",
+      "historical_python_files": 95,
+      "current_python_files": 97,
+      "authorized_additions": [
+        "scripts/clock_observation_v1.py",
+        "tests/test_clock_observation_v1.py"
+      ],
+      "historical_python_files_unchanged": true
+    }
+  },
+  "remaining_release_blockers": [
+    "Implement and independently review the release-gated comparison runner and mocked execution tests.",
+    "Implement and independently review the result auditor and synthetic audit tests.",
+    "Issue a separate complete hash-bound release/proof with exact stage arguments, all source/dependency origins and immutable comparator inputs.",
+    "Before each released research stage: fresh full tests, verified no-active-process/absent-output checks and exact predecessor verification."
+  ],
+  "research_runs_released": false,
+  "policy_promoted": false
+}
