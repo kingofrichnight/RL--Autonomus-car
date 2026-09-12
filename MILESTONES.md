@@ -9085,3 +9085,182 @@ Audit report SHA-256:
 No simulation was run during this audit. A fresh full-suite gate is still
 required before the next training/evaluation experiment, rather than treating
 these analysis-only tests as that gate.
+
+## 87. Preregistered sector-feature comparison (2026-09-11)
+
+The synchronized retry result and failed gates were committed locally as
+`9a6e5d1`. Focused checks in the actual repository also passed (25 tests in
+0.07 seconds, Ruff and CRLF-aware whitespace checks). No checkpoint, log or
+unrelated file was committed, and nothing was pushed.
+
+Under the user's continued-research authorization, the next bounded experiment
+is a **two-arm representation comparison**, specified in
+`V3_SECTOR_COMPARISON_V1.md` before either arm trains. The section 82 sector
+prototype remains byte-identical. The synchronized observation is a shared
+measurement pipeline for this comparison, not adoption of its rejected trained
+policy. Both arms are fresh PPO models, with no checkpoint transfer.
+
+- Padding control: original synchronized115 inputs plus48 exact zeros; model
+  stem `ppo_v3_sector_padding_v1_seed42`, protocol
+  `predictive_post_spawn_padding_v1`.
+- Sector candidate: same synchronized115 inputs plus the existing48 sector
+  values; model stem `ppo_v3_sector_features_v1_seed42`, protocol
+  `predictive_post_spawn_sector_v1`.
+
+Both input shapes are163 and use the same256/256 separate actor/value towers.
+Initial policy tensor SHA-256 and parameter count must match before either
+model is compared. Padding matches shape, nominal parameter count and initial
+weights, **not effective capacity**: permanently zero features cannot contribute
+or give their connected weights a data gradient. Relative to115 inputs, each
+model has24,576 additional first-layer weights across the two towers. Sector
+features provide a nonlinear basis, not new independent information.
+
+Frozen feature formula remains section82: p=200[x,y], v=80[vx,vy], radial closing
+speed=-dot(p,v)/norm(p),16 ego-relative half-open angular sectors of width pi/8,
+nearest actor-center per sector, and features
+`[presence, norm(p)/(200*sqrt(2)), clip(closing/(80*sqrt(2)),-1,1)]`.
+Empty=`[0,1,0]`; coincident-center and tie rules are unchanged. Retain only the
+already observed14 neighbors. Original115 values, forecasts, dynamics and random
+state are preserved; no extra visibility, real/noisy sensors, labels, shields,
+reward changes or action modes are introduced. This does not implement CARLA,
+pedestrians, lane changes or rerouting.
+
+### 87.1 Fixed commands, order and resource boundary
+
+New entry point: `scripts/run_sector_comparison_v1.py`. Before **each** stage,
+verify fresh Ruff/full pytest and frozen sources/eligible predecessor artifacts.
+One research process at a time. Fixed order, independent of interim results:
+
+```powershell
+python -u -m scripts.run_sector_comparison_v1 padding train --refuse-overwrite
+python -u -m scripts.run_sector_comparison_v1 sector train --refuse-overwrite
+python -u -m scripts.run_sector_comparison_v1 padding evaluate --refuse-overwrite
+python -u -m scripts.run_sector_comparison_v1 sector evaluate --refuse-overwrite
+```
+
+Both arms keep section84's geometry config SHA
+`a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7`,
+fresh seed42,200000 requested/200704 expected steps, LR.0003, n_steps1024,
+batch64, one environment, stride1000, validation offset70000,50 episodes every
+10000 steps, checkpoints every25000, gamma.99, GAE.95, entropy.01, epochs10,
+clip.2, vf_coef.5, max_grad.5, advantage normalization, no targetKL or value clip.
+Native30 seconds,5Hz policy,15Hz simulation, collision-first reward and predictor
+settings (horizon3,margin.5,growth.25,clearance10,speed9,neighbors14) are unchanged.
+All section84 dependency/Python versions and CPU threads8/8 remain fixed.
+
+Total batch budget is400000 requested/401408 expected collected training steps
+and1000 development episodes, plus the unchanged internal validation. Train both
+arms before evaluating either. Do not adjust the second arm from the first's
+training reward, validation best or development result. Only completed final
+root models are scored. No new training seed, increased per-arm budget, warm
+start, resume or automatic failed-run retry is allowed by this batch design.
+
+Each evaluation is500 deterministic episodes on consumed seeds40042--40541,
+unsafe TTC threshold2.0, no safety shield/risk-fusion/intent. Output CSV stems:
+`ppo_v3_sector_padding_v1_development_seed40042` and
+`ppo_v3_sector_features_v1_development_seed40042` under results, with matching
+summary JSONs. Model-stem training summaries/run manifests, local models and
+unique logs follow section84 naming. Refuse existing targets and preserve failed
+records. Bind the new runner, this separate preregistration document, existing
+prototype, original45-entry lineage and completed retry evidence with hashes.
+No historical source, configuration, model or CSV is replaced.
+
+### 87.2 Frozen decision rules and limits
+
+Audit both arms independently. Retain all16 historical gates in section86. In
+aggregate these still demand at least394successes, at most98collisions and8
+incomplete, mean minimum TTC>=.6728939419963959, favorable exact paired success
+against original V3/corrected control/V1, and every other original condition.
+Do not add a significance requirement against Geometry V2.
+
+For a sector-feature benefit claim additionally require favorable paired success
+versus padding (rescues>regressions, exact two-sided McNemar p<.05), sector
+collisions<=padding collisions, incomplete<=padding incomplete and mean minimum
+TTC>=padding mean minimum TTC. These are added before running, not substitutes
+for historical gates. Report all arm/reference counts and paired comparisons,
+including rejected synchronized retry, plus finite-TTC exclusions and metadata.
+Pairing remains positional under recorded sequential resets, not per-row seed IDs.
+
+If only padding passes historical gates, no sector benefit is established. If
+sector passes historical gates but fails its padding comparison, feature benefit
+is also unestablished. Any full pass is only eligibility for preregistered
+replication/fresh evaluation, not acceptance on this consumed one-training-seed
+development set. Record every failure or mixed outcome. Do not change gates or
+continue identical failed experiments hoping for a favorable draw. Original V3
+remains accepted. Implementation/test/review and actual launch are recorded
+separately after completion; this preregistration itself starts no process.
+
+### 87.3 Opt-in batch runner implementation
+
+The new runner adds `PaddingPredictiveObservation`, preserving the direct
+synchronized115-vector and appending48 float32 zeros with the same declared
+space as the sector arm. Geometry, dtype, presence and ego-heading contracts
+are checked without new observation/forecast/physics/random calls. Both policies
+have **216,580 parameters**. Historical factories, scripts and package files
+remain unchanged; process-local adapters are restored in `finally`.
+
+An exclusive cross-process lock prevents overlapping batch stages. Every stage
+requires the exact completed predecessor chain (train padding, train sector,
+evaluate padding, evaluate sector), with source/model/summary/record/CSV hashes
+as applicable. Future-stage artifacts are rejected before out-of-order work.
+Abrupt process death can leave a lock and incomplete artifacts; this requires
+diagnosis, not automatic removal/retry. Normal exit removes only its own lock.
+The user-facing launcher separately checks existing console-log targets and
+unrelated active research jobs. The runner preserves failed records and outputs.
+
+Training records initial sorted policy state-dict tensor names, dtypes, shapes
+and bytes in a deterministic SHA-256 before `learn`, along with parameter count.
+Sector initialization must equal padding's saved **initial** fingerprint before
+optimization. It is never compared to the trained padding weights. Protocol,
+arm and initial fingerprint are stored on the checkpoint and in summaries.
+Verifiers enforce CPU,163 inputs/3 actions, all frozen PPO settings,200704 final
+steps and1960 updates, finite weights and summary protocol. Runtime and source
+fingerprints are checked at preflight and source/predecessor hashes at completion.
+
+The separate preregistration document is explicitly pinned before the first
+run (SHA-256 `fbc0a4383a0d6224a78f6e4cbd7686cb6fa9593f471daa67a78686b99f74d56d`).
+Keep that document and the runner unchanged throughout the four-stage batch;
+append later status/results here. The old section82 prototype text records its
+earlier engineering-only boundary; this separately named protocol is its opt-in
+experimental release, not a default factory or accepted-policy change.
+Independent review and tests must pass before any launch.
+
+### 87.4 Implementation checks and preflight
+
+Independent code review passed the final runner SHA-256
+`e825ed428fe5ea228e4527f9e3e5daa82f9798f7f3da4064106a87cb115609aa`.
+The first focused runner Ruff check found three overlong lines; formatting was
+corrected and Ruff passed. The new test file's first focused run passed all79
+tests but Ruff found four overlong lines. Those formatting issues were corrected,
+and the repeated focused gate passed **79 tests in 4.48 seconds** with Ruff clean.
+No failed PPO run or numerical research result occurred during implementation.
+
+Tests cover exact arguments, identical163 spaces and preserved115 prefixes,
+padding's lack of extra sensing/physics/random draws, stage order/predecessor
+chains, all14 existing-output guards across the two arms, lock exclusion/stale
+lock preservation, failed-run records, runtime/model/source mismatches and
+process-local adapter restoration. Importantly, real fresh CPU PPO models for
+both real wrappers have identical initial policy tensor hashes,216580 parameters
+and the required seed42/256/256/frozen initial settings. These constructors were
+not trained or saved; this is an initialization check, not another experiment.
+
+Actual-repository read-only preflight passes **56 source/input/lineage hashes**,
+Python3.12.9, all frozen package versions, Torch threads8/8 and an empty predecessor
+chain for padding training. Final source/document bytes match the reviewed
+maintenance copies. Fresh full pytest and Ruff in the actual repository remain
+the required pre-training gate; its result and launch follow separately.
+
+### 87.5 Fresh full pre-training gate passed
+
+Actual-repository Ruff passed and **432 tests passed in 54.33 seconds**, with
+only the two existing unbounded-Box warnings. No test failed. The finalized new
+test file SHA-256 is
+`1a671e1a0c8b636f1b94c8e66475b32377bffc0d84843be79fbb01e14296946a`.
+Final runner SHA and all56 preflight fingerprints remain unchanged. This gate
+authorizes only the first padding-control training stage after the final
+no-active-research-process/absent-output/absent-console-log check. Each later
+training or evaluation stage requires another fresh Ruff/full pytest gate.
+
+The preregistration, new runner/tests and append-only record are committed before
+launch. Models/logs/live run records are excluded. Actual process launch and
+follow-up retargeting will be recorded below; neither is implied by passing tests.
