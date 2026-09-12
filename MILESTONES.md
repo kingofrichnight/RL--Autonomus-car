@@ -8983,3 +8983,105 @@ The active continuation follows this evaluation and subsequent audited research
 under sections 84--85. The interrupted original experiment is never a fallback
 scoring target. Preserve concurrent user/app commits and all live run manifests;
 commit their completed audited versions later, never models or logs.
+
+## 86. Synchronized retry development result: not retained (2026-09-11)
+
+The fixed retry01 evaluation completed at **2026-09-11T23:41:13.875670Z**.
+The final `Synchronized evaluate complete` marker and completed run record are
+present, stderr is empty, and reviewed-access process inspection found no
+remaining research process. The 500-episode evaluation was run once, using the
+section 85 final model and unchanged development seeds **40042--40541**.
+
+Independent raw-row reconciliation gives:
+
+| Policy | Success | Collision | Incomplete | Mean minimum TTC (s) |
+| --- | ---: | ---: | ---: | ---: |
+| Original V3 | 294/500 (58.8%) | 206/500 (41.2%) | 0/500 (0.0%) | 0.6003656548142169 |
+| Corrected control | 294/500 (58.8%) | 205/500 (41.0%) | 1/500 (0.2%) | 0.6065401801078688 |
+| Predictive V1 | 364/500 (72.8%) | 101/500 (20.2%) | 35/500 (7.0%) | 0.6728939419963959 |
+| Geometry V2 | 394/500 (78.8%) | 98/500 (19.6%) | 8/500 (1.6%) | 0.6666153731858254 |
+| Synchronized retry01 | **376/500 (75.2%)** | **117/500 (23.4%)** | **7/500 (1.4%)** | **0.6436872601882264** |
+
+Retry mean reward is 4.430025122161374 (summary differs only in floating-point
+rounding), mean length 52.792, mean travel time 10.5584 seconds, mean unsafe-TTC
+events 18.776 and mean interventions zero. All 500 TTC observations in every
+arm are finite; no observations were dropped. Raw CSVs remain unchanged.
+
+Exact two-sided paired success comparisons (rescue = reference failure becoming
+candidate success; regression = reference success becoming candidate failure):
+
+| Reference | Rescues | Regressions | Exact p | Favorable at p < .05 |
+| --- | ---: | ---: | ---: | --- |
+| Original V3 | 130 | 48 | 6.342544360226172e-10 | Yes |
+| Corrected control | 127 | 45 | 3.0266123277781867e-10 | Yes |
+| Predictive V1 | 70 | 58 | 0.33093582894221385 | No |
+| Geometry V2 | 45 | 63 | 0.10143273504110499 | No |
+
+**Decision: not retained under the unchanged section 79.5/81 gates.** Five
+checks fail: V1 collision ceiling (117 > 101), V1 TTC non-regression, favorable
+paired success versus V1, Geometry success floor (376 < 394), and Geometry
+collision ceiling (117 > 98). The Geometry incomplete ceiling passes (7 <= 8).
+There is still no added significance requirement against Geometry V2.
+
+Relative to Geometry V2, this run has 18 fewer successes, 19 more collisions,
+one fewer incomplete episode and lower mean minimum TTC. The paired success
+difference against Geometry is not significant at .05; do not claim this single
+run proves synchronization is intrinsically harmful. It establishes that this
+trained candidate does not meet retention rules. Lower unsafe-event count or
+fewer timeouts does not offset the failed safety/success gates. Geometry V2 also
+remains unpromoted because of its previously failed V1 TTC gate. Original V3
+remains accepted; V4's conservative-waiting rejection is unchanged.
+
+### 86.1 Audit implementation and provenance
+
+Added `scripts/audit_synchronized_retry.py`, reusing the frozen stdlib row,
+metric and exact-paired-test helpers without changing their historical source.
+It verifies the completed train/evaluate records, final model/training summary,
+all 45 source/lineage hashes and full package inventory; reconciles all five
+500-row CSVs against summaries; checks evaluation metadata against Geometry V2
+apart from the recorded model/protocol difference; and evaluates all 16 gates.
+It checks fingerprints again before returning and refuses an existing output.
+This is offline analysis, not another rollout or a model-selection step.
+
+The Spreadsheets skill's scientific-research guidance informed independent
+raw-data reconciliation, preservation of observations and explicit exclusion/
+pairing limits. No workbook was requested, modified or exported. The bundled
+Python runtime executed the stdlib audit; the RL environment remains unchanged.
+
+Artifacts in `results/`:
+
+- `ppo_v3_predictive_sync_v1_retry01_development_seed40042.csv`, SHA-256
+  `b2865f8d45db051a450744eb94f95850fd742089f6f12445820d6067a3514dfc`.
+- Matching `.summary.json`, SHA-256
+  `763cfef6e8c4a9364f69896c5ede4a6ece7e3f6dcf0e54ea33b0df140da2338d`.
+- `ppo_v3_predictive_sync_v1_retry01_seed42.evaluate.run.json`, SHA-256
+  `da3e4e4b98d1f4d754d521d687e300dfa3fee0afb7ed243020d5adef209b5d2d`.
+- `ppo_v3_predictive_sync_v1_retry01_development_seed40042.audit.json` contains
+  all recomputed metrics, counts, paired tests, gate decisions and fingerprints.
+
+Pairing is positional under the recorded contiguous reset protocol. The CSVs
+do not include per-row seed IDs, so seed identity is not independently observable
+from the rows alone. This repeatedly consumed development set and one training
+seed do not provide independent generalization evidence. No gates, coefficients,
+seeds, checkpoints or evaluation protocol were altered in response to results.
+Preserve the original interrupted attempt and every prior result. Tests and
+independent review of the new audit are recorded below before its scoped commit.
+
+### 86.2 Audit verification gate
+
+The 25 new audit tests pass in 0.13 seconds and focused Ruff passes. They cover
+all inclusive count/TTC boundaries, unchanged paired-success requirements,
+absence of an extra Geometry significance gate, frozen hashes, existing-output
+and create-race protection, failure preservation and all-infinite TTC rejection.
+Independent read-only recomputation separately confirmed all 2,500 rows across
+the five policies, 45 source hashes, 42-entry predecessor snapshot, final-model
+and summary hashes, exact evaluation arguments, all five failed gates and all
+paired results. No integrity discrepancy or failed test was found.
+
+Audit source SHA-256:
+`0c7ebea4537425f81edf0a9abed0cd2a1cae13e825403a764c0292127bfc2fd7`.
+Audit report SHA-256:
+`0292a40705889a3b6e75874c4955ecfb5e5ac19420b1909c88d1c104476bd30a`.
+No simulation was run during this audit. A fresh full-suite gate is still
+required before the next training/evaluation experiment, rather than treating
+these analysis-only tests as that gate.

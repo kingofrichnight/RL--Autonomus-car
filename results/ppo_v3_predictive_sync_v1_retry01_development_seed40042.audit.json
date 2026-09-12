@@ -1,0 +1,226 @@
+{
+  "status": "verified",
+  "first_seed": 40042,
+  "last_seed": 40541,
+  "pairing": "positional under recorded contiguous reset protocol; no row seed IDs",
+  "evidence": {
+    "original": {
+      "metrics": {
+        "mean_reward": 2.0158370123236304,
+        "mean_length": 37.934,
+        "success_rate": 0.588,
+        "collision_rate": 0.412,
+        "mean_travel_time": 7.5868,
+        "mean_unsafe_ttc_events": 16.116,
+        "mean_safety_interventions": 0.0,
+        "episodes": 500.0,
+        "mean_min_ttc": 0.6003656548142169
+      },
+      "counts": {
+        "success": 294,
+        "collision": 206,
+        "incomplete": 0,
+        "excluded_nonfinite_ttc": 0
+      },
+      "csv_sha256": "aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4",
+      "summary_sha256": "51fe8e4aa86f62b2bbb5b66a7e8979655305e3a03ad571ca631d40828c7556a1"
+    },
+    "control": {
+      "metrics": {
+        "mean_reward": 1.981036515283595,
+        "mean_length": 38.31,
+        "success_rate": 0.588,
+        "collision_rate": 0.41,
+        "mean_travel_time": 7.662,
+        "mean_unsafe_ttc_events": 16.204,
+        "mean_safety_interventions": 0.0,
+        "episodes": 500.0,
+        "mean_min_ttc": 0.6065401801078688
+      },
+      "counts": {
+        "success": 294,
+        "collision": 205,
+        "incomplete": 1,
+        "excluded_nonfinite_ttc": 0
+      },
+      "csv_sha256": "33ce4dc8b0e0a914033095a163cb26197ea31cf15788f9c0684e4e7818d711a3",
+      "summary_sha256": "f4a3a623c75c6f643d14ac499d9dd5ce5f9b444c67ca25ba0388234d75929000"
+    },
+    "v1": {
+      "metrics": {
+        "mean_reward": 4.760246779820535,
+        "mean_length": 55.006,
+        "success_rate": 0.728,
+        "collision_rate": 0.202,
+        "mean_travel_time": 11.0012,
+        "mean_unsafe_ttc_events": 18.618,
+        "mean_safety_interventions": 0.0,
+        "episodes": 500.0,
+        "mean_min_ttc": 0.6728939419963959
+      },
+      "counts": {
+        "success": 364,
+        "collision": 101,
+        "incomplete": 35,
+        "excluded_nonfinite_ttc": 0
+      },
+      "csv_sha256": "c5a50b1147fafa4aa61c55f9c8784455b4ce77b57ac9617dfd7466a48daae535",
+      "summary_sha256": "f9521709fa74cd3a369809f9040d216384cc2ad0cb72f965b42d32acce1134eb"
+    },
+    "geometry": {
+      "metrics": {
+        "mean_reward": 5.15308204815753,
+        "mean_length": 51.468,
+        "success_rate": 0.788,
+        "collision_rate": 0.196,
+        "mean_travel_time": 10.2936,
+        "mean_unsafe_ttc_events": 19.208,
+        "mean_safety_interventions": 0.0,
+        "episodes": 500.0,
+        "mean_min_ttc": 0.6666153731858254
+      },
+      "counts": {
+        "success": 394,
+        "collision": 98,
+        "incomplete": 8,
+        "excluded_nonfinite_ttc": 0
+      },
+      "csv_sha256": "e145084f4ccce3d419c34886bd9434c0b5a817fb6fa3c1ceab616a89e1929030",
+      "summary_sha256": "227675bacf3f113209d970ec28763ccb57a86e352cfcd546f4ee8f6b1b5ecc61"
+    },
+    "synchronized_retry": {
+      "metrics": {
+        "mean_reward": 4.430025122161374,
+        "mean_length": 52.792,
+        "success_rate": 0.752,
+        "collision_rate": 0.234,
+        "mean_travel_time": 10.558399999999999,
+        "mean_unsafe_ttc_events": 18.776,
+        "mean_safety_interventions": 0.0,
+        "episodes": 500.0,
+        "mean_min_ttc": 0.6436872601882264
+      },
+      "counts": {
+        "success": 376,
+        "collision": 117,
+        "incomplete": 7,
+        "excluded_nonfinite_ttc": 0
+      },
+      "csv_sha256": "b2865f8d45db051a450744eb94f95850fd742089f6f12445820d6067a3514dfc",
+      "summary_sha256": "763cfef6e8c4a9364f69896c5ede4a6ece7e3f6dcf0e54ea33b0df140da2338d"
+    }
+  },
+  "paired_success": {
+    "original": {
+      "rescues": 130,
+      "regressions": 48,
+      "p_exact_two_sided": 6.342544360226172e-10,
+      "favorable": true
+    },
+    "control": {
+      "rescues": 127,
+      "regressions": 45,
+      "p_exact_two_sided": 3.0266123277781867e-10,
+      "favorable": true
+    },
+    "v1": {
+      "rescues": 70,
+      "regressions": 58,
+      "p_exact_two_sided": 0.33093582894221385,
+      "favorable": false
+    },
+    "geometry": {
+      "rescues": 45,
+      "regressions": 63,
+      "p_exact_two_sided": 0.10143273504110499,
+      "favorable": false
+    }
+  },
+  "gates": {
+    "absolute_success": true,
+    "absolute_collision": true,
+    "incomplete": true,
+    "original_ttc": true,
+    "original_paired_success": true,
+    "control_success": true,
+    "control_collision": true,
+    "control_ttc": true,
+    "control_paired_success": true,
+    "v1_success": true,
+    "v1_collision": false,
+    "v1_ttc": false,
+    "v1_paired_success": false,
+    "geometry_success": false,
+    "geometry_collision": false,
+    "geometry_incomplete": true
+  },
+  "failed_gates": [
+    "v1_collision",
+    "v1_ttc",
+    "v1_paired_success",
+    "geometry_success",
+    "geometry_collision"
+  ],
+  "all_retention_gates_pass": false,
+  "decision": "not_retained_under_frozen_gates",
+  "limitations": [
+    "Consumed development seeds; one training seed, not generalization",
+    "Synchronized retry is fresh execution recovery, not replication",
+    "No added significance gate against Geometry V2",
+    "TTC uses finite observations only; exclusions are reported"
+  ],
+  "frozen_sha256": {
+    "results/ppo_v3_predictive_sync_v1_retry01_seed42.train.run.json": "de38b7ab02ceb7378ec07de76b3b2c95b8a25306a8ba437e42a06c9f58b97dba",
+    "results/ppo_v3_predictive_sync_v1_retry01_seed42.evaluate.run.json": "da3e4e4b98d1f4d754d521d687e300dfa3fee0afb7ed243020d5adef209b5d2d",
+    "results/ppo_v3_predictive_sync_v1_retry01_seed42.training.json": "e858bc356e2f430e409ae96d53c62f164204376ed0799fa75f43fe3524d0edfa",
+    "models/ppo_v3_predictive_sync_v1_retry01_seed42.zip": "8a363a7b5e7caef621d6b616890175c10d457531b4d4a213d05fc2011244f395",
+    "results/ppo_v3_predictive_sync_v1_retry01_development_seed40042.csv": "b2865f8d45db051a450744eb94f95850fd742089f6f12445820d6067a3514dfc",
+    "results/ppo_v3_predictive_sync_v1_retry01_development_seed40042.summary.json": "763cfef6e8c4a9364f69896c5ede4a6ece7e3f6dcf0e54ea33b0df140da2338d",
+    "configs/intersection_v3_predictive_geometry_v2.yaml": "a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7",
+    "scripts/train_ppo.py": "6dd20e7059bb0fd33f9516d3bb942003e8b2e0c386386252b9cb4e3c6d3dccc8",
+    "safeintent_rl/sensors/predictive.py": "2d3880359d26a6408cef8e5d7ae7dfc30ab2a9c4813a6888593935258fc86e2f",
+    "scripts/evaluate_policy.py": "922b9f4a722b3c3a79a94e36753d4adb45c24a6d1faabb14c0c15604696aa55a",
+    "safeintent_rl/envs/intersection.py": "eca1191c1f676600ea68998642f8c417f654b14e810c948cdbd614842e03d52c",
+    "safeintent_rl/evaluation/metrics.py": "5a647b7a5616b5cc5f9a5743feb13dda386bab2e387a82d6c5af249c5342ed6b",
+    "safeintent_rl/safety/ttc.py": "75565975fa3beb8eabf6f6af75cf26eedbdad1805e7ae568630cb0575c0ae2c0",
+    "safeintent_rl/sensors/synchronized_predictive.py": "758d665d2c635d88693b1c71845b547d735580221830392c3f328724f68eb200",
+    "results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv": "aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4",
+    "results/ppo_reward_v3_cpa_baseline_holdout_seed40042.summary.json": "51fe8e4aa86f62b2bbb5b66a7e8979655305e3a03ad571ca631d40828c7556a1",
+    "results/ppo_v3_predictive_control_development_seed40042.csv": "33ce4dc8b0e0a914033095a163cb26197ea31cf15788f9c0684e4e7818d711a3",
+    "results/ppo_v3_predictive_control_development_seed40042.summary.json": "f4a3a623c75c6f643d14ac499d9dd5ce5f9b444c67ca25ba0388234d75929000",
+    "results/ppo_v3_predictive_safety_v1_development_seed40042.csv": "c5a50b1147fafa4aa61c55f9c8784455b4ce77b57ac9617dfd7466a48daae535",
+    "results/ppo_v3_predictive_safety_v1_development_seed40042.summary.json": "f9521709fa74cd3a369809f9040d216384cc2ad0cb72f965b42d32acce1134eb",
+    "results/ppo_v3_predictive_geometry_v2_development_seed40042.csv": "e145084f4ccce3d419c34886bd9434c0b5a817fb6fa3c1ceab616a89e1929030",
+    "results/ppo_v3_predictive_geometry_v2_development_seed40042.summary.json": "227675bacf3f113209d970ec28763ccb57a86e352cfcd546f4ee8f6b1b5ecc61",
+    "safeintent_rl/__init__.py": "9dd1b057bff98bfc286c79adb3c0aea9d1bbfa32596d4652f981bc9d3d9cafed",
+    "safeintent_rl/agents/__init__.py": "059f29f921a0610b1bcdf303a7c904116021d9ed0583a6ee0ddaa29e75ce86bf",
+    "safeintent_rl/agents/route_graph.py": "61ad8b1284cbced0bf3746453c01a32f797419bab8a3ceef124048ed7d870f02",
+    "safeintent_rl/agents/rule_based.py": "b98f97196692ec29daafc317e5800983b9cec09308f797474dcb73151ddba53d",
+    "safeintent_rl/config.py": "ecafe11d690a08f7932c946f94ec482ee7b3921b13c38235ea4282e4e71cbaa0",
+    "safeintent_rl/envs/__init__.py": "28f192b2e1cf553d3556c073e781a799692220087fe277612df0ff8ebae00baa",
+    "safeintent_rl/envs/driver_behavior.py": "e45179f38c1d0e32a55566dc55440d5d1a2ce0a68aebde1b8ed7e8fc8a80eedf",
+    "safeintent_rl/envs/obstacle_route.py": "717cec59aaa8787669501e6d7ccae6e356132ff32ee955ffddf497b53fadb104",
+    "safeintent_rl/envs/reward.py": "87b3e297274806190e912df2e5175e83b8030e7939441a6ec3959a18da9f9285",
+    "safeintent_rl/evaluation/__init__.py": "363257a8cd11b4cf46f292d2a2038eb7d94f22e5f9a4032752251e04b5ea7fab",
+    "safeintent_rl/intent/__init__.py": "573eade9ff1749ac3378009fab8107d0c786697543e877635fa75e868e6c60c4",
+    "safeintent_rl/intent/dataset.py": "899c0aab246b98482edaad0ac18fffe571fdf7197ebfb6242de2abd1774532e2",
+    "safeintent_rl/intent/diagnostics.py": "94fad66d35461d79f2c808e844f572deddea30885a596e05412da5ad9fcde4a4",
+    "safeintent_rl/intent/evaluation.py": "e4740c4430a3874246ea317eab4b4d3966925ea1721425d1b6b8bf078858d89a",
+    "safeintent_rl/intent/inference.py": "fab08683051458a8cdf82eb45eb98b06051eb6c1fc4925026f6eb309966ab030",
+    "safeintent_rl/intent/model.py": "0d0ef6cb97122003ac263d015124a5369c345b5c997711410972291778bae9f5",
+    "safeintent_rl/intent/training.py": "674bb65224431fbbf5318fc9285c6649e0266f4d4fc39f71b780bf13942b2271",
+    "safeintent_rl/intent/wrapper.py": "c25bad61566bc272e3d067f600500daa2d313aab35e901ed3e6723e89bea1505",
+    "safeintent_rl/safety/__init__.py": "a39a8a4f99411802e76b5da9cb06f49ba6b1b47597db69eb3b5ed5a0111aabd6",
+    "safeintent_rl/safety/conflict.py": "85e430866f688a0af25efe8a27ed880e79d48e504fd53c46c2dbffab0ff9c888",
+    "safeintent_rl/safety/shield.py": "8ae8d371a2eb5c197dc6c0051c8bd1ae2b903eb7077f6b08c508e0caee7e153f",
+    "safeintent_rl/sensors/__init__.py": "1c4b338bf34e46a2180bacb4b7d4695f69797d8ca42138b2a6e2d0d108b48820",
+    "safeintent_rl/sensors/controller_state.py": "10d965e217989f1afb2ad82596f1556b623b95ebce33bb417a1a4c828c8855a8",
+    "safeintent_rl/sensors/fusion.py": "1add3b69dbcfc9422abc4bf3983e60536ff8bd756642d562bfd5790040fdaae1",
+    "scripts/audit_geometry_development.py": "80d98ac72d453b172a729f6eac2b5eef9f962172bdb7d1d3a66af75833c274d0",
+    "scripts/run_synchronized_predictive.py": "9ab2dfbbb90b89f425cdca8e52f7c61f11e24f481efb2f5e0a8b87dc82fe4823",
+    "results/ppo_v3_predictive_sync_v1_seed42.train.run.json": "4a884209aaeb320255416eedbf9d170bbecaee946a6e9fa998005618f1ec60a7",
+    "results/ppo_v3_predictive_sync_v1_seed42.interruption.json": "ab64f59b8d8b891213612948cc1cb7817cca39b30501c4b321ed14e9b3fc1ea7",
+    "scripts/run_synchronized_retry.py": "bb9dfa47723325176b2727ef74fbbed0b7157dc343479e9712e7f7e003def577"
+  },
+  "audit_source_sha256": "0c7ebea4537425f81edf0a9abed0cd2a1cae13e825403a764c0292127bfc2fd7"
+}

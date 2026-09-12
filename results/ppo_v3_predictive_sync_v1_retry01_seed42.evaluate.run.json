@@ -1,5 +1,5 @@
 {
-  "status": "running",
+  "status": "complete",
   "mode": "evaluate",
   "observation_protocol": "predictive_post_spawn_sync_v1",
   "started_utc": "2026-09-11T23:23:31.986390+00:00",
@@ -84,5 +84,9 @@
   "torch_threads": [
     8,
     8
-  ]
+  ],
+  "model_sha256": "8a363a7b5e7caef621d6b616890175c10d457531b4d4a213d05fc2011244f395",
+  "summary_sha256": "763cfef6e8c4a9364f69896c5ede4a6ece7e3f6dcf0e54ea33b0df140da2338d",
+  "csv_sha256": "b2865f8d45db051a450744eb94f95850fd742089f6f12445820d6067a3514dfc",
+  "finished_utc": "2026-09-11T23:41:13.875670+00:00"
 }
