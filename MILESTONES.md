@@ -9316,3 +9316,3063 @@ follow-up requires the computer powered on and the app running:
 https://learn.chatgpt.com/docs/automations?surface=app . No power setting was changed.
 The running model itself and its mutable manifest remain local/uncommitted;
 the launch record was committed as `11dcee4`.
+
+## 88. User selects Geometry V2 as current best development candidate (2026-09-11)
+
+In a side conversation, after reviewing the success/collision comparison and
+the small difference in mean minimum TTC, the user explicitly instructed:
+"ok record v2 as the best for now dont make any majoy changes without saving".
+Here "V2" means **V3-PredictiveSafety Geometry V2**, not the earlier Reward V2,
+Intent V2 or Fusion V2 experiments.
+
+**Prospective status: Geometry V2 is the current best development candidate.**
+On the same 500 consumed development seeds 40042--40541 it produced 394 successes,
+98 collisions and 8 incomplete episodes: **78.8%, 19.6% and 1.6%**, respectively.
+Original V3 produced 294 successes and 206 collisions on this comparison.
+The user-selected ranking recognizes Geometry V2's stronger observed success/
+collision outcomes. Original V3 remains an unchanged historical reference,
+not the current best development designation. This supersedes earlier
+"current best" status statements prospectively without deleting their history.
+
+### 88.1 Preserve the original result and distinguish the designation
+
+Section 79.8's original all-gates rejection is preserved exactly. Geometry V2
+still failed the predeclared non-decreasing mean-minimum-TTC comparison against
+Predictive V1: 0.6666153731858254 versus 0.6728939419963959 seconds, a difference
+of about 0.00627857 seconds (6.28 milliseconds). The new designation does not
+retroactively mark that rule as passed or change any reported measurements.
+
+This is a difference between averages of per-episode minimum radial-TTC
+estimates, not a measured braking/reaction delay. The implementation estimates
+distance divided by radial closing speed; it does not establish collision-path
+intersection. The reported means alone do not establish statistical or practical
+significance of that small difference. No new statistical test was run here.
+With 98 collisions in 500 episodes, Geometry V2 is not a real-world-safe policy.
+One training seed on reused development cases is not independent validation.
+
+### 88.2 Verified saved reference and save-before-change requirement
+
+The selected checkpoint and its configuration/results already exist locally.
+Read-only SHA-256 checks matched the recorded artifacts before this note:
+
+- Model: `models/ppo_v3_predictive_geometry_v2_seed42.zip`.
+  SHA-256 `f3bfeaa9826f989ab1934b71a46a92a97cef159c8a800c56b23b4530c17636d2`.
+- Config: `configs/intersection_v3_predictive_geometry_v2.yaml`.
+  SHA-256 `a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7`.
+- Development CSV: `results/ppo_v3_predictive_geometry_v2_development_seed40042.csv`.
+  SHA-256 `e145084f4ccce3d419c34886bd9434c0b5a817fb6fa3c1ceab616a89e1929030`.
+- Matching `.summary.json`: SHA-256
+  `227675bacf3f113209d970ec28763ccb57a86e352cfcd546f4ee8f6b1b5ecc61`.
+- Matching `.audit.json`: SHA-256
+  `9465c90a6e68b0478c6c47e55b577c82734f8950cb4668739024f97c2cbbcf9e`.
+
+The repository's existing saved source commit at this decision is
+`a26c912f69f1da2abee4a0a01179f82741e395e3`; this identifies the pre-note source
+snapshot, not a new training run or a commit of this note. No checkpoint was
+copied, renamed, overwritten, committed or removed by this documentation change.
+The existing local model remains outside Git; no remote artifact backup is claimed.
+
+Before any future major source/configuration/formula change, preserve a
+recoverable snapshot of the affected current work (a scoped commit or an explicit
+backup, under the applicable authorization), record its identity and verify that
+the selected Geometry V2 checkpoint/config/results remain saved. Use new names
+for variants and outputs. Never overwrite the best candidate or silently change
+seeds, rewards, evaluation protocols or coefficients. Keep large checkpoints
+outside Git unless intentional artifact storage has been approved.
+
+### 88.3 Documentation-only scope; running comparison unchanged
+
+This side-conversation request changes only the current-best designation and
+save-before-major-change requirement. It does not interrupt, restart or modify
+the section 87 sector batch, its frozen document/source hashes, architecture,
+seeds, rewards, budget or acceptance gates. The earlier all-gates decisions
+remain historical facts; any future decision-rule revision requires a separately
+recorded prospective protocol, not alteration of the current comparison.
+
+Only a current-status section in README.md and this append-only record are
+changed. No simulation, model training, evaluation or test suite is rerun for
+this documentation-only update. Verification checks the old research-record
+prefix, unchanged historical README content, existing artifact fingerprints and
+all 56 frozen inputs of the running batch. Git staging/commits, scheduling,
+permissions, source code and model/config/result files are left unchanged.
+
+## 89. Padding control completed; sector-stage gate passed (2026-09-12 UTC)
+
+Padding training finished at **2026-09-12T03:24:48.555030Z**, collecting the
+required **200,704 steps** with **1,960 optimization updates**. The final
+`Sector comparison padding train complete` marker and completed manifest are
+present, stderr is empty, both launch processes have exited and the stage lock
+has been released. No development evaluation has run for either batch arm.
+
+Verified local artifacts:
+
+- `models/ppo_v3_sector_padding_v1_seed42.zip`, 2,637,043 bytes, SHA-256
+  `82da273ff74b39776b7486a6523c96102428b5e84d72499e130d9c7c22fddbd6`.
+- `results/ppo_v3_sector_padding_v1_seed42.training.json`, SHA-256
+  `b8c73b0e901aefc98dfbcba890e9f26c61c971725e01ec6a0bf38b37f8795b2c`.
+- `results/ppo_v3_sector_padding_v1_seed42.train.run.json`, SHA-256
+  `6077b4f778fa817a07d6a5933e219ca7c22b1489b1cc6dcd9407f67a60c0b19b`.
+
+The runner's completed-training verifier and independent read-only audit both
+passed: all 56 source/input hashes, exact arguments and summary settings,
+163-input/3-action CPU policy, 216,580 parameters, finite tensors and the recorded
+initial SHA `ca35bda9cfe2f2afce2eb0cf71d2abd74fb6808d2f935b7e20a5b31c1d054c19`.
+ZIP CRC/load is clean. The root final checkpoint is distinct from callback-best,
+which has 180,000 steps and is not selected. The sector stage's exact three-file
+padding predecessor chain passes. This proves successful training execution,
+not improved driving success or a policy promotion.
+
+### 89.1 Fresh pre-sector-training tests
+
+After completion verification, Ruff passed and **432 tests passed in 55.50
+seconds**, with only the same two existing unbounded-Box warnings. No test or
+integrity check failed. Frozen runner and preregistration remain byte-identical
+to section 87; no configuration, seed, coefficient, architecture, training
+budget or checkpoint-selection change is made based on the control's results.
+
+The next command remains exactly:
+
+```powershell
+python -u -m scripts.run_sector_comparison_v1 sector train --refuse-overwrite
+```
+
+It must recreate padding's recorded initial tensors before learning. Both
+training arms must complete before padding evaluation and then sector evaluation,
+each with another fresh test gate. No early padding evaluation or extra seed.
+Actual launch still requires the final no-active-process/absent-output/log check.
+
+### 89.2 Preserve the newer designation and overlapping documentation edits
+
+Section 88 and the corresponding README change were authored in the user's side
+conversation and remain uncommitted. They are preserved exactly. Geometry V2 is
+the user-selected current best **development candidate**, while original V3 is a
+historical reference. This does not retroactively pass the earlier TTC gate or
+alter the already frozen sector comparison. The immutable section 87 document
+retains its historical status wording; this later record governs current status.
+
+No major source/configuration/formula edit is made in this continuation. The
+selected Geometry V2 artifacts and saved source version remain preserved. Save
+and verify a recoverable snapshot before any future major change, as requested.
+
+Commit only the verified completed padding records and a small verification/test
+record now. Leave README and the whole overlapping MILESTONES working change
+(including this append) unstaged, rather than committing the user's pending
+documentation on their behalf or reordering the append-only history. No model,
+log, large data or unrelated work is committed; no Git push. The research record
+is updated on disk and can be committed together when its pending edits are ready.
+
+### 89.3 Actual sector-feature training launch
+
+Completed padding artifacts and their verification/test record were committed
+as `1128dfb`. After confirming no active research process, all17 new/future
+stage output/log/lock targets absent, and all56 sources plus the exact three
+padding predecessor hashes valid, launched the unchanged sector train command
+at **2026-09-12T03:56:45.3624877Z**. Launcher PID **49684**, worker PID **23632**.
+The hidden process uses unique sector stdout/stderr logs; no old log was reused.
+
+The new record starts **2026-09-12T03:56:48.563923Z**, status `running`, arm
+`sector`, protocol `predictive_post_spawn_sector_v1`, with56 source fingerprints
+and three predecessor artifacts. Both actual command lines match section89.1.
+CPU execution and the unique TensorBoard directory are confirmed; stderr is
+empty. Its real initial policy SHA equals padding's recorded initial SHA exactly,
+with216580 parameters, before learning. No checkpoint transfer or warm start.
+
+This establishes sector-training launch only. Success/collision results require
+completion and the two later fixed evaluations. Do not evaluate padding while
+sector is training, change frozen inputs, or replace Geometry V2. The live sector
+record, models and logs remain uncommitted. The pending README/MILESTONES edits
+remain unstaged as described above; this launch is appended without rewriting
+any previous record.
+
+### 89.4 Quiet continuation retargeted to the sector stage
+
+The supported automation tool updated the existing follow-up at
+**2026-09-12T03:58:28.078Z**. Exact saved-prompt equality and unchanged ID/name,
+heartbeat kind, ACTIVE status,30-minute interval, task and creation time were
+verified. No duplicate automation, raw configuration edit or permission change.
+
+The new prompt records completed padding and its fingerprints, active sector
+training and initial-weight equality, the fresh432-test gate, and the required
+remaining order: finish sector training, fresh-gate padding evaluation, then
+fresh-gate sector evaluation. All source, budget, seed, metric and retention
+rules are unchanged. It now reflects section88's Geometry V2 development
+designation, the save-before-major-change request and preservation of overlapping
+uncommitted documentation. Ordinary training progress remains quiet.
+
+OpenAI Docs guidance was used for the supported follow-up update. The selected
+Geometry V2 model, config, CSV, summary and audit hashes were rechecked and all
+match section88.2. Sector stdout now shows optimization updates, with no stderr.
+Neither development evaluation has started. This is not a new performance claim.
+
+## 90. Sector training complete; fixed development evaluations released
+
+### 90.1 Completed final sector checkpoint and independent verification
+
+The sector-feature arm completed at **2026-09-12T07:10:38.579429Z** with
+**200704 collected steps**, **1960 optimization updates** and **216580
+parameters**, as preregistered. Its final `Sector comparison sector train
+complete` marker is present; launcher49684 and worker23632 exited, stderr is
+empty, and the batch lock was released normally. No partial checkpoint, resumed
+run, callback-best selection, reward change or early stopping was used.
+
+Verified final artifacts:
+
+- Model `models/ppo_v3_sector_features_v1_seed42.zip`, 2637042 bytes;
+  SHA-256 `0695d09d098ecdae60ae63d33b919c691af8844f782af5a66649c33e497bfaef`.
+- Summary `results/ppo_v3_sector_features_v1_seed42.training.json`;
+  SHA-256 `42b838eca81e1a93bc741568fc994dc02383708e4c69aa0f54022f26bd28a28c`.
+- Completed record `results/ppo_v3_sector_features_v1_seed42.train.run.json`;
+  SHA-256 `0829a00096ed593a71f5aabab5d3e3c79d4d96406e1cb32b924948e09740469b`.
+
+Main verification and an independent read-only checkpoint audit both passed.
+ZIP CRC/load, finite policy tensors, CPU execution,163 float32 observations,
+three actions, protocol `predictive_post_spawn_sector_v1`, sector arm, frozen
+PPO settings, runtime, summaries and argument lists match. All56 source hashes
+and the three padding predecessors match. Both arms' recorded initial tensor
+SHA is exactly `ca35bda9cfe2f2afce2eb0cf71d2abd74fb6808d2f935b7e20a5b31c1d054c19`.
+The completed sector tensor fingerprint is
+`ec893d38dd2f2193261eb76439a9ee0df810d3c88638f97f94c47d46726dd31d`.
+
+The independent auditor's first ad-hoc report serialization encountered a
+NumPy-integer JSON TypeError after its assertions; casting that display scalar
+and repeating the read-only report passed. This was not a training failure or
+an artifact modification. No experiment was rerun.
+
+### 90.2 Fresh gate and exact next stage
+
+Fresh repository-venv `python -m ruff check .` passed. Fresh full
+`python -m pytest -p no:cacheprovider` passed **432 tests in85.74 seconds**,
+with only the two existing obstacle-route unbounded Box warnings. Both final
+training records and the six-artifact predecessor chain pass the frozen runner's
+`verify_training` and `check_predecessors('padding', 'evaluate')` checks.
+
+The next command remains exactly:
+
+```powershell
+python -u -m scripts.run_sector_comparison_v1 padding evaluate --refuse-overwrite
+```
+
+Launch only once after rechecking no active research process, no batch lock,
+and no current/future evaluation outputs or unique console logs. The evaluation
+uses the final padding model,500 deterministic episodes,seeds40042--40541,
+unsafe TTC2.0,CPU and no shield/intent/risk fusion. Finish it and require another
+fresh Ruff/full-suite gate before the sector evaluation. No outcome-driven
+change is allowed between arms; all16 historical and extra feature-benefit
+conditions in the frozen preregistration remain unchanged.
+
+Training completion alone is not a success/collision result. No development
+evaluation has yet been launched at this entry. Geometry V2 remains the user's
+current best development candidate, including its historical TTC-gate failure.
+No selected baseline, configuration, formula or large model file was changed.
+
+Append this evidence without staging the overlapping README/MILESTONES edits
+from sections88--89. Commit only the reviewed completed sector records and a
+small verification/test JSON. Models/logs stay local and ignored; no Git push.
+
+### 90.3 Actual padding development evaluation launch
+
+The three reviewed sector completion files were committed locally as **4211917**.
+README and all overlapping MILESTONES working edits remain unstaged. Immediately
+before launch, no active research process was found, all11 current/future
+evaluation output/log/lock targets were absent, and all56 source fingerprints
+plus the complete six-artifact predecessor chain were reverified.
+
+Launched the unchanged padding evaluation command once at
+**2026-09-12T07:47:06.9562717Z**, launcher PID **12476**, worker PID **45024**.
+The dedicated hidden process uses new padding evaluation stdout/stderr logs.
+Its manifest starts **2026-09-12T07:47:10.256791Z**, status `running`, arm
+`padding`, mode `evaluate`, protocol `predictive_post_spawn_padding_v1`, with56
+source hashes and six training predecessor hashes. Both actual command lines
+match section90.2. Initial provenance remains the identical216580-parameter
+tensor hash recorded above; no error is recorded and stderr is empty.
+
+The evaluator normally buffers all500 episode rows until the loop ends, so an
+empty stdout log during execution is not a failure or evidence of completion.
+Do not start sector evaluation until this process exits with the complete marker,
+verified artifacts and another fresh full test gate. Audit comparative outcomes
+after both fixed evaluations; do not tune based on this first arm's results.
+
+### 90.4 Quiet continuation updated for the evaluation stages
+
+Using the OpenAI Docs skill and the supported automation tool, updated the
+existing follow-up at **2026-09-12T07:48:38.073Z**. Verified exact saved-prompt
+equality and unchanged ID, name, heartbeat kind, ACTIVE status,30-minute
+interval, target task and creation time; no duplicate, raw configuration edit
+or permission change. Official guidance consulted:
+https://learn.chatgpt.com/docs/automations?surface=app.
+
+The prompt now records both completed trainings, sector artifacts and4211917,
+the fresh432-test gate, actual running padding evaluation, and the remaining
+fresh-gated sector evaluation followed by the independent two-arm audit. All
+seeds, source fingerprints, formulas, budgets and retention conditions remain
+frozen. It preserves Geometry V2's development designation, save-before-major-
+change requirement and all pending README/MILESTONES working edits through90.
+Routine healthy progress remains quiet; meaningful results/failures or required
+user action trigger notification.
+
+A post-launch check confirms the same padding processes, all56 unchanged source
+hashes, all six unchanged predecessor artifacts and empty stderr. No evaluation
+completion or driving-performance claim is made at this entry.
+
+## 91. Padding evaluation complete; final sector evaluation released
+
+### 91.1 Completed evaluation and protocol-integrity verification
+
+Padding evaluation completed at **2026-09-12T08:07:42.626635Z**. Launcher12476
+and worker45024 exited, the final `Sector comparison padding evaluate complete`
+marker is present, stderr is empty, and the batch lock was released normally.
+Neither training was rerun and no callback-best checkpoint was substituted.
+
+Completed evidence, independently checked without comparing driving outcomes:
+
+- `results/ppo_v3_sector_padding_v1_development_seed40042.csv`,29844 bytes,
+  SHA-256 `b35aa0e97aee4417870a40433e8f0d7a36235771f7abf2ea4981c3a087c54e96`.
+- `results/ppo_v3_sector_padding_v1_development_seed40042.summary.json`,
+  SHA-256 `53db2479022478371f6555f4a7eecd521a0a58481d274182c61d207b0c3aa53b`.
+- `results/ppo_v3_sector_padding_v1_seed42.evaluate.run.json`,
+  SHA-256 `cf7eee76af7a437fba2e1f19e6c939d59dd3b840a7d79758d0413e840e481863`.
+
+Main and independent read-only verification passed the completed-record,
+both-final-training and `check_predecessors('sector','evaluate')` checks.
+All56 source hashes, six padding-evaluation predecessors and the nine-artifact
+next-stage chain match. Metadata records500 episodes,seeds40042--40541,
+unsafe TTC2.0,CPU,the final padding model and the fixed Geometry V2 config.
+Protocol is `predictive_post_spawn_padding_v1`; no shield,CPA,rate/seed change,
+intent,risk fusion or standalone target-speed override. Initial tensor provenance
+matches both completed training records. Sector evaluation outputs, unique logs
+and lock were absent. No execution or integrity error was found.
+
+This verifies execution/protocol and file identity, not numerical outcome
+reconciliation or retention. Raw500-row checks, finite-TTC exclusions, all16
+historical gates and the additional sector-versus-padding tests remain pending
+until BOTH fixed evaluations finish. No first-arm-driven tuning is permitted.
+
+### 91.2 Fresh test gate and exact final command
+
+Fresh repository-venv Ruff passed. Fresh full
+`python -m pytest -p no:cacheprovider` passed **432 tests in83.14 seconds**,
+with only the two existing obstacle-route unbounded Box warnings. The exact
+remaining batch command is:
+
+```powershell
+python -u -m scripts.run_sector_comparison_v1 sector evaluate --refuse-overwrite
+```
+
+Launch exactly once after rechecking no research process, no existing stage
+outputs/console logs/lock, all56 sources and all nine predecessor artifacts.
+Keep the frozen500 deterministic episodes,seeds40042--40541,unsafe TTC2.0,
+CPU,no shield/intent/risk fusion and the final sector checkpoint. No scientific
+setting, budget, decision gate, configuration or checkpoint selection changed.
+Geometry V2 remains saved as the current best development candidate.
+
+Preserve the CSV as generated; no row rewriting, cleanup, added seed column,
+workbook export or numerical comparison at this stage. Spreadsheets scientific
+research guidance informed this raw-record preservation. Commit only the three
+completed padding evaluation artifacts and a small protocol-verification/test
+record. Keep README and the entire overlapping MILESTONES working change
+unstaged, including this append. Models/logs remain local; no Git push.
+
+### 91.3 Actual final sector evaluation launch
+
+Committed the four completed padding evaluation/protocol files as **8799954**.
+Immediately before the final stage, no research process was active, all six
+new evaluation output/log/lock targets were absent, and the frozen runner
+reverified all56 source fingerprints and nine predecessor artifacts.
+
+Launched exactly once at **2026-09-12T08:24:52.9624950Z**, launcher PID **12756**,
+worker PID **52448**, using the unchanged command in91.2. The hidden process
+has unique sector evaluation stdout/stderr logs. Its manifest starts
+**2026-09-12T08:24:56.383821Z**, status `running`, arm `sector`, mode `evaluate`,
+protocol `predictive_post_spawn_sector_v1`,56 sources and nine predecessors.
+Actual process command lines and identical216580-parameter initial provenance
+match the frozen protocol; stderr is empty. Both training stages and padding
+evaluation were complete before this launch.
+
+No numerical comparison, policy promotion or new training is authorized by
+this launch alone. On completion verify the final record and artifacts, then
+independently reconcile both500-row files and all unchanged historical and
+sector-versus-padding conditions. Keep all failures and mixed results. Preserve
+Geometry V2 and the user's pending README/MILESTONES edits.
+
+### 91.4 Follow-up retargeted to final evaluation and the two-arm audit
+
+The supported automation update succeeded at **2026-09-12T08:26:13.382Z**.
+Exact saved-prompt equality and unchanged ID/name/kind/ACTIVE status,30-minute
+interval,target task and creation time were verified. OpenAI Docs guidance
+was consulted for this update; no raw automation-file edit, duplicate follow-up
+or permission change was made.
+
+It now records completed padding evaluation hashes and8799954, the fresh
+432-test gate, actual active sector evaluation and the next independent audit
+of both500-row files against all five historical references. All16 historical
+and extra sector-benefit gates remain unchanged. The protected documentation
+boundary covers the entire pending README/MILESTONES overlap through91, and
+the Geometry V2/save-before-major-change decisions remain in force.
+
+The latest running-manifest check has56 unchanged sources,nine unchanged
+predecessors and empty stderr. No final evaluation result is claimed. Routine
+healthy progress remains quiet; the completed comparative audit or a failure
+requiring attention will be reported.
+
+## 92. Completed sector batch and reproducible numerical audit
+
+### 92.1 Final execution evidence and audit implementation
+
+Sector evaluation completed at **2026-09-12T08:50:18.368379Z**. Launcher12756
+and worker52448 exited, the final completion marker is present, stderr is empty,
+and the lock was released. All four preregistered stages are complete in order;
+no stage was resumed, repeated or selected by callback-best reward.
+
+Final sector evidence:
+
+- `results/ppo_v3_sector_features_v1_development_seed40042.csv`,29743 bytes,
+  SHA-256 `68e7259e0c08519978b9a07bc48b812878b4f1b6481afd12d20e30abe5199cbb`.
+- `results/ppo_v3_sector_features_v1_development_seed40042.summary.json`,
+  SHA-256 `5b5c01f105b3ef018f08ac2aeccd2384c0351ce5eecec15e65fa380f7984453d`.
+- `results/ppo_v3_sector_features_v1_seed42.evaluate.run.json`,
+  SHA-256 `144b8df605a1edb7c52a5d2c3ba47d7d2c76965268448a9aa6b481b5916674c1`.
+
+Main frozen-runner verification and an independent auditor confirm all56 source
+hashes, nine final-stage predecessors, complete earlier stages, identical initial
+provenance, final model identities, exact runtime/arguments,500 deterministic
+episodes on40042--40541 and the unchanged metric/shield settings.
+
+Added `scripts/audit_sector_comparison_v1.py` as a separate standard-library
+audit, with no simulator/model-loading imports and no historical-source changes.
+It pins the four completed manifests and existing audit helpers, checks ordered
+source/artifact lineage, reconciles all seven500-row CSVs and summaries, verifies
+model/config identities, applies the16 existing gates to each arm and the five
+additional feature-benefit conditions, and writes only a new named JSON report.
+No raw row, historical result, config, formula or checkpoint is rewritten.
+
+Spreadsheets scientific research guidance informed original-record preservation,
+summary reconciliation and explicit finite-TTC exclusions; no workbook is created.
+Initial Ruff on the helper passed. Focused tests and final independent numerical
+cross-check are recorded in the next append before the final audit is accepted.
+Keep README and the whole overlapping MILESTONES working change unstaged.
+
+### 92.2 Audit tests and prospective diagnostic design
+
+Added84 focused audit tests. They cover every historical prerequisite, the five
+additional conditions, paired significance/direction, exact count/TTC boundaries,
+strict summary keys/path normalization, finite-TTC exclusions, four-stage source/
+artifact/chronology checks and preservation of existing/racing output files.
+Focused tests passed84/84 in0.67 seconds. Initial test-file Ruff found one unused
+import and three long lines; those test-only formatting/import issues were fixed,
+then Ruff and all84 tests passed again. No experiment failed or was rerun.
+
+Independent full static review of the new audit helper found no actionable
+false-pass or protocol defect. Main's read-only execution using the bundled
+Python runtime agrees with the independent numerical audit. Existing sources
+remain unchanged. A full repository gate follows before final report acceptance.
+
+Added `V3_SECTOR_TIMEOUT_DIAGNOSTIC_V1.md` as a **prospective, not released**
+diagnostic design. The union of all24 padding and23 sector incomplete cases is
+37 consumed seeds, with10 overlapping cases. Proposed matched replay in the
+three saved Geometry/padding/sector arms is bounded to111 diagnostic episodes.
+Read-only selection finds Geometry outcomes9success/23collision/5incomplete
+on that selected union. This is a biased subset, not a new performance benchmark
+or proof that waiting was avoidable. It argues for inspecting decisions before
+adding blanket urgency that could exchange timeouts for collisions.
+
+No replay code/command is released or executed here. The design requires a
+recoverable snapshot before major changes, pinned inputs/selection, unchanged
+per-model observation contracts, read-only traces, exact saved-outcome
+reproduction, fixed tolerances, independent review and fresh tests before a
+separate launch. No reward, deadline, memory architecture, cost budget, sensor
+visibility, action override or training budget is changed by this design.
+
+### 92.3 Full verification and final audited results
+
+Fresh full repository Ruff passed. Full pytest passed **516 tests in54.47
+seconds**, with only the two existing obstacle-route unbounded Box warnings.
+The84 new audit tests are included. No frozen scientific source was changed.
+
+Ran the new standard-library audit with the bundled Python runtime and exclusive
+output creation. Final report:
+`results/ppo_v3_sector_comparison_v1_development_seed40042.audit.json`, SHA-256
+`791a2ced1df57d7cd24668a1d6e13c964c6223b0ac8f3c67120fab76c629ce05`.
+Audit helper SHA is
+`2fac2274eacdd24c788fc676774d1b01272f22809f0d0c92a736460f4a593736`;
+test-file SHA is
+`7c12f5e134e6addd4568e72ddd83fc048d965eb1bd5ffed6ce44819c587a8a67`.
+
+Both main and independent calculations validated all **3500 raw episode rows**
+across the two new and five historical arms. All metrics reconcile with their
+summaries, counts are exclusive, travel time equals length/5, unsafe counts are
+valid, interventions are zero, and there are **zero missing/nonfinite TTC
+exclusions in every arm**. Model/config hashes, stage order, runtime and source
+lineage match. Positional pairing remains conditional on the recorded contiguous
+seed-reset order; the historical CSV format has no per-row seed identifier.
+
+All rows below are500 consumed development episodes,seeds40042--40541:
+
+| Policy | Success | Collision | Incomplete | Mean minimum TTC (s) |
+| --- | --- | --- | --- | --- |
+| Original V3 |294 (58.8%)|206 (41.2%)|0 (0.0%)|0.6003656548142169|
+| Corrected control |294 (58.8%)|205 (41.0%)|1 (0.2%)|0.6065401801078688|
+| Predictive V1 |364 (72.8%)|101 (20.2%)|35 (7.0%)|0.6728939419963959|
+| Geometry V2 |394 (78.8%)|98 (19.6%)|8 (1.6%)|0.6666153731858254|
+| Synchronized retry01 |376 (75.2%)|117 (23.4%)|7 (1.4%)|0.6436872601882264|
+| Padding control |401 (80.2%)|75 (15.0%)|24 (4.8%)|0.6791049010194959|
+| Sector features |415 (83.0%)|62 (12.4%)|23 (4.6%)|0.6843001704521431|
+
+Other new-arm metrics, independently computed without rounding inputs:
+
+| Metric | Padding | Sector |
+| --- | --- | --- |
+| Mean reward |5.6375732520126665|6.025933996126378|
+| Mean length (policy steps) |54.834|64.744|
+| Mean travel time (s) |10.9668|12.948799999999999|
+| Mean unsafe-TTC events |19.092|21.252|
+| Mean safety interventions |0.0|0.0|
+
+### 92.4 Every unchanged historical gate and paired comparison
+
+Each new arm passes14/16 gates. Both fail exactly the two incomplete ceilings:
+
+| Historical criterion | Padding | Sector |
+| --- | --- | --- |
+| Success >=315 |Pass|Pass|
+| Collision <=174 |Pass|Pass|
+| Incomplete <=10 |**Fail:24**|**Fail:23**|
+| TTC >=0.6003656548142169 |Pass|Pass|
+| Favorable paired success vs original |Pass|Pass|
+| Success >=304 |Pass|Pass|
+| Collision <=195 |Pass|Pass|
+| TTC >=0.6065401801078688 |Pass|Pass|
+| Favorable paired success vs corrected control |Pass|Pass|
+| Success >=364 |Pass|Pass|
+| Collision <=101 |Pass|Pass|
+| TTC >=0.6728939419963959 |Pass|Pass|
+| Favorable paired success vs Predictive V1 |Pass|Pass|
+| Geometry success >=394 |Pass|Pass|
+| Geometry collision <=98 |Pass|Pass|
+| Geometry incomplete <=8 |**Fail:24**|**Fail:23**|
+
+Exact two-sided McNemar success comparisons use the existing binomial formula.
+Rescues mean reference failure/new-arm success; regressions mean the reverse.
+
+| New arm | Reference | Rescues | Regressions | Exact two-sided p |
+| --- | --- | --- | --- | --- |
+| Padding |Original V3|135|28|5.248825264114541e-18|
+| Padding |Corrected control|133|26|1.6640115908925767e-18|
+| Padding |Predictive V1|78|41|0.0008881371170898847|
+| Padding |Geometry V2|55|48|0.5546010666648742|
+| Padding |Synchronized retry01|62|37|0.015432364507309008|
+| Sector |Original V3|147|26|1.0721585278004046e-21|
+| Sector |Corrected control|146|25|5.47176740686932e-22|
+| Sector |Predictive V1|77|26|4.945479817326375e-07|
+| Sector |Geometry V2|51|30|0.02565435797169625|
+| Sector |Synchronized retry01|72|33|0.0001783572223101363|
+| Sector |Padding|51|37|0.1654405129339897|
+
+Geometry's paired test is descriptive context, **not a newly added gate**.
+These are unadjusted exploratory comparisons on consumed development seeds,
+not confirmation after multiple model searches or independent-training evidence.
+
+### 92.5 Feature-benefit decision, limitations and next bounded work
+
+The additional sector-feature conditions have the following outcomes:
+
+- All historical gates: **Fail**, due to incompletion.
+- Favorable paired success vs padding: **Fail**;51 rescues/37 regressions,
+  exact p0.1654405129339897 is not below0.05.
+- Collisions no greater than padding: Pass,62<=75.
+- Incomplete no greater than padding: Pass,23<=24.
+- Mean minimum TTC no lower than padding: Pass,0.6843001704521431>=0.6791049010194959.
+
+**Both new policies are not retained under the frozen gates. The preregistered
+sector-feature benefit is not established.** Preserve all checkpoints and raw
+results as useful research evidence; do not change the ceilings after seeing
+results. The sector arm has an observed4.2-percentage-point success gain and
+7.2-point collision reduction versus Geometry V2, but3.0 points more incomplete
+episodes. Neither that trade-off nor a positive TTC average establishes real-world
+safety. Sector also takes longer and accumulates more unsafe-TTC events on
+average than padding. Do not select a single favorable metric.
+
+Padding and sector have identical nominal architecture and initial tensors, not
+equal effective capacity; extra sector features are state-derived, not new
+independent sensors. Only one training seed was tested. Geometry V2 remains the
+user's saved current best development candidate, with its earlier TTC failure
+still preserved. No policy promotion or new training follows automatically.
+
+Next work is the separately described37-seed/111-episode matched timeout
+diagnostic design, SHA-256
+`4846e927192fed546e569d90a98b410d7d665c97b3742d08f97d0363a5abb087`.
+It remains **unreleased and unexecuted** until recoverable snapshot, isolated
+instrumentation, full protocol/tolerance/output fingerprints, independent review
+and fresh tests are complete. Replays diagnose selected consumed cases only;
+do not add them to the benchmark sample size or infer counterfactual safety.
+
+Commit the reviewed new audit code/tests, new diagnostic design and small
+completed sector results/report only. Preserve the entire pending README and
+overlapping MILESTONES change unstaged. No model/log/large-data commit or Git push.
+
+### 92.6 Scoped commit and next-stage handoff
+
+Committed the eight reviewed owned audit, test, diagnostic-design and small
+completed-result files as `5a494aa` (`Audit completed sector comparison and
+preserve timeout diagnostic design`). The README and entire overlapping
+MILESTONES working change remain unstaged; no checkpoint, log, large dataset or
+Git push was included. The final stored audit reproduced exactly under a fresh
+read-only audit invocation. The final repository checks found no active research
+process, no batch lock, and unchanged hashes for all five saved Geometry V2
+model/configuration/CSV/summary/audit artifacts. The full test gate remains the
+516 passing tests and clean Ruff check recorded in section92.3.
+
+The supported automation update was completed and its saved prompt verified at
+`2026-09-12T09:13:03.569Z` (updated_at `1789204383569`). The existing
+`finish-v3-geometry-experiment` follow-up retains its identity, ACTIVE status and
+30-minute schedule. It now records both new policies as rejected under the
+unchanged gates and directs only the next bounded diagnostic preparation:
+recoverable snapshot, isolated tracing implementation, fixed protocol and
+tolerances, independent review and fresh full tests before releasing the
+37-seed/111-episode replay. The diagnostic remains unexecuted. No training,
+reward/deadline change or policy promotion has been launched. Quiet routine
+monitoring and all existing artifact, documentation and authority protections
+remain in force.
+
+## 93. Sector timeout tracing preparation (2026-09-12; replay not released)
+
+### 93.1 Recoverable baseline content saved before the new tracing implementation
+
+The fixed sector batch remains complete and rejected as recorded in section92.
+No training or diagnostic research replay is running. Read the current README,
+all prior research history and the complete prospective
+`V3_SECTOR_TIMEOUT_DIAGNOSTIC_V1.md` before this preparation. No historical
+configuration, reward, observation source, seed or acceptance gate is changed.
+
+Before adding tracing implementation, ran the new standard-library content-backup
+utility `scripts/preserve_timeout_baseline_v1.py` from the maintenance workspace
+with the actual repository virtualenv. It exclusively reserved this local,
+Git-ignored directory:
+`logs/v3_sector_timeout_diagnostic_v1_snapshot_20260912T0949Z/`.
+The snapshot completed at `2026-09-12T09:56:09.424128Z`, preserving 235 files:
+all232 tracked current working-tree files plus the3 frozen Geometry/padding/sector
+final checkpoints, totaling15,698,716 uncompressed bytes. In particular it keeps
+the actual pending README and MILESTONES content, not just their hashes.
+
+- `snapshot.zip`:11,445,831 bytes, SHA-256
+  `68b9c311587cf9fe801d0a879f23f6251be209e6946a72037012385543173406`.
+- `manifest.json`: SHA-256
+  `1f5f638d020b464c88cee753546fffe83a8e7d7a0e155e29b9d63e86a26b29f2`.
+- Source HEAD: `5a494aa23adcf3ba149aede7d5205594f065dd2c`.
+
+The utility verified each archived member against its original length/SHA-256,
+ZIP inventory/CRC, all unchanged input bytes and unchanged Git HEAD/index/status.
+Model/config/design pins passed before writing. The manifest includes per-file
+hashes, Git metadata and Python/package versions. This is a recoverable
+working-tree-content backup, **not** a .git object/index-history backup, installed
+virtualenv backup or backup of every ignored/untracked file. Verify archive and
+member hashes and restore into a new empty directory, never over the live repo.
+No large binary was staged or committed. No prior artifact was overwritten.
+
+### 93.2 Isolated tracing primitives implemented; no research command released
+
+Added separately named `scripts/sector_timeout_trace_v1.py` after the snapshot
+completed. It constructs the original115-input Geometry and163-input synchronized
+padding/sector wrapper stacks; an explicitly requested bootstrap seed is passed
+to the original inner factory before adding outer wrappers. The future replay
+must request the historical40042 bootstrap, then exactly one reset per selected
+case; no missing development episodes may be simulated to cure a mismatch.
+
+Scoped, exact-environment-filtered hooks copy the already executed native
+observation, normalization, neighbor-selection and prediction calls. They handle
+observation instances recreated by reset. Native raw rows distinguish actual
+out-of-range clipping from values merely equal to a boundary. Ordered,
+episode-scoped strong-reference actor IDs distinguish Geometry's historical
+pre-spawn native view from its post-spawn forecast view. Synchronized arms retain
+their existing refresh call. No extra observe/forecast/selection call is made.
+
+The policy helper captures categorical probabilities from the same single
+`model.predict`/`get_distribution` inference that returns the delegated action;
+it adds no second network pass, sampling, override or alternative-action rollout.
+The frame helper copies the actual policy observation, existing forecasts,
+clipping/selection evidence, ego/controller state and returned route progress.
+Terminal post-step frames must be recorded without another prediction. These are
+diagnostic-only data, never extra policy inputs or reward terms.
+
+This module is preparation only and exits without a replay if invoked as a
+program. No111-episode runner, release manifest, tolerance protocol or output
+ledger is implemented/released yet. Independent review and engineering tests
+are in progress. The existing37-seed/111-episode budget and release conditions
+remain unchanged; no diagnostic result or policy improvement is claimed.
+
+### 93.3 Independent review and focused engineering checks
+
+Independent readback verified every snapshot member, all235 member hashes/sizes
+and ZIP CRCs, including pending document bytes and all3 final checkpoints. The
+archive is genuine recoverable local content, not an off-device disaster backup.
+An independent protocol review found no blocking issue in the tracing primitives.
+Its suggested exact event-order and event-time guards were added: Geometry must
+capture native→forecast; synchronized arms native→forecast→native, all at the
+current simulator time. Stale/reordered frames fail instead of being mislabeled.
+
+Focused tests in the maintenance workspace, using the actual repository venv:
+
+- Snapshot utility:23 tests passed in0.29s, Ruff clean. The first test attempt
+  encountered23 pytest temporary-fixture permission errors; the same tests passed
+  with normal reviewed temporary-directory access. This was not a snapshot or
+  experiment failure. Two new utility line-length lint findings were corrected.
+- Tracing primitives:31 tests passed in9.04s, Ruff clean. The first focused
+  pytest run also passed31 in9.20s; two test-file line-length findings and two
+  new tracing-source line-length findings were corrected before the clean checks.
+- No historical source file, configuration, checkpoint or evaluation changed;
+  the56 frozen completed-batch source hashes were reverified unchanged.
+
+The tracing tests use engineering seed7, three short fixed-action prefixes and
+one tiny fresh CPU PPO initialization with zero training steps, never any of the
+selected37 research cases or saved checkpoints. They check exact115/163 stacks,
+factory bootstrap ordering, native1/2-plus-forecast1 call counts, unchanged
+observations/rewards/dynamics and env/Python/NumPy/Torch RNG, reset-recreated
+observers, unrelated-environment filtering, true clipping versus boundaries,
+detached snapshots and actor IDs, stale/reordered frames, overlapping/partial
+hook-install failures, and a single actual categorical inference with action
+parity. These are engineering checks, not driving-performance measurements.
+
+The entire actual-repository Ruff/pytest gate remains to be run before the scoped
+preparation commit. Passing it will not by itself release the still-unimplemented
+111-episode runner or relax any prerequisite in the frozen diagnostic design.
+
+### 93.4 Fresh full repository gate and verified preparation record
+
+Copied only the four reviewed new utility/tracing/test files to the actual repo,
+verifying byte equality and refusing preexisting targets. Appended this research
+record under a full normalized-text prefix guard. No historical source changed.
+With the actual repository virtualenv, `python -m ruff check .` passed and
+`python -m pytest -p no:cacheprovider` passed **570 tests in60.26s**. The only two
+warnings are the existing obstacle-route Box infinite observation bounds.
+
+Final reviewed helper/test hashes:
+
+- `scripts/preserve_timeout_baseline_v1.py`:
+  `a1530df7544a86c5c665182b416e25578ed0da07ce3a7730c2c6a8c61e2953cc`.
+- `scripts/sector_timeout_trace_v1.py`:
+  `be4e23b57faf3593136b910b5f54b8ca73a206be2e1359f81c37a0211b67f94d`.
+- `tests/test_timeout_baseline_snapshot.py`:
+  `a47fd932fd84fcfbaedbe75c334667e7159157b7cf18f8e958998203ff07ee2d`.
+- `tests/test_sector_timeout_trace_v1.py`:
+  `5ddb2cdbb7793166458806f276992b6c12a44757c5c0c049336473093126c1b2`.
+
+The small `results/v3_sector_timeout_trace_v1.preparation.json` records snapshot,
+review, final helper hashes, full/focused tests and remaining release conditions.
+Final utility hashes describe the reviewed file after line-length corrections;
+the recoverable archive is independently verified by its own member hashes.
+
+The next step is to implement and preregister the separate bounded runner and
+its failure-preserving output ledger. It must freeze exact float tolerances and
+all output/source/dependency fingerprints, reproduce all8 historical metrics,
+tag executed actions and terminal post-step frames correctly, and pass new
+independent review/full tests before the111 selected replays. Preserve the
+historical floating-time truncation behavior; do not invent a150-step cutoff,
+substitute reward_min_ttc for the evaluator's TTC, simulate omitted seeds, or
+rerun failures. **No selected replay or research training has run in this stage.**
+
+### 93.5 Scoped preparation commit and preserved baseline check
+
+Committed only the five reviewed new code/test/provenance files as
+`73dd18f7e13c894b54412fa84ef9b2d639a2bc23`
+(`Preserve V3 baselines and add read-only timeout tracing primitives`). The
+preparation JSON SHA-256 is
+`8cddf592bc42c52467322f830f1576f5b5f313e9d4acc4199cd9c2718f5efcf3`;
+its four final helper/test hashes were verified against actual files before
+commit. The entire README and overlapping MILESTONES diff remain unstaged.
+No model, archive, raw trace, log, large dataset or Git push was included.
+
+Final read-only checks found all234 archived files other than the intentionally
+appended MILESTONES unchanged, including README, all3 final models and all
+historical result bytes. No research Python process or completed-batch lock
+was active. The baseline archive and manifest remain retained unchanged.
+The next bounded task is runner implementation/release preparation, not a
+research launch; the111-case diagnostic is still unreleased and unexecuted.
+
+### 93.6 Follow-up retargeted to bounded runner preparation
+
+Using the supported automation update after checking
+[official OpenAI scheduled-task guidance](https://learn.chatgpt.com/docs/automations?surface=app),
+the existing `finish-v3-geometry-experiment` follow-up was updated and its saved
+prompt exactly verified at `2026-09-12T10:06:19.625Z` (updated_at
+`1789207579625`). Its identity, name, ACTIVE status,30-minute schedule, target
+task and creation timestamp remain unchanged. Historical results, acceptance
+gates, budget and protocol paragraphs were preserved unchanged.
+
+The saved prompt now records the retained verified snapshot, tested tracing
+primitives, preparation commit and570 passing tests. Its next work is the
+unreleased bounded runner, exclusive episode-start/failure ledger, prospectively
+fixed tolerances/outputs/fingerprints, independent review and fresh full test
+gate before any111-case replay. It preserves all scientific/permission limits,
+the entire pending README/MILESTONES working diff through93, quiet routine
+monitoring and the prohibition on new training or silently repeated cases.
+No research process was launched by this follow-up update.
+
+## 94. Bounded timeout replay runner implementation and release preparation
+
+### 94.1 Frozen numeric reproduction contract and initial runner implementation
+
+Read the complete diagnostic design and the existing research record through93.6.
+README and the retained baseline snapshot/manifest hashes remain unchanged.
+The Spreadsheets scientific-research workflow is used for read-only CSV
+selection/reconciliation: preserve raw rows, counts, units and source meaning;
+do not rewrite, rescore, replace or add benchmark samples. This remains a
+consumed-case diagnostic, not a new policy evaluation or causal-safety study.
+
+Before any selected-case execution, fix these numerical comparison tolerances:
+
+- `success` and `collision`: exact booleans, collision-first, never numeric aliases.
+- `length`, `unsafe_ttc_events`, `safety_interventions`: exact integer counts,
+  with booleans rejected as counts. Convert the historical reader's validated
+  integer-valued floats to integers in memory only; source CSVs are unchanged.
+- `reward` and `min_ttc`: `math.isclose`, absolute tolerance1e-9 and relative
+  tolerance1e-12. These cover numerical serialization only, not different actions.
+- `travel_time`: absolute tolerance1e-12, relative tolerance0.
+- All8 completed-episode metrics must be present, correctly typed, valid and
+  finite; no missing/extra fields. Per-decision TTC may legitimately be positive
+  infinity and is represented explicitly in JSON traces, never substituted in
+  the metric calculation. Nonfinite completed-episode minima cannot reproduce
+  these finite reference rows and must fail.
+
+Added separately named `scripts/run_sector_timeout_diagnostic_v1.py` in the
+maintenance workspace. It uses the tested capture primitives and the original
+evaluation ordering: pre-step minimum TTC, one deterministic policy inference,
+one step, sequential reward sum, returned min_ttc with pre-step fallback, <=2.0
+unsafe counting and original final collision/success detection. It imposes no
+new150-step cap or reward/deadline change. It records actual returned policy
+frames, proposed actions before steps, executed actions only after steps return,
+and final terminated/truncated post-step frames without another prediction.
+
+The fixed run name is `v3_sector_timeout_diagnostic_v1`. Planned exclusive paths:
+
+- Release: `configs/v3_sector_timeout_diagnostic_v1.release.json`.
+- Ignored raw run directory: `logs/v3_sector_timeout_diagnostic_v1/`, containing
+  `started.json`, `episodes.jsonl`, one `<arm>.trace.jsonl.gz` per fixed arm, and
+  `complete.json` only after verified completion.
+- Small final record: `results/v3_sector_timeout_diagnostic_v1.summary.json`.
+- Lock: `logs/v3_sector_timeout_diagnostic_v1.active.lock`.
+- Runner-owned console files: `logs/v3_sector_timeout_diagnostic_v1.stdout.log`
+  and `logs/v3_sector_timeout_diagnostic_v1.stderr.log`; a launcher must not
+  redirect onto those same paths.
+
+The ledger durably records each attempt before its reset, then the actual and
+reference8-metric rows before advancing. Any mismatch or exception stops the
+batch and retains its consumed attempts, raw/partial traces, failure record and
+lock; there is no automatic cleanup, resume, reset correction or retry. Existing
+outputs refuse reuse. Only clean111/111 ordered reproduction, unchanged frozen
+inputs, closed-trace hashes and a final completion marker permit completion.
+
+The protocol/fingerprint helper, independent runner review and fake/engineering
+lifecycle tests are being prepared. **No release file or research run exists at
+this implementation stage.** Full source/dependency pins and fresh full tests
+must be recorded before release. The original design,37 seeds,111-case limit,
+arm order, bootstrap40042 and every historical scientific gate are unchanged.
+
+### 94.2 Protocol validator and independent failure-path review
+
+Implemented the separate read-only `scripts/sector_timeout_protocol_v1.py`.
+It pins and reconciles all three500-row references and their summaries, verifies
+the exact24/23/10 timeout selection and37-seed union, checks the retained235-file
+snapshot byte-for-byte, and permits only append-only MILESTONES changes. It
+preserves the completed batch's56-source/9-predecessor lineage and fingerprints
+all current package, script and test Python files. Runtime checks retain Python
+3.12.9 and the exact46-distribution inventory. Byte fingerprints additionally
+cover all installed HighwayEnv/Gymnasium/SB3 Python sources, key NumPy/Torch
+binaries, Torch CPU/Python DLLs and Python executable/runtime DLL. This is
+specific local runtime provenance, not certification of every transitive binary.
+
+Independent review found and corrected prospective runner defects before any
+selected replay: failed release preflight originally preceded permanent output
+reservation; completion checked only the in-memory ledger; a secondary artifact
+hash failure could mask the primary failure; an environment-close failure could
+replace a prior replay failure; and a same-named nonregular artifact could lack a
+hash yet permit completion. The runner now permanently reserves evidence before
+preflight, reads back all durable typed start/completion pairs and eight metrics,
+preserves primary errors and secondary close/hash failures, and requires every
+expected final artifact to be a regular non-symlink file with a recorded hash.
+Its test/review verification JSON is itself hash-bound to the release and exact
+source/dependency inputs. Console exceptions remain in the exclusive stderr log.
+
+Also investigated whether trace birth IDs' strong actor references could change
+traffic by suppressing object-ID reuse. The actual driver wrapper uses existing
+actor label attributes, not an ID cache. Independent inspection found the
+installed simulator's actor ID uses confined to representation/graphics, no
+actor destructor/weak-reference/identity-order mechanism, and driving/collision/
+regulation limited to the current road lists. Retained removed actors are not
+reinserted or stepped. No concrete dynamics-sensitive lifetime mechanism was
+found in this frozen stack; this static finding is not a general proof for
+other simulator versions. The historical capture helper remains byte-unchanged.
+
+Protocol-focused synthetic tests:82 passed in1.00s, Ruff clean. Initial runner
+tests:38 passed in2.26s; after preflight/ledger/proof hardening,52 passed in2.43s.
+Long fixture/source lines found by Ruff were corrected before clean checks.
+Additional close/nonregular-artifact regressions and the fresh actual-repository
+full gate remain pending. None of these synthetic tests runs saved policies or
+selected diagnostic episodes. **Release and research execution remain pending.**
+
+### 94.3 Additional engineering regression and preflight discovery failure
+
+Runner-focused tests now pass68 cases in3.01s, Ruff clean. A review of the
+cleanup fix caught another prospective edge case: `sys.exception()` could see
+an unrelated exception already handled by the caller and hide a sole close
+failure. Replaced that with an explicit per-arm pending-error variable; the new
+synthetic caller-exception regression passes. This was corrected before that
+test's first execution. Final independent runner review passes at SHA-256
+`e27866d46b1d661a2efb2abcb553c273848c7ed0be1e38e5673ce6ef9c29901c`.
+Runner test SHA is
+`e87ff30fb570ed804159944963d63f7e13a569f11b6e54af0f2739f5bf5e5a35`.
+
+The first read-only actual-repository preflight successfully loaded all three
+references, checked selection and fingerprinted source/snapshot bytes, but then
+failed the package-inventory check before any release, model load or episode.
+The recorded snapshot has46 distribution entries; `python -c` from the actual
+repo discovers47. The sole extra is a second identical `safeintent-rl==0.1.0`,
+from root `safeintent_rl.egg-info`, alongside the installed virtualenv dist-info.
+The original snapshot utility's full-script-path launch did not discover this
+root entry. No package name/version pair was added or removed; this is a
+launch-context metadata-discovery difference, not evidence of an installation.
+
+A narrowly scoped prospective validator correction is being prepared: keep the
+exact46 installed name/version inventory, permit only this matching root project
+duplicate with verified origins, and additionally freeze the full raw discovery
+inventory, metadata hashes and locations in the release runtime record. Reject
+other duplicates or conflicting versions. Do not edit the historical snapshot,
+install packages, alter model/environment behavior or broadly deduplicate away
+unexpected inputs. Fresh review/tests/preflight must pass after the correction.
+**No selected diagnostic attempt or new training has run.**
+
+### 94.4 Corrected metadata-discovery validation before release
+
+The narrow validator correction passes93 protocol-focused synthetic tests in
+1.09s, with Ruff clean. Read-only checking against the actual virtualenv now
+reconciles the unchanged46 installed entries and records all47 raw discoveries.
+Both the local project PKG-INFO and installed METADATA currently have SHA-256
+`875afbe19b971145e3d7b29fb8d5e70e0551d32cac577f8ac4464f9d73231cbf`.
+The full raw inventory includes each discovery's resolved location and owning
+metadata hash. It allows only the exact matching local project alias; unrelated
+duplicates, changed versions, missing installed counterparts or wrong origins
+fail. No package or historical snapshot was changed.
+
+Source review also identified nested vendored metadata: installed setuptools
+lists13 files named METADATA. Discovery therefore identifies only each entry's
+own top-level dist-info/METADATA or egg-info/PKG-INFO, with a synthetic vendor
+fixture verifying that distinction. It does not miscount bundled vendor metadata
+as a separately discovered installed distribution.
+
+Corrected protocol SHA-256:
+`04ace537d57aa01538ce582377f8fed6272f16c17867d08f053171e7b58ed57d`.
+Protocol-test SHA-256:
+`e5a79b04dc57b0d43f6c6b0db4242317d13bc31510a359f6b3658923aeab65cd`.
+The separate read-only check also verified all227 dependency files (221 Python
+sources and6 binaries), all preserved references and selected outcomes, and the
+snapshot/source lineage. Final corrected actual-copy/full gate and hash-bound
+release are still required; no selected episode has been run.
+
+### 94.5 Final prospective alias check and reviewed source freeze
+
+Independent review tightened the new metadata exception to require byte-identical
+local and installed metadata, not just matching names, versions and origins.
+The added mismatched-metadata regression passes; protocol tests now pass94 cases
+in1.09s, Ruff clean. This supersedes only the unreleased draft hashes in94.4:
+
+- Protocol: `7be46a561157313865117d9589c237cbbf0b7c48a80b1b76a8b474e7ce1254cd`.
+- Protocol tests: `24afe3dad911cc1537636816cc932cf37b6c86c5b66547b1b0502d22b2949f00`.
+
+Final independent review passes for this protocol and the runner/test hashes in
+94.3. No historical source, model, CSV, configuration, snapshot or package bytes
+were modified. Only the four new unreleased runner/protocol/test files are being
+synchronized before the fresh full actual-repository gate. All previous record
+entries, including unsuccessful preflight and superseded draft hashes, remain.
+
+### 94.6 Fresh full gate and prospective 111-case release
+
+The final actual-repository `python -m ruff check .` passed.
+`python -m pytest -p no:cacheprovider` passed **732 tests in62.66s**, with only
+the two existing obstacle-route Box infinite-bound warnings. No source changed
+after this full gate. Independent read-only preflight verified all235 snapshot
+members, all1,500 historical reference rows, the exact37-case selection,246
+repository fingerprint entries (including29 package,30 script and34 test Python
+files),227 dependency files, and the exact46 installed/47 raw metadata inventory.
+
+Created the separate prospective release and hash-bound test/review proof:
+
+- `configs/v3_sector_timeout_diagnostic_v1.release.json`, SHA-256
+  `af45b9e044dae3e418df7c04704810ca667673cd53ca0ebac53ecfea699ebe67`.
+- `results/v3_sector_timeout_diagnostic_v1.release_verification.json`, SHA-256
+  `ab7ac9af93a0f2755b0cdef0658ba06a6c4654059b55224af4cf15b60f22cda9`.
+
+These freeze the unchanged design, all reference/model/config/source/dependency
+bytes, raw runtime origins,37 seeds, Geometry/padding/sector order,111-case
+ceiling, bootstrap40042, CPU8/8 threads, original evaluation loop, exact eight
+metrics/tolerances and exclusive outputs specified in94.1. The verification
+record's source HEAD is73dd18f; exact new uncommitted source bytes are included
+in its fingerprint map. The records add no training or alternative actions.
+
+Only after copying and validating these exact records, recording the scoped
+commit, and confirming no active research process or existing run outputs, the
+single released command from the actual repo is:
+
+```powershell
+python -m scripts.run_sector_timeout_diagnostic_v1 --release-sha256 af45b9e044dae3e418df7c04704810ca667673cd53ca0ebac53ecfea699ebe67 --refuse-overwrite
+```
+
+Use the actual repo virtualenv. The runner owns its exclusive console files;
+launch hidden if backgrounded and do not redirect over those paths. The first
+mismatch, exception or input drift stops and preserves the entire attempt record
+and lock; no retry, resume, replacement seed, new cutoff or model change. All
+historical policy acceptance gates and interpretation limits remain unchanged.
+**At release preparation, zero selected attempts have been executed.**
+
+### 94.7 Scoped release commit and pre-launch record
+
+The exact release/proof files were copied with SHA checks and actual-repository
+`validate_release` passed, including all frozen source/dependency/runtime inputs
+and hash-bound test/review evidence, without loading a model or running an episode.
+Committed only the six new runner/protocol/test/release/proof files as
+`6adb444be883545052394962be6e5dffeac1a404`
+(`Release hash-bound V3 timeout diagnostic with failure-preserving evidence`).
+The entire overlapping README/MILESTONES working diff remains unstaged. No
+model, raw trace, log, archive, large dataset or Git push is included.
+
+The next execution is only the single preregistered111-case diagnostic after a
+final no-active-process/existing-output check. No new training, changed policy,
+extra evaluation cases or automatic retry is authorized by this release.
+
+### 94.8 Single released diagnostic launched
+
+Independent release review rehashed all246 repository/input files and227 runtime
+dependency files and confirmed exact release/proof alignment. The final launch
+check found no Python process and none of the six conflicting run/output paths.
+At `2026-09-12T11:11:09.0276679Z`, launched the exact94.6 command once, hidden,
+using the actual virtualenv and working directory. Launcher PID20664 created
+worker PID17156; its permanent lock records parent20664 and start time
+`2026-09-12T11:11:11.050974+00:00`.
+
+The runner reserved its own console logs, run directory and summary. At this
+initial observation no completion or failure had yet been reported. This is the
+bounded non-interventional111-case diagnostic, not training or a new benchmark.
+Do not start another process, delete a lock, resume or repeat a consumed case.
+Preserve any failed/partial artifacts and inspect them read-only if it stops.
+
+### 94.9 Existing follow-up retargeted to the active diagnostic
+
+Using the supported automation update after checking
+[official OpenAI scheduled-task guidance](https://learn.chatgpt.com/docs/automations?surface=app),
+retargeted the existing `finish-v3-geometry-experiment` follow-up at
+`2026-09-12T11:14:43.543Z` (updated_at1789211683543). The saved16,744-character
+prompt was exactly read back and verified; UTF-8 SHA-256
+`c38c72696b5c1a6df042fe98be2a81f5ffb11621c47a9fe61d9c573a0c15dc2d`.
+ID, name, heartbeat kind, ACTIVE status,30-minute schedule, target task and
+creation timestamp remain unchanged.
+
+The saved instructions now monitor the single recorded worker and exact output
+paths read-only, preserve failure/partial evidence, and prohibit another launch,
+resume, retry or failed-lock deletion. After complete111-case reproduction they
+require ledger, metric, source/runtime and trace-hash verification before analysis
+of existing traces. They do not authorize automatic new training. Historical
+results, acceptance gates, snapshot/budget, permissions, quiet notification intent
+and the entire pending README/MILESTONES diff through94 remain protected.
+
+### 94.10 Schema-only descriptive analysis plan, before reading raw traces
+
+An independent schema-only review proposed the following descriptive analysis
+after verified completion; it read no ongoing raw trace and ran no extra cases.
+Join each decision to its transition and following returned observation, including
+the terminal state. Use actual timestamps and the original cutoff behavior.
+
+- Measure time at the existing target speeds0/4.5/9, zero-target run lengths,
+  final zero-target duration and every zero-to-positive target relaunch. Attribute
+  each executed interval to the following frame's actual target, not the action
+  name alone. IDLE preserves a target and does not necessarily stop the car.
+- Describe actual speeds, progress gains and terminal remaining route fraction
+  alongside those target sequences. Zero target is not exactly zero physical
+  speed, and the episode can begin with the car already approaching in motion.
+- Summarize action/probability/entropy patterns per episode, then by observed
+  outcome and arm. Do not count correlated decisions as independent cases.
+- Inspect actual last-native versus forecast identity ordering/set differences,
+  selected-neighbor counts and true clipping masks by feature/ego/neighbor.
+  Boundary values are not clipping; full observation slots do not prove hazards
+  were omitted. Actor birth identities cannot be matched across arms.
+- Describe the logged normalized forecast quantities and their saturation by
+  action. Positive margin is not collision probability or a certified safe gap;
+  first-conflict1 is ambiguous between no conflict and conflict at the3s horizon.
+  Later trajectories do not directly test unexecuted alternative-action forecasts.
+
+These are prospective descriptive questions, not new scientific acceptance gates
+or claims that timeouts are avoidable. The37 seeds were outcome-selected and
+already consumed; findings cannot increase the500-episode sample counts, change
+reported rates or establish the safety of forcing movement. Any subsequent RL
+change still requires its own named, fixed experiment and matched controls.
+
+## 95. Completed timeout diagnosis and read-only trace analysis
+
+### 95.1 Exactly-once diagnostic completion and integrity checks
+
+The released diagnostic completed all111 attempted/completed/matched episodes.
+Summary finalization was `2026-09-12T11:27:21.941662+00:00`; the closed-summary
+completion marker followed at `2026-09-12T11:27:21.968418+00:00`. The expected
+Diagnostic complete console message is present, stderr is empty, the worker and
+launcher have exited, and the completed invocation removed its own live lock.
+No replay, training or replacement case was started by this follow-up.
+
+Final records:
+
+- Summary `results/v3_sector_timeout_diagnostic_v1.summary.json`, SHA-256
+  `a443b95ac7beb0b70b6fd7e43f3730695377bbc12eac67c6a5e93a4e024c2f4e`.
+- Completion marker, SHA-256
+  `06de7c97d66b54345c526e009781e1b3aba8ab08bee3cee26559f025a27b76c8`.
+- Durable ledger, SHA-256
+  `f5eb5a7bbe462d30b5da186fbaa38e756427b8334941b804e2237925ae02749b`.
+- Geometry gzip, SHA-256
+  `6cca858bd5480cbec57e00b2551b6240ab3ad55f59329ad83393e1dc1e212491`.
+- Padding gzip, SHA-256
+  `1f5ba8dbf80920be6e348ccc0e3cb7d24e2f424cff34282c11b87cf8e76ec17e`.
+- Sector gzip, SHA-256
+  `320329b2ea21372296e29715f17bf66d195725ca626e5d11b251b29a04af5805`.
+
+Before adding any actual-repository source, main independently revalidated the
+release/proof, all246 repository/input hashes,227 dependency hashes, exact runtime
+and snapshot, and all222 ordered durable start/completion records against the
+111 summary entries and pinned reference CSV rows. Every one of the eight
+metrics reproduced; all recorded numeric deltas were exactly zero, not merely
+inside tolerance. All six final artifacts are regular files, the five recorded
+artifact hashes match, and all three gzip streams parse through valid EOF.
+Decision/transition counts are2416/2416 Geometry,4304/4304 padding,4592/4592 sector;
+each contains37 ordered terminal frames for the fixed seed list.
+
+The Spreadsheets scientific/read-only workflow preserves raw CSVs, units, seeds,
+definitions and sample meaning. This completed budget diagnoses already-scored
+cases; it does not add111 independent samples or change any500-episode rate.
+Additional independent completion review is being reconciled before analysis
+artifacts are finalized. All historical policy decisions and gates remain.
+
+### 95.2 Initial descriptive cross-check and separate offline analyzer
+
+Following94.10, a read-only streaming cross-check of the completed traces joined
+decisions/transitions/terminal frames and attributed each elapsed interval to the
+following returned target speed. It found these incomplete-case descriptions:
+
+- Geometry5 timeouts: mean zero-target25.52s, median final zero-target run19.2s.
+- Padding24 timeouts: mean zero-target25.25s, median final zero-target run16.8s.
+- Sector23 timeouts: mean zero-target25.73913043478254s, median final zero-target
+  run19.6s. Twenty-two finish with target0 and one with target4.5m/s.
+
+Every selected timeout has the unchanged historical151-step/30.2s truncation.
+Median terminal route progress is0.4246445924488685 for Geometry timeouts,
+0.47822642273465604 for padding and0.4159671133317737 for sector. These are
+fractional route-progress observations, not direct percentages of physical road
+distance. Long zero-target commands dominate most timeouts, but do not establish
+that earlier movement was safe. Some cases resume late, so a blanket statement
+that every timeout was continuously stationary would be wrong.
+
+This preliminary cross-check found no true native clipping in the selected
+decision frames. Padding and sector have no native/forecast identity mismatch;
+Geometry has350 such decision frames in this selected sample. This weakens a
+clipping/alignment explanation for the new arms' timeouts, but does not establish
+adequate visibility or calibrated forecasts. No raw field or outcome was changed.
+
+A separately named stdlib-only `scripts/analyze_sector_timeouts_v1.py` and
+synthetic tests are being implemented in the maintenance workspace. They will
+validate frozen input and artifact bytes, trace joins and metric reconstruction,
+then reproduce the descriptive measurements with per-episode output and
+equal-episode outcome-group summaries. The fixed new output will be
+`results/v3_sector_timeout_diagnostic_v1.analysis.json`, written exclusively.
+No simulator, policy inference or additional forecast is part of this analysis.
+Review, tests and independent calculation comparison remain required before
+accepting the new analysis artifact or choosing another RL experiment.
+
+### 95.3 Independent completion audit agreement
+
+Independent review agrees with95.1: exact111 ordered start/complete pairs, all
+eight saved metrics, all333 floating comparisons exactly equal,1,500 pinned
+reference rows,37 seeds,246 source and227 dependency hashes, release/proof,
+runtime origins, snapshot/CRC and append-only baseline all pass. It found no
+error fields and verified the six regular final artifacts and five-entry hash
+map, final console marker, empty stderr, absent lock and both original PIDs gone.
+Its sandbox denied CIM enumeration, so the separate main-agent approved CIM
+check supplies the confirmed absence of any matching diagnostic command.
+
+This final integrity gate occurred before new actual-repository source additions.
+Subsequent analysis may add only its separately named reviewed analyzer/test and
+small output/provenance files; every previously frozen input remains unchanged.
+Do not mistake those documented post-completion additions for permission to edit
+old sources or rerun the consumed diagnostic. No new training is released.
+
+### 95.4 Remaining-time research hypothesis and existing bootstrap convention
+
+The descriptive waiting pattern motivates testing whether clock information
+helps, rather than immediately changing collision penalties or forcing movement.
+This is a hypothesis for a separate controlled RL experiment, not a claim that
+the selected waiting was avoidable or that a clock will reduce crashes.
+
+[Pardo et al., Time Limits in Reinforcement Learning, ICML2018](https://proceedings.mlr.press/v80/pardo18a.html)
+distinguishes tasks whose finite deadline is part of the objective from continuing
+tasks interrupted for data collection. Remaining time matters to the former's
+state representation; value bootstrapping applies to the latter's artificial
+truncations. The [Gymnasium time-limit guidance](https://gymnasium.farama.org/tutorials/gymnasium_basics/handling_time_limits/)
+likewise distinguishes termination from truncation and their learning targets.
+
+Read-only inspection of our exact installed sources found that HighwayEnv
+`intersection_env.py:118` reports time expiry as truncated. SB3 DummyVecEnv
+sets TimeLimit.truncated and preserves the terminal observation; its on-policy
+collector then adds gamma times the predicted terminal value. Thus the current
+training convention bootstraps at the time limit, while evaluation records a
+missed arrival by that limit as incomplete. This is an existing task-objective
+distinction, not a package bug or permission to edit installed dependencies.
+
+A possible isolated next test is one remaining-time observation versus one
+zero-padding feature, with the same synchronized predictive parent and identical
+fresh model dimensions/initial tensors/settings. Proposed feature:
+`clip((duration - env.time) / duration, 0, 1)`. Route progress would be a separate
+later ablation, not silently added with it. Clock-only testing must preserve the
+existing cutoff, rewards and timeout-bootstrapping convention and be labeled
+accordingly; it would not fully implement a finite-horizon terminal-objective
+correction. Changing termination/bootstrap semantics requires its own prospective
+experiment. Deadline rushing, abandonment, value error and fixed-deadline
+overfitting remain plausible failure modes.
+
+No clock feature, reward change, termination change or training has been
+implemented or released here. A complete named preregistration, retained baseline,
+review, matched controls, fixed budget and fresh tests are prerequisites.
+
+### 95.5 Offline analyzer implementation and independent review
+
+Implemented the separately named stdlib-only
+`scripts/analyze_sector_timeouts_v1.py` in the maintenance workspace. It streams
+the three completed gzip files, enforces ordered decision/transition/terminal
+joins, checks the pinned completed ledger and reference rows, and produces
+per-episode descriptions followed by equal-episode arm/outcome distributions.
+It performs no simulator step, policy inference or alternative-action forecast.
+
+The analyzer rehashes all246 frozen repository inputs and227 recorded dependency
+files, retained package metadata, snapshot, release/proof and six completed raw
+artifacts. The only allowed post-completion Python additions are this analyzer
+and its synthetic test file; their bytes are recorded separately. Input hashes
+and that source inventory are checked again after analysis. The completion
+marker is independently pinned, and output creation requires
+`--refuse-overwrite` and exclusive mode. The bundled offline Python is recorded
+separately from the retained RL interpreter; it does not recompute or substitute
+the RL runtime fingerprint.
+
+Six metrics are independently rebuilt from raw frames: sequentially accumulated
+reward, episode length, travel time, minimum TTC, unsafe-TTC count and collision.
+Success and safety interventions remain verified against the pinned ledger and
+reference source, because the raw frame schema does not separately log them.
+Zero-target intervals use the returned target and actual elapsed frame times;
+IDLE is not equated to stopping, and progress remains a signed fractional change.
+Normalized forecast endpoints are not interpreted as uncensored distances,
+collision probabilities or certified safe counterfactuals.
+
+Independent code review passed analyzer SHA-256
+`2074e226b4423288b7602608dc87dea6f4a39363df47f1ad4128e0244876a80d`,
+pending the final synthetic and full-repository test gates. Review requested and
+verified the completion-marker pin and final source-inventory recheck. An
+initial38 synthetic core checks passed; additional parser/provenance/output
+checks are still being finalized. A read-only first-case schema smoke check
+parsed Geometry seed40084 and its151 steps without importing NumPy, pandas,
+Torch, Gymnasium, HighwayEnv or SB3, and wrote no result. No complete analysis
+artifact is accepted yet and no new RL experiment has been released.
+
+### 95.6 Final synthetic gate and guarded transfer
+
+The completed analyzer suite passed94 synthetic tests in0.37s. Its initial Ruff
+check reported one E501 on a101-character test definition; only that definition
+was line-wrapped, and focused Ruff then passed. The analyzer bytes remain95.5's
+reviewed hash. Final test SHA-256 is
+`2284fefeade854b26a3c2c8f3bc38898e44652aac6b6e85e7f83c63e97d8b2e1`.
+Main read the entire analyzer and test file. Coverage includes target attribution,
+terminal joins, zero runs/relaunches, clipping boundaries, forecast censoring,
+stream ordering/CRC/EOF, ledger agreement, changed-source detection, equal-episode
+aggregation and exclusive output preservation. Synthetic fixtures are not extra
+research episodes.
+
+A transfer attempted against the pre-format test hash was correctly refused by
+the pre-copy hash guard. Validation checks all requested files before copying,
+so neither file was copied and no actual tests or analysis ran in that attempt.
+The transfer is being retried only against the final reported test hash; no
+preserved artifact is removed or overwritten. The fresh full-repository gate
+remains required before the offline output is accepted.
+
+### 95.7 Fresh full gate and completed offline result
+
+The final hash-guarded transfer succeeded. In the actual RL repository, the
+existing RL virtual environment passed full `python -m ruff check .` and
+`python -m pytest -p no:cacheprovider`:826 passed in62.64s, with only the two
+previously recorded obstacle-route Box infinite-bound warnings. This includes
+the732 prior tests and94 new synthetic analyzer checks.
+
+After that gate, the bundled offline interpreter ran exactly once:
+`python -B -m scripts.analyze_sector_timeouts_v1 --refuse-overwrite`.
+It completed successfully in approximately8s and exclusively created
+`results/v3_sector_timeout_diagnostic_v1.analysis.json` (1,219,937 bytes), SHA-256
+`ac193ba5925672de86149547865e977d1d94d74824c0d45107c50be3f2d03c32`.
+The recorded analysis interpreter is CPython3.12.14, separately from the frozen
+CPython3.12.9 RL runtime. No research episode, policy prediction or simulation
+step was executed by the analyzer. Both new source hashes match95.5/95.6; all
+pre-existing pins and final post-read checks passed. The diagnostic summary
+remains SHA-256
+`a443b95ac7beb0b70b6fd7e43f3730695377bbc12eac67c6a5e93a4e024c2f4e`.
+
+Main readback confirms all111 descriptions, the fixed37 ordered seeds per arm,
+and95.2's independent preliminary measurements. At displayed precision, the
+incomplete-case mean zero-target durations are25.52/25.25/25.73913043478254s for
+Geometry/padding/sector; median terminal zero-target runs are19.2/16.8/19.6s.
+Tiny differences below1e-12 from displayed preliminary values reflect the actual
+floating frame-time accumulation, not altered durations. Terminal route-progress
+medians match95.2 exactly. All selected decision frames have zero true native
+clipping, while Geometry has350 ordered native/forecast identity mismatches and
+the synchronized padding/sector arms have none.
+
+The incomplete groups also include relaunches: median counts6/7.5/3 respectively.
+Thus these are not uniformly one uninterrupted stop. Zero target must still not
+be described as zero physical speed, and neither relaunching nor positive
+forecast margins proves a missed safe opportunity. The result supports studying
+waiting/deadline representation, not forcing motion or weakening collision
+penalties. It does not change any500-episode rates, retention gates or historical
+rejections. Independent completed-artifact reconciliation and a scoped code/
+result commit are the remaining handoff checks; no fresh training is released.
+
+### 95.8 Independent result audit and scoped local commit
+
+Independent completed-artifact audit passed. A separate bundled-stdlib
+calculation read all111 raw episodes and verified the531 saved input hashes,
+exact post-completion source inventory, both new source hashes and the analysis
+output hash/size. Its zero-target duration, final zero-run and terminal-progress
+aggregates agree with95.2/95.7. It independently confirmed zero clipping in all
+three arms,350/0/0 identity-mismatch decision counts, and22 zero-target versus
+one4.5m/s terminal target among sector timeouts.
+
+Relaunches occurred in4/5 Geometry,24/24 padding and21/23 sector timeout cases;
+their respective median counts are6/7.5/3. These selected trajectories often
+contain repeated stopping and relaunching. This does not establish that earlier
+movement was safe or that waiting alone caused the recorded failures. No extra
+episodes or alternative-action evaluations were used in the independent audit.
+
+Created local commit `df8abd0425934d0812b1b9d583678e2f20d97d41`,
+`Analyze completed V3 timeout diagnostic without new episodes`, containing only:
+
+- `scripts/analyze_sector_timeouts_v1.py`
+- `tests/test_sector_timeout_analysis_v1.py`
+- `results/v3_sector_timeout_diagnostic_v1.summary.json`
+- `results/v3_sector_timeout_diagnostic_v1.analysis.json`
+
+The exact four-path staged scope was checked before the commit. No push occurred;
+no model, raw trace, log or historical policy/configuration was committed or
+modified. Existing overlapping README/MILESTONES88-95 documentation changes,
+including these append-only entries, remain intact and unstaged for reconciliation.
+The README hash remains
+`52c5b93040da9259eaae83616d9500236eff307170b8e7896f85bdf242da7134`.
+The consumed111-case diagnostic is finished and must not be rerun. The next
+bounded work is a separately named clock-only versus zero-padding preregistration
+and implementation/test plan under95.4, not automatic release of new training.
+
+### 95.9 Existing follow-up retargeted to completed diagnosis and next design
+
+Using the OpenAI Docs skill and supported app tools, the existing
+`finish-v3-geometry-experiment` follow-up was updated, not replaced, at
+2026-09-12T12:16:01.899Z (updated_at1789215361899). Supported view and exact
+persisted readback verified the intended18,562-character prompt, UTF-8 SHA-256
+`6ea99b136d3a3cb47dff21f441f44f9d111bfecfbf6cf58b8b8f376883b65d8f`.
+Main read the complete verified review copy. Only prompt and updated_at changed;
+identity, name, heartbeat type, ACTIVE status,30-minute cadence, original target
+task, created_at1789109054456, notification policy and permission boundaries
+remain unchanged. No raw automation configuration was edited.
+
+The saved task now records the completed111-case replay, departed original
+processes, independent completion/result audits,826-test gate, exact analysis
+hashes and local commit95.8. It does not monitor those departed PIDs or release
+another replay. Its next bounded work is95.4's separately named clock-only versus
+matched-zero preregistration and implementation/test plan. Rewards, dynamics,
+floating cutoff, timeout bootstrapping, every historical gate and matched-control
+requirements remain fixed. No new training is released by this update. Prior
+failures, no-rerun/no-overwrite rules, preserved snapshots, pending document edits,
+quiet unchanged-state behavior and no-push/no-model-commit limits remain intact.
+
+## 96. Prospective remaining-time RL comparison (2026-09-12)
+
+### 96.1 Design preparation and preserved baseline
+
+Continued95.4/95.9 with a separately named
+`V3_CLOCK_OBSERVATION_V1.md` in the maintenance workspace. This is a prospective
+scientific design plus implementation/test plan, not a released wrapper, runner,
+training command or evaluation. No new training, checkpoint loading, rollout or
+diagnostic replay was performed while preparing it.
+
+README still matches95.8's hash and the actual HEAD isdf8abd0425934d0812b1b9d583678e2f20d97d41.
+Main read the newly relevant research-record tail and full diagnostic/sector
+designs, plus the exact installed factory, wrapper, trainer/evaluator and timeout
+bootstrap source. Read-only preflight revalidated246 frozen source/input hashes,
+227 dependency hashes,531 total bound inputs, completed diagnostic status and
+the retained snapshot/member/CRC/live-baseline contract. It wrote no output and
+did not rerun the descriptive analysis or111 episodes. The existing snapshot is
+preserved, not recreated. All pending README/MILESTONES edits remain intact.
+
+The proposed arms append exactly one float32 value to the same synchronized115
+prefix: exact zero versus `clip((30 - env.time) / 30, 0, 1)`, producing116 inputs.
+The separate256/256 actor/value networks each have192516 parameters. Both train
+fresh with identical initial tensors; the historical163-input fingerprint is
+not reused. Clock reads the actual returned-state time, preserves the tiny
+positive fraction just before30 and native151-step floating-time expiry, and
+retains positive time at early success/collision. Constructors and augmentation
+add no reset, sensing, forecast, random draw or action override.
+
+Primary Pardo/Gymnasium references were reopened. The proposal deliberately
+preserves SB3's timeout bootstrap and therefore tests clock information alone,
+not a full finite-horizon terminal-objective correction. Deadline rushing,
+fixed-deadline overfitting and zero-clock value error remain failure modes.
+Scientific/read-only guidance preserves raw data, finite-TTC conventions and
+the meaning of consumed development samples. No workbook or CSV was edited.
+
+Independent static parent and gate reviews agree on the116-input/192516-parameter
+contract, all16 old gates and a prospective five-part clock-versus-zero benefit
+test. They clarified that70042 is the initial internal-validation environment
+seed; later auto-resets continue its RNG stream and are not explicitly reseeded
+or paired validation episodes. The plan now states20 callbacks of50 episodes per
+arm,2000 internal-validation episodes total, plus1000 paired development episodes
+and401408 collected training steps. Those are future fixed budgets, not work
+already performed. Final document review, a fresh full test gate and a scoped
+design commit remain pending; no training is released.
+
+### 96.2 Reviewed design freeze and fresh baseline test result
+
+Both independent reviewers read the complete new design and passed SHA-256
+`3266b72e0687e309816375a63377e7f4a7d3fe9d9c4e8461840b8fde7153973c`.
+No concrete protocol, parameter-count, timing, bootstrap, budget, gate or
+holdout-scope defect remained. The file was transferred to the actual repository
+only after checking that exact hash and refusing an existing destination.
+No executable file was edited or added.
+
+Fresh actual-project `python -m ruff check .` passed, followed by
+`python -m pytest -p no:cacheprovider`:826 passed in67.87s with the same two
+existing obstacle-route Box infinite-bound warnings. This is the unchanged
+baseline suite, not evidence that an as-yet unimplemented clock wrapper has
+passed its proposed tests. Full scientific budgets, measured initialization
+fingerprint, release/proof, runner and output artifacts remain prospective.
+
+The design isolates one clock input against one zero, preserves all16 historical
+gates and requires favorable exact paired success plus collision/incomplete/TTC
+non-regression against that fresh matched control. It introduces no target-rate
+promise, new holdout, changed reward or timeout-bootstrap semantics. Next bounded
+implementation is the separately named outer wrapper and synthetic/non-driving
+tests, including measured116-input initialization evidence; later runner/audit/
+release work remains required before any training. A scoped design-only local
+commit is being made while the existing README/MILESTONES diff stays unstaged.
+
+### 96.3 Scoped prospective-design commit
+
+Created local commit `251300c649460443d960fa7fe4b346b26e08ad04`,
+`Preregister matched V3 remaining-time observation experiment`. Its sole file is
+`V3_CLOCK_OBSERVATION_V1.md` (325 lines), with the reviewed SHA from96.2. The
+pre-stage hash, initially empty index, exact one-path staged scope and whitespace
+checks passed. No executable source, model, raw result, dependency or old design
+was changed. No Git push occurred. Actual status remains only the existing
+README and append-only MILESTONES modifications, intentionally unstaged.
+
+This completes design preparation, not training release. The next wrapper/test
+stage must preserve every old source/input hash and retained snapshot while
+explicitly recording its two newly named Python files. The completed analyzer's
+old exact source-inventory guard must not be weakened or mistaken for a new
+experiment release. Its consumed111-case analysis/replay is not repeated to test
+the new wrapper. New code validation uses the registered synthetic/non-driving
+fixtures and fresh full tests before any later release decision.
+
+### 96.4 Existing follow-up advanced to wrapper/test preparation
+
+OpenAI Docs guided a supported update of the existing
+`finish-v3-geometry-experiment` follow-up. The first saved design-to-implementation
+transition at2026-09-12T13:16:35.224Z had a verified prompt length of19693
+characters and SHA-256
+`622fa429f1b147040715a4e82981af8a4ecf1592898939422d379c57545b3b8a`.
+Main caught a transcription error in that follow-up: preserving115 bytes is not
+the same as preserving115 float32 values. The committed design was already
+correct. A narrow supported correction changed that phrase to preserving all
+first115 float32 values byte-for-byte and made the shape notation `(116,)`.
+No scientific design, executable source or numerical result changed.
+
+Final saved update is2026-09-12T13:18:02.962Z (updated_at1789219082962),19717
+characters, UTF-8 SHA-256
+`4861ae4f5390dbbfec758f5f6c23b69ed1e4724d000b31f73c81adfdf1868bdf`.
+Main independently parsed the persisted configuration read-only and verified
+both corrections, the full next-stage paragraph, hash, length and unchanged
+id/name/heartbeat/ACTIVE/30-minute cadence/target/created_at1789109054456. All
+mutations used the supported app tool; no raw automation file was edited.
+
+The next bounded stage is only `scripts/clock_observation_v1.py` and
+`tests/test_clock_observation_v1.py`, with optional fixed preparation JSON for
+measured non-driving initialization evidence. It requires the frozen96.2 design,
+independent review, fresh full tests and append-only recording/scoped local
+commit. The runner, auditor and release/proof remain later stages. There is no
+permission in this transition to train, score new episodes, replay completed
+diagnostics, alter historical inputs/gates or push Git. Quiet unchanged-state
+behavior and all existing authority boundaries remain preserved.
+
+### 96.5 Externally changed staging preserved at handoff
+
+The final read-only Git check found a new index state after96.3's design-only
+commit: README and MILESTONES are now staged, while the newly appended96.4 tail
+is unstaged. This turn did not stage either document. Cached diff shows23 added
+README lines and1457 added MILESTONES lines; the then-unstaged tail has30 added
+lines. HEAD remains251300c, and README/design hashes still match96.2/95.8.
+
+Preserve this externally changed index exactly. Earlier descriptions of the
+documents as unstaged are historical observations, not instructions to unstage
+the user's current work. No further add, reset, unstage, commit or push was
+performed. This entry and96.4 remain append-only working-tree additions; future
+work must inspect the live status and preserve any subsequent user changes.
+
+## 97. User-requested Sector V1 preservation for later development (2026-09-12)
+
+The user explicitly asked to save the sector-feature policy for later
+development. Preserve it as a **future-development research candidate**, separate
+from the current-best designation. This is an archival decision, not acceptance
+under the frozen gates or evidence of established sector-feature benefit.
+Geometry V2 remains the user's current best development candidate.
+
+The unchanged completed development evaluation is 500 episodes on seeds
+40042--40541: **415 successes (83.0%), 62 collisions (12.4%), and 23 incomplete
+episodes (4.6%)**. Section92's full results, limitations and failures remain
+authoritative: the sector policy fails both incomplete ceilings (10 and8), and
+the preregistered benefit over the padding control was not established. These
+are consumed development seeds, not a new independent holdout result.
+
+Preserved original artifacts:
+
+- Checkpoint: `models/ppo_v3_sector_features_v1_seed42.zip`, SHA-256
+  `0695d09d098ecdae60ae63d33b919c691af8844f782af5a66649c33e497bfaef`.
+- Configuration: `configs/intersection_v3_predictive_geometry_v2.yaml`, SHA-256
+  `a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7`.
+- Evaluation: `results/ppo_v3_sector_features_v1_development_seed40042.csv`,
+  SHA-256 `68e7259e0c08519978b9a07bc48b812878b4f1b6481afd12d20e30abe5199cbb`.
+- Summary: `results/ppo_v3_sector_features_v1_development_seed40042.summary.json`,
+  SHA-256 `5b5c01f105b3ef018f08ac2aeccd2384c0351ce5eecec15e65fa380f7984453d`.
+- Training record: `results/ppo_v3_sector_features_v1_seed42.training.json`;
+  audit: `results/ppo_v3_sector_comparison_v1_development_seed40042.audit.json`.
+
+The checkpoint requires the original 163-input
+`predictive_post_spawn_sector_v1` observation contract and recorded wrapper
+settings, not the Geometry V2 observation contract. Future variants must use
+new names and preserve these original artifacts and evaluation conditions.
+
+Fresh read-only SHA-256 checks matched all ten selected artifacts: the sector
+checkpoint/configuration/CSV/summary/training record, completed comparison audit,
+existing snapshot archive/manifest, Geometry V2 checkpoint and README. The
+sector checkpoint was also read directly from the existing recoverable snapshot
+in `logs/v3_sector_timeout_diagnostic_v1_snapshot_20260912T0949Z/`; its member
+hash matches the live original. Section93.1 records the snapshot identity and
+backup limitations. No duplicate checkpoint or new backup was needed.
+
+This preservation is documentation-only: no new training, evaluation, test run,
+configuration/reward/seed change, model replacement or policy promotion. Models
+remain local and outside Git. Preserve all existing staged document entries;
+this appended note is left unstaged, with no commit or push requested here.
+
+## 98. Remaining-time wrapper implementation preparation (2026-09-12)
+
+The user's next-step request advances only the bounded wrapper/test stage from
+96.4, following the frozen V3_CLOCK_OBSERVATION_V1.md design. Preserve the new
+external section97 Sector V1 archival decision and both staged document blobs.
+README was reread in full and the complete historical research record was read
+before earlier work; the new section97 suffix was read fully before this append.
+No training, development scoring, diagnostic replay, checkpoint loading or
+release of a research command is part of this implementation stage.
+
+Before adding executable source, read-only checks verified all531 input hashes
+bound by the immutable completed diagnostic analysis, the unchanged clock design
+hash3266b72e0687e309816375a63377e7f4a7d3fe9d9c4e8461840b8fde7153973c,
+and the existing235-member recoverable snapshot including live byte equality
+(MILESTONES permits append-only growth). No CSV metrics were recomputed and no
+snapshot was recreated. Historical code/configuration/models remain unchanged.
+Current HEAD is251300c649460443d960fa7fe4b346b26e08ad04. Preserved staged blobs:
+README f0355703b4be5aae514fa0608bffcaf62daa3582;
+MILESTONES8049d870ade230e876074daec698ce6b64d4eda4.
+
+### 98.1 Prefix wording clarification; frozen design retained
+
+Section96.4's statement that the committed design was already correct was too
+broad: its main observation contract correctly requires all115 existing values
+to remain byte-identical, but Required tests item2 also retained the shorthand
+"first115 bytes". The executable implementation and tests enforce the full
+115 float32 values, which occupy460 bytes. This clarifies that test item using
+the unambiguous main contract; it changes no feature, formula or scientific
+comparison. The frozen design and every previous record remain unedited.
+
+### 98.2 Opt-in implementation, pending verification
+
+Added scripts/clock_observation_v1.py in the maintenance workspace. It directly
+wraps the synchronized predictive parent and appends either float32 zero or
+float32 clip((30-actual_time)/30,0,1), retaining all460 prefix bytes. Both arms
+validate parent/configuration/time/input contracts identically, delegate once,
+and preserve the returned reward, flags and info. There is no extra sensing,
+forecast, reset, random draw, reward shaping, sector feature or action override.
+Early terminal observations keep their actual remaining time; native timeout
+and SB3 bootstrapping behavior are not changed. Full source/runtime/reward pins
+and checkpoint compatibility are the future release-gated runner's responsibility.
+
+An independent agent is adding fabricated non-driving tests and another is
+reviewing the wrapper against the design. No historical tests are edited.
+Verification results, failures if any, measured initialization evidence and any
+scoped local commit will be appended after they actually occur. The runner,
+auditor and release/proof are still unimplemented and no run is released.
+
+### 98.3 Focused tests and independent review
+
+The first focused synthetic suite passed95 tests in8.23s. Independent review
+identified one missing frozen-parent guard: forecasts use cached
+predictive.frequency, so checking only the base simulation_frequency was not
+sufficient. Added the cached frequency=15 check and a rejection test for30.
+Additional native-bound and arm/protocol identity regression cases were added;
+the initialization test now reuses the historical framed tensor fingerprint
+helper instead of a different concatenation convention. This is preparation,
+not a change to any historical fingerprint or research outcome.
+
+Final focused suite:101 passed in3.44s; Ruff clean. There were no pytest failures;
+two preliminary new-test line-length findings were corrected before pytest.
+Tests use fabricated non-driving fixtures, preserving460 bytes including signed
+zero and read-only/noncontiguous input, no extra sensing/RNG/physics calls,
+single delegation, early terminal clocks, native30.2-second timeout semantics,
+separate DummyVecEnv terminal/autoreset clocks and installed SB3 pure-truncation
+bootstrap using the terminal observation. Synthetic collector calls are unit
+checks, not PPO learning or research driving episodes. Two fresh CPU seed42
+116-input PPO initializations match at192516 parameters with learn/train forbidden.
+
+Reviewed new source SHA-256:
+f89fd0c94e02e94272898f87033bd3cfae25bcb333ba1cf081083b7018cd0157.
+New test SHA-256:
+a59a6fc03593a60f1dc725dd208262c8a5331123cc598044142ae75c7525f958.
+The actual-project full-suite gate and separately measured preparation
+fingerprint remain pending at this entry; no run has been released.
+
+### 98.4 Full-gate lint failure and preparation-report serialization failure
+
+The first actual-project full gate stopped at Ruff E501: the new wrapper's
+_finite_real return line was103 characters versus the100-character limit.
+Pytest did not run in that invocation. The98.3 Ruff pass was the focused new
+test-file check, not a full-project pass. Wrapped that expression across two
+lines without changing behavior; the98.3 wrapper hash is now historical.
+
+Separately, both non-driving fresh-policy constructions passed initialization
+parity/count/CPU/zero-step assertions, but the measurement command's JSON report
+failed to serialize a NumPy int64 action count. The reporting-only command was
+corrected to emit a Python int and is being repeated. No research episode,
+learning, checkpoint load/save or output artifact was produced by that failed
+report. Final measured evidence and full-gate results will follow separately.
+
+### 98.5 Final full gate, stable initialization and retained baseline
+
+The second measurement attempt also passed its policy assertions but correctly
+refused its final source-stability check because the wrapper's lint-only edit
+occurred during measurement. This rejected attempt is not accepted provenance.
+After both files were frozen, the final independent measurement exited0 in4.24s,
+with unchanged before/after source hashes and no reset, step, learn, predict,
+checkpoint load/save or artifact write. Both fresh116-input, seed42 CPU policies
+have192516 parameters, num_timesteps0, _n_updates0 and the identical measured
+initial tensor SHA-256:
+d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec.
+The historical sorted/name-dtype-shape/payload length-framed fingerprint helper
+was used, not the old163-input hash. Actual runtime is CPython3.12.9, Torch2.13.0,
+SB3 2.9.0, NumPy2.5.2, Gymnasium1.3.0 and HighwayEnv1.12.1, CPU threads8/8.
+
+Fresh actual-project Ruff passed; pytest passed927 tests in61.90s, with only
+the two existing obstacle-route infinite-Box warnings. This includes826 unchanged
+historical tests plus101 new synthetic clock tests. Independent final static
+review passed both complete actual files and the cached-frequency correction.
+Final wrapper SHA-256:
+c441bcbbcdac563a29675010430260f9bb3f52810ca73dce5e9558995d46c136.
+Test SHA remainsa59a6fc03593a60f1dc725dd208262c8a5331123cc598044142ae75c7525f958.
+
+Post-test verification again matched all531 completed-analysis input hashes,
+the unchanged clock design and all235 snapshot members. The actual source
+inventory is exactly the95 historical Python files plus the two named new
+files; no historical Python file changed and no old strict inventory checker
+was weakened. Whitespace check passed. No research train/evaluate/comparison/
+diagnostic process was present during the approved process check.
+
+Added results/v3_clock_observation_v1.preparation.json containing this measured
+initialization, exact source/design/configuration pins, runtime, test counts,
+failure history and explicit remaining release blockers. It is preparation
+evidence, not a training release or driving-performance result. Geometry V2's
+designation, Sector V1's section97 preservation, original V3 and every previous
+success/collision/TTC result and rejection remain unchanged. No model was saved,
+no research episode was collected, and no policy is promoted.
+
+### 98.6 Preparation artifact review and scoped commit readiness
+
+Independent review of the6401-byte preparation JSON passed: its initialization
+values match the accepted measurement stdout, all six source pins match and
+the parent-reported full-test/baseline counts are accurately distinguished from
+the reviewer's own measurement. No additional initialization or research run
+was needed. Preparation SHA-256:
+f25260c79a2a8bbb535a8130b52d6526c2100093f5e6bb399dc028a7fa37f2a9.
+Main also parsed the JSON and verified its actual-project source hashes.
+
+The reviewed local commit scope is only the new clock wrapper, its101-test file
+and the small preparation JSON. README and the full overlapping MILESTONES
+working change remain excluded, with the two staged blob IDs from98 preserved.
+No models, data, raw logs, historical file edits or Git push are included.
+
+### 98.7 Local commit complete; test-coverage wording correction
+
+Local commit4e3f9adcd1685110f39f4f23e1a894ab661988b8 contains exactly three new
+files and717 inserted lines: the127-line wrapper,431-line test file and159-line
+preparation JSON. The commit used explicit paths only. Both staged document
+blob IDs from98 remained identical before/after; README and the entire
+overlapping MILESTONES change were excluded. Working status remains staged
+README and staged-plus-unstaged MILESTONES. No model, log, data or push occurred.
+
+Final documentation review caught an overstatement in98.3: the executed tests
+explicitly exercise read-only source arrays and signed zero, but do not create
+a separate noncontiguous prefix fixture. Noncontiguous input preservation was
+reviewed statically from the element-wise float32 copy; it must not be described
+as separately tested. This append corrects the coverage claim without altering
+prior entries, source, measured fingerprint, preparation JSON or927-test result.
+
+The next bounded engineering stage is only the new controlled comparison runner
+and its mocked execution tests under the unchanged frozen clock design. The
+independent result auditor and complete release/proof remain later gates; no
+training/evaluation/replay is released by this commit or that next stage.
+
+### 98.8 Existing follow-up advanced after verified completion
+
+OpenAI Docs guided a supported update of the existing
+finish-v3-geometry-experiment follow-up after the scoped commit and reviews.
+Saved update2026-09-12T13:40:45.770Z (updated_at1789220445770),22048 characters,
+UTF-8 prompt SHA-256:
+3c556aa278bfd07b0c3542889a51d1abba9584f422b5e7333350627c858542b9.
+The updating agent verified the exact intended prompt through supported view
+and persisted readback; main independently parsed the persisted configuration
+read-only and verified hash, length and all metadata. Identity/name/heartbeat,
+ACTIVE status,30-minute cadence, target task and created_at1789109054456 remain
+unchanged. No raw automation file was edited.
+
+The saved prompt records the completed wrapper/preparation, exact source/report/
+initialization hashes and local commit, and advances only to
+scripts/run_clock_comparison_v1.py and tests/test_clock_comparison_v1.py with
+fabricated/mocked execution tests. Full auditor/release/proof implementation and
+all research launches remain later stages. It explicitly preserves the staged
+documents, section97 archival decision,460-byte clarification and98.7 coverage
+correction, all historical results/gates/snapshot/no-rerun constraints and quiet
+unchanged-state notifications. No experiment or policy improvement is claimed.
+
+## 99. Controlled clock runner implementation preparation (2026-09-12)
+
+The existing follow-up advances only the new runner and mocked-test engineering
+stage specified in98.8. README/design hashes and actual HEAD4e3f9ad were checked;
+the full design and previous record were already read, and the complete98 tail
+was reread before changes. Existing staged README/MILESTONES blobs and all
+historical sources, configurations, models and results remain untouched.
+No training, evaluation, replay, new holdout inspection, checkpoint loading or
+initialization measurement is authorized as a research run in this stage.
+
+Before implementation, main verified all531 immutable completed-analysis input
+hashes and all235 recoverable snapshot members/live baseline bytes. Independent
+read-only verification also passed those checks, all six preparation source
+pins, the46-installed/47-discovered exact metadata-origin contract, all227 frozen
+dependency hashes and CPU threads8/8. No CSV outcomes were reanalyzed and no
+snapshot was recreated. Actual source inventory was95 historical files plus the
+two committed clock files. New additions are only the runner and its test file;
+the future auditor/test must later be explicitly inventoried before release.
+
+### 99.1 Draft release-gated adapter and review corrections
+
+Added scripts/run_clock_comparison_v1.py in the maintenance workspace, with one
+stage per dedicated process and only the four frozen arm/stage combinations.
+Arguments retain the exact200000-requested/200704-collected PPO budget, seed42,
+70042 initial internal-validation stream,50 episodes every10000 steps,25000-step
+checkpoints and500 deterministic development seeds40042--40541. It preserves
+the unchanged training/evaluation mains through scoped in-memory adapters.
+
+The draft validates a future externally hash-pinned release and independently
+bound proof before output/model/environment work. It rechecks all old byte pins,
+runtime origins, dependency inventory and snapshot, plus the explicit new source
+inventory. No release/proof or auditor is created here; their current absence
+blocks launch. Every future stage requires a fresh full Ruff/pytest gate,
+exclusive outputs, verified predecessors, a no-competing-process check and a
+failure-preserving owner lock. Only a cleanly completed owner removes its lock.
+
+Independent static review prompted explicit imported-module origin checks,
+exact116-input Box/action validation, cached initialization/source/runtime/arm/
+duration stamps, CPU predecessor/final-model verification and before/after
+evaluation-load byte checks. Both fresh arms must equal the measured d1c314...
+initial tensor hash before learn, not merely match each other. Exceptional
+factory/main paths close owned environments without masking the primary error;
+all adapted globals are restored. Windows process checking narrowly recognizes
+the expected venv redirector parent rather than ignoring arbitrary ancestors.
+
+During draft checks, root corrected an unsuitable read-only path helper that
+required output files to exist; the new resolver supports absent named outputs
+while rejecting path escape/symlink substitution. Initial focused Ruff reported
+13 new-source E501 line-length findings; subsequent edits exposed an import-order
+finding and the remaining three long lines. These are engineering preparation
+failures, not research results. A separate agent is writing fabricated tests;
+focused/full test results and final review will be appended when available.
+
+### 99.2 Mocked tests and output-race hardening
+
+The first mocked runner suite passed139 tests in4.23s. New-test Ruff found eight
+long lines plus import formatting. Expanded inventory tests initially produced
+145 passes and eight fixture failures: a mock compared a Windows backslash path
+with a forward-slash suffix, returning the wrong synthetic dictionary. Corrected
+the fixture with Path.as_posix. A later formatting rerun overlapped expanded
+import-origin validation and produced152 passes/one fixture failure; updating
+the fixture to include all imported local modules/packages resolved it. The
+resulting153-test suite passed in3.88s and focused Ruff passed. These temporary
+fixture failures changed no research inputs or results.
+
+Further review separated expected initialization metadata from actual measured
+initial_policy in a failed training record: initial_policy remains null until
+the policy is fingerprinted. Process enumeration now fails if its own worker is
+missing or duplicated. Final summary/record readback is verified, and the legacy
+numeric Infinity encoding for wholly unavailable TTC is preserved rather than
+substituted; such a result cannot pass the future audit's TTC gate.
+
+Final output-race review found that the unchanged historical mains check for
+existing outputs before the potentially long operation. A file created later
+could otherwise be overwritten. Added an exact-path open adapter around only
+the delegated main: the final model/summary/CSV writes use atomic exclusive
+creation, retaining late-created existing material and partial failed writes.
+It covers frozen SB3 Path.open, summary Path.write_text and pandas CSV file-open
+routes, rejects append/update of protected outputs, leaves checkpoint/best/log
+writes unchanged and restores both open functions on all exits. No closure is
+attached to a model and no learning, action, reward, reset or metric changes.
+Synthetic regression tests for these paths are being added before the final
+full gate; the153-test count above predates those final tests.
+
+### 99.3 Final focused gate and static runner review
+
+The final focused runner suite passed171 tests in4.19s; focused Ruff passed.
+The final output cases cover four protected artifact types through Path and
+built-in open, late-created sentinels, atomic refusal despite a stale existence
+check, append/update rejection, partial-write preservation, callback/unrelated
+writes and both open hooks' restoration. The fabricated external-tamper case
+uses the captured original open to represent a different process, then tests
+postflight rejection. No additional functional failures occurred.
+
+Complete independent static runner review passed; every raised origin, model,
+initialization-provenance, process, cleanup and output-race issue was resolved.
+Runner SHA-256:
+5e8602b58cba8e2f830836f023c9cf94f4e4c01374437d8455274bdfc9bca9d6.
+Test SHA-256:
+f847213c51055d95c9b9d5d68a732aac0edda6ac3ca9841ed1fa6747aca328de.
+The actual-project full test gate and separate independent test-file review
+remain pending at this entry. No auditor, release/proof, model or research
+output has been created and no research command has been invoked.
+
+### 99.4 First full gate and independent test-review findings
+
+After the reviewed two files were copied to the actual repository, Ruff passed
+and all1098 tests passed in65.14s, with only the two existing obstacle-route Box
+warnings. This gate covered the171-case new runner suite and927 existing tests.
+
+Independent review read the entire1002-line test file and650-line runner. It
+confirmed meaningful real argument/guard/hash/order/lock/file-I/O assertions
+around mocked external operations, with no real PPO/environment research calls.
+It also found two final gaps before commit: summary checks were mocked in all
+stage tests, leaving the direct required-field contract untested; and the current
+training model was not rehashed after final CPU reload, unlike predecessor and
+evaluation loads. The latter could leave a completion record with a stale hash
+if model bytes changed during reload. No research run has used this draft.
+
+Added post-training-reload and end-of-check current-model/CSV hash guards. The
+runner's new SHA-256 is
+b93965c70559379449bc0232712bd3d973bfac8ef582cbdd3382e262cb7bcfa8;
+focused Ruff passes. Synthetic summary metadata/null-field rejection cases and
+a fake load-time model-mutation regression are being added, along with explicit
+forbidden PPO construction/prediction guards. The1098-test gate above predates
+these final changes; another actual-project full gate is required before commit.
+
+### 99.5 Final review regressions covered
+
+The expanded focused suite passed202 tests in3.93s; Ruff passed. It adds complete
+synthetic training/evaluation summary fixtures with26 wrong/missing-field cases,
+a fake final CPU-load mutation that must leave a failed record and retained lock,
+and explicit forbidden real PPO construction/prediction guards. The31 added
+cases passed their first execution; one new-test line-wrap lint finding was
+corrected and no new semantic test failure occurred. Independent runner delta
+review approved the post-load/final-current-artifact hash checks without changing
+any scientific setting. New test SHA-256:
+566ee4bc5517add1a73e1594db8b3ce1961be1bd8693ffefde00acf6baa8402b.
+Final actual-project full verification and independent test-delta review follow.
+
+### 99.6 Final full gate and retained-input verification
+
+Fresh actual-project Ruff passed and pytest passed1129 tests in65.19s, with only
+the two existing obstacle-route infinite-Box warnings. This is927 unchanged
+existing tests plus202 new runner tests. Independent final test-delta review
+confirmed that both the summary-contract coverage and post-reload hash gaps
+were closed, and that no real PPO/environment research operations occur in the
+new tests. Runner/test hashes remain exactly those recorded in99.4/99.5.
+
+Main post-copy integrity checks matched all531 immutable analysis input hashes,
+all235 snapshot members/live baseline bytes and the four retained clock design/
+wrapper/test/preparation pins. Actual Python inventory is exactly97 pre-existing
+files from commit4e3f9ad plus the two new runner files, totaling99. No historical
+Python file changed. The future released inventory will additionally require
+the separately implemented auditor and its tests; no old checker was weakened.
+
+Whitespace checks pass. Preserved staged README blob remains
+f0355703b4be5aae514fa0608bffcaf62daa3582 and MILESTONES blob remains
+8049d870ade230e876074daec698ce6b64d4eda4. The reviewed local commit will include
+only the new runner and its test file, never these overlapping documents.
+No experiment, fresh checkpoint, release/proof or result auditor was created;
+no policy is promoted and every previous outcome/rejection remains unchanged.
+
+### 99.7 Reviewed runner/test commit complete
+
+Local commit33a62993fbf6dc764cccb0abba82622561bee098 contains exactly the new
+657-line clock runner and1117-line mocked test file,1774 inserted lines total.
+It excludes README and MILESTONES, all historical source/configuration files,
+all models/results/logs and any release/proof. Both staged document blobs from
+99.6 were verified identical before/after the explicit path-scoped commit.
+Working status remains staged README and staged-plus-unstaged MILESTONES.
+No Git push occurred.
+
+The completed engineering implementation still refuses a missing/invalid
+release and its exact source inventory requires the not-yet-created independent
+auditor and test file. Next bounded work is only that read-only auditor and
+synthetic audit tests under the frozen clock design. Release/proof issuance,
+all research launches and outcome-based policy acceptance remain later gates.
+
+### 99.8 Verified follow-up transition to independent audit implementation
+
+OpenAI Docs guided the supported update of the existing follow-up after the
+runner/test commit and final reviews. Saved update2026-09-12T14:50:55.261Z
+(updated_at1789224655261),23854 characters, UTF-8 prompt SHA-256:
+cc38cdc4c55ded8330c2c44c2aabf86139489fa6bd9e96597fac13df70260b9e.
+The updating agent checked exact intended/supported-view/persisted readback;
+main independently parsed the persisted configuration read-only and verified
+hash, length, completion/next-stage text and every metadata field. Identity/name,
+heartbeat/ACTIVE,30-minute cadence, target task and created_at1789109054456 are
+unchanged. No raw automation file was edited.
+
+The existing follow-up now records the completed runner commit and final202/
+1129-test evidence, then permits only scripts/audit_clock_comparison_v1.py and
+tests/test_clock_comparison_audit_v1.py with synthetic/mock cases. The auditor
+must independently check the eight-column500-row schema, exclusive outcomes,
+positional pairing, finite-TTC exclusions, model/config/runtime/source lineage,
+all16 historical gates and all five clock-benefit conditions, including strict
+paired-success significance boundaries. It must not trust runner acceptance.
+
+That next stage does not permit runner changes, release/proof creation, a real
+new-result audit invocation, training, evaluation or replay. All prior history,
+gates, snapshot/provenance/no-rerun rules, user-staged document preservation and
+quiet unchanged-state notifications remain. This turn collected no research
+episodes and made no scientific performance or policy-improvement claim.
+
+## 100. Independent clock auditor implementation preparation (2026-09-12)
+
+The user's next-step request continues only the independent result-auditor and
+synthetic-test stage recorded in99.8. The complete README/research record had
+already been read; main reread the README including the actual staged Geometry
+designation, the full frozen clock design and the latest99 tail before changes.
+Actual HEAD remains33a62993fbf6dc764cccb0abba82622561bee098. The maintenance and
+actual MILESTONES copies matched before this append. No scientific setting or
+historical source, model, result, release/proof or README is being changed.
+
+Independent read-only pre-implementation verification passed all531 immutable
+analysis input hashes,235 snapshot members/live baseline bytes and preparation
+source pins. Actual inventory is exactly95 historical plus four clock sources,
+99 total. Frozen runtime origins (46 installed/47 discovered),227 dependency
+hashes and CPU8/8 also passed. Staged README blobf0355703b4be5aae514fa0608bffcaf62daa3582
+and MILESTONES blob8049d870ade230e876074daec698ce6b64d4eda4 remain unchanged.
+
+Only scripts/audit_clock_comparison_v1.py and
+tests/test_clock_comparison_audit_v1.py will be added. Independent parsing,
+statistical gates and provenance checks will be tested with fabricated evidence;
+no new-result audit, real checkpoint loading, simulation, training, evaluation,
+replay, initialization measurement or release issuance occurs in this stage.
+Every implementation/test failure and final verification will be appended below.
+
+### 100.1 Independent auditor draft and first synthetic gate
+
+Added the prospective auditor in the maintenance workspace. It reconstructs
+the exact clock protocol/arguments independently of runner acceptance helpers,
+validates a hash-bound release/proof and retained inventory, and checks all four
+completed stages with cumulative0/3/6/9 predecessor artifacts, timestamps, fresh
+test records and model/summary/CSV identities. Bound evidence is rehashed after
+reading and before completion. Actual checkpoint inspection is deferred inside
+the future valid audit path; it checks CPU/PPO settings, exact116-input bounds,
+the12-tensor architecture and192516 finite parameters without prediction or
+learning. New tests substitute synthetic models/evidence; no policy was loaded.
+
+The independent numeric implementation preserves500 rows/eight columns and
+positional pairing, collision-first exclusive outcomes, length/5 travel time,
+finite episode-minimum-TTC averaging, all16 historical gates and five clock
+benefit rules. Positive-Infinity TTC rows are excluded with explicit counts.
+A wholly unavailable mean is represented as JSON null only in the new report;
+its raw summary must retain legacy positive Infinity and every TTC gate fails.
+This reporting representation does not substitute observations or an estimator.
+
+The first98 fabricated parser/statistical/JSON/gate tests passed in0.33s.
+Initial source Ruff found five E501 line-length findings; wrapped the lines and
+the source check now passes. Expanded summary, lineage, model and integration
+tests and independent full review remain pending. No release/proof or research
+artifact has been generated, and no prior source or scientific setting changed.
+
+### 100.2 Independent review corrections before final tests
+
+Independent protocol review confirmed the reconstructed description matches the
+completed runner exactly and that strict Python integer fields match frozen SB3
+serialization. Review added two evidence-consistency checks, not scientific
+gates: each stdout must end with its exact stage-completion marker in addition
+to valid artifacts/records, and unsafe_ttc_events>0 must equal min_ttc<=2.0,
+because the frozen evaluator derives both from the same step-TTC sequence.
+The supervisor must still separately verify the operating-system worker exit.
+
+A second reviewer found that the frozen531-input map does not contain live
+checkpoint bytes for original V3, corrected control or Predictive V1. The draft
+would have rejected every future audit for those missing historical pins.
+Corrected only these three exact historical model-name/path cases to report
+their identities as recorded in immutable hash-pinned summaries, explicitly
+not live-byte verified. All configurations, the other four historical models
+and both new clock models must remain live-byte bound. No old checkpoint is
+newly required, loaded, replaced or added to the frozen release protocol.
+
+The recorded-only identities remain original f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c,
+control172260972c4aad6ed73ea7080ae3458282cf046819c868820754c9d637c01473 and
+V1 935dbd281c4f59326fdbd40a53038713629d7f74b7a48aa22566d88dce83b406.
+Their original summary hashes and all three configuration hashes were checked
+read-only; no historical CSV outcomes were reanalyzed for this correction.
+
+Checkpoint inspection now requires the previously bound expected digest, hashes
+captured bytes before deserialization, loads only that checked in-memory byte
+stream and rehashes the live path afterwards. This prevents a replaced pathname
+from being deserialized between separate checks. Stage JSON hashes are captured
+before parsing and reused in the cumulative chain, with readback/end checks.
+Independent review approved these fixes; synthetic regression coverage and the
+actual-project full gate remain pending. No research run has used this draft.
+
+### 100.3 Focused synthetic tests and complete source review
+
+The expanded focused gate passed185 tests in2.85s, followed by the frozen207-case
+suite passing in6.29s. All three semantic-test executions (98,185,207 cases)
+passed; new-test Ruff found ten line-length findings, which were corrected.
+Final focused Ruff passes for both files. These are engineering checks only.
+
+The suite includes a complete fabricated audit exercising the real cumulative
+chain, summary reconciliation, all16+5 rules and final hashes, with only release
+verification and model loading substituted. It covers the three recorded-only
+historical identities, exact95+6 source inventory,227 dependency/origin guards,
+strict schemas, unavailable TTC, independent fake checkpoint tensors and verified
+byte-stream loading, output races and exclusive CLI publication. Real PPO
+construction/load/save/predict/learn/train, gym.make and environment factories
+are forbidden in the synthetic tests.
+
+Independent complete source and final delta reviews passed. Auditor SHA-256:
+23a7cfff76513e5225f6a880fe948b8c0569aa1bb42cafce11e06d6c73e06e3d.
+Test SHA-256:
+8f07d13ba340af7e30757671879545232c88efbca81895de9ed5a1df700c5f78.
+The independently reviewed first837 test lines passed; the final added coverage
+is now under separate review. Actual-project full tests and post-copy baseline
+verification follow before a scoped commit. No release or experiment is started.
+
+### 100.4 Actual-project full gate and final independent test review
+
+Copied exactly the two reviewed new files into the actual repository after
+absence/hash checks; copied only the append-only MILESTONES tail after normalized
+prefix verification. Both staged document blobs remained unchanged. Fresh
+actual-project Ruff passed and pytest passed1336 tests in77.39s, with only the
+two existing obstacle-route infinite-Box warnings. This comprises1129 unchanged
+existing tests plus207 new synthetic auditor cases; no semantic test failed.
+
+Independent final test review passed all added end-to-end, recorded-only identity,
+inventory/runtime and exclusive-output cases, including the changed fixtures and
+explicit forbidden research operations. Auditor/test hashes remain exactly those
+in100.3. No historical source, configuration, checkpoint or result was altered.
+
+Main also performed standalone read-only input verification, not an actual result
+audit: the independent auditor and completed runner returned identical current
+fingerprint structures,540 input pins and227 dependency pins, with exact101-source
+inventory and unchanged snapshot archive68b9c311587cf9fe801d0a879f23f6251be209e6946a72037012385543173406.
+This retained all531 completed-analysis inputs and235 recoverable snapshot members,
+plus the explicitly added clock evidence/sources. Full runtime origins and CPU8/8
+were checked by both independent paths. No release/proof is issued by this check.
+
+The scoped commit includes only the independent auditor and its synthetic tests.
+README and the entire overlapping MILESTONES working/staged change are excluded;
+append-only research updates remain in the working tail. No model, log, data,
+research result or Git push is included. Next bounded work is independent
+non-driving release/proof verification and issuance; training/evaluation/replay,
+new-result audit invocation and automatic policy promotion remain unreleased.
+
+### 100.5 Reviewed local auditor commit complete
+
+Local commit c65c3df7949b45f6e76b389409c28f80a3f51cb4 contains exactly the new
+780-line independent auditor and 1113-line synthetic test file, 1893 inserted
+lines total. The explicit path-scoped commit excluded both pending documents,
+all historical sources/configurations and every model, result, log or data file.
+No Git push occurred. Before and after the commit, the staged README blob was
+f0355703b4be5aae514fa0608bffcaf62daa3582 and staged MILESTONES blob was
+8049d870ade230e876074daec698ce6b64d4eda4. Status remains staged README and
+staged-plus-unstaged MILESTONES; this research tail remains a working-file append.
+
+Post-test read-only verification again passed the exact 540-input/227-dependency
+binding and retained snapshot/runtime checks. Every named clock release, proof,
+model, train/evaluate record, summary, CSV, audit report, research log directory
+and batch lock was absent. No research run, checkpoint work or release was
+performed. All historical rates, failed gates, rejections and user designations
+remain unchanged. The next stage is only reviewed non-driving release/proof
+preparation under the frozen design, with separate future launch checks.
+
+### 100.6 Verified follow-up transition and test-scope clarification
+
+OpenAI Docs guided a supported update of the existing follow-up after the
+reviewed commit and full test gate. The saved update is
+2026-09-12T15:22:40.469Z (updated_at 1789226560469), 26368 characters, with
+UTF-8 prompt SHA-256:
+848b29b405b26ebe46f1147d983369f62947a8196e9273f628c82076e6b489c7.
+The updating agent verified intended text against supported view and persisted
+readback. Main independently parsed the saved configuration read-only, verified
+that exact hash/length and reviewed the changed text. Every identity, name,
+heartbeat/ACTIVE status, 30-minute cadence, task target, created_at 1789109054456
+and other metadata field remained unchanged. No raw automation file was edited.
+
+The saved prompt records the completed auditor/test commit and 207/1336-test
+evidence, then advances only to the two named clock release/proof JSON files.
+Independent source/input/runtime/dependency/snapshot checks, absence/process
+checks, fresh full tests, independent JSON review, hash-only verification and
+scoped local commit are required. It forbids new result-audit or runner stages,
+training, evaluation, replay, new seed inspection and separate PPO initialization
+or loading. A valid release does not bypass the later experiment launch gates.
+All prior decisions, failed gates, no-rerun rules and staged-document preservation
+remain intact; section references now include100.
+
+For precision, this section's no-model/no-simulation wording describes research
+execution and separate checkpoint or initialization work, not removal or bypass
+of the required unchanged historical engineering suite. Its existing non-driving
+test behavior remains allowed. The new auditor tests forbid real PPO and
+environment operations and use fabricated evidence. No fresh research episode,
+checkpoint inspection/measurement, policy result or release was produced here.
+
+## 101. Clock comparison release/proof preparation (2026-09-12)
+
+The existing follow-up advances only the non-driving release/proof stage recorded
+in100.6. Main reread the complete frozen clock design, retained diagnostic design
+and all of section100 before changes. The previously read README remains at
+SHA 52c5b93040da9259eaae83616d9500236eff307170b8e7896f85bdf242da7134;
+both MILESTONES copies matched. Actual HEAD is
+c65c3df7949b45f6e76b389409c28f80a3f51cb4. The staged README/MILESTONES blobs
+remain those in100.5. No implementation or scientific protocol change is planned.
+
+The first combined preflight/test command stopped before Ruff or pytest: the
+unchanged runner process guard detected Python PID47744. Independent read-only
+baseline verification was being performed concurrently. A subsequent direct CIM
+inspection found no remaining Python process; no process was terminated and no
+guard was weakened. Preparation checks will be serialized before repeating the
+preflight. This was a preparation refusal, not a failed research stage: no
+release/proof, model, training, evaluation, replay or result audit was produced.
+
+Only the two named release/proof JSONs may be created after verified baseline,
+absence/process checks, fresh full tests and independent review. All old evidence,
+measured initialization and source/configuration/model bytes remain unchanged.
+
+### 101.1 Repeated guard refusal and identified Windows launcher mismatch
+
+The second preparation attempt also stopped before Ruff/pytest, this time on
+PID48624. No third blind attempt was made. The independent baseline checker had
+used the venv interpreter with stdin source, imported only the auditor and
+completed successfully; it did not capture its PID, so the earlier suggestion
+that PID47744 was the parallel checker is not established.
+
+A dedicated read-only live census identified the real launcher mismatch. Its
+worker PID47732 had parent PID47880. The parent executable and first command-line
+token were the actual repository's .venv/Scripts/python.exe, while the child
+executable and first token were the installed base Python312/python.exe. Their
+remaining arguments were identical and the direct parent-child relationship was
+verified. The unchanged no_active_research guard requires whole CommandLine
+equality for its narrowly allowed venv redirector. The executable-token rewrite
+therefore prevents that exemption and classifies the launcher's visible research
+module name as another worker. This is safe refusal, not concurrent training.
+
+Independent test review confirmed the missed case: the positive mocked parent
+and child had different ExecutablePath values but identical literal CommandLine
+strings. It did not represent this observed argv[0] rewrite. The existing passing
+1336-test result remains valid for its tested cases, but does not establish that
+the actual Windows launch preflight works. No release approval is inferred from
+that historical pass, and no fresh test gate completed in this preparation turn.
+
+Independent retained-baseline verification still passed all 531 old/540 current
+inputs, 101 sources, 227 dependencies, 46 installed/47 discovered runtime origins,
+235 snapshot members and measured preparation identity. All 26 reserved outputs
+were absent. No source, package, model, process or scientific setting changed.
+
+The current release-only scope prohibits repairing frozen source code or relaxing
+the check. Release/proof issuance is therefore withheld pending direction for a
+separately reviewed, narrowly scoped launcher-guard correction and corresponding
+source-pin/test updates. A prospective correction must retain direct PID/PPID
+and executable identity checks, compare complete argument tails with Windows-
+aware parsing, and continue rejecting competitors, malformed commands and any
+argument mismatch. Hiding a research command in stdin, altering runtime origins,
+terminating the launcher or bypassing the guard is not an accepted workaround.
+
+No release/proof JSON, model, training/evaluation/diagnostic output, new result
+audit or code commit was created. All historical research decisions are preserved.
+
+### 101.2 Independent blocker confirmation and rejected workarounds
+
+Independent protocol review confirmed the census against the version-correct
+[CPython 3.12.9 launcher source](https://github.com/python/cpython/blob/v3.12.9/PC/launcher.c#L1764):
+VENV_REDIRECT removes the original executable token, constructs the base
+interpreter command and preserves the argument suffix and venv identity. Thus
+whole-command-line equality does not represent this legitimate launch sequence.
+The earlier static/fabricated process review missed that real-platform assumption.
+
+No acceptable already-supported invocation was found. Ordinary module, script
+and visible command-string launches retain the executable-prefix difference.
+Stdin indirection hides research identity from the command-name check; direct
+base-interpreter, custom executable-token or internal environment-variable tricks
+change the frozen launch contract. These are not approved workarounds. No such
+research invocation, guard bypass, runtime edit or process termination was tried.
+
+Release/proof preparation remains blocked on direction for the narrow process-
+identity repair, its real-Windows non-driving regression cases and refreshed
+source fingerprints/reviews/full gates. The prior release-only plan is deferred,
+not completed or silently broadened. The follow-up will wait quietly for new
+direction instead of repeatedly executing the known-failing preflight. Historical
+tests/results, source bytes and staged documentation remain preserved.
+
+### 101.3 Follow-up records blocker and waits for direction
+
+OpenAI Docs guided the supported update of the existing follow-up to record this
+blocker and defer the previous release-only plan. Saved update:
+2026-09-12T16:04:08.251Z (updated_at 1789229048251), 29880 prompt characters,
+UTF-8 SHA-256:
+124cb64f74dc056b396ad8e07b45d88b528fbccc5443c34cba857fa9aa1887d3.
+The updating agent verified intended text against supported view and persisted
+readback. Main independently parsed the saved file read-only, verified that
+hash/length, reviewed the full blocker/waiting/deferred-plan text and compared
+every metadata field with the prior saved state. Identity, name, heartbeat/ACTIVE,
+30-minute cadence, task target, created_at 1789109054456 and all other metadata
+are unchanged. No raw automation file was edited.
+
+While no new explicit direction arrives, the follow-up performs no repeated
+preflight, tests, process census or research work and returns quiet DONT_NOTIFY.
+It does not repeat the clarification question on every heartbeat. The pending
+question asks permission for the narrow launcher-guard correction, regression
+tests and source-fingerprint updates. Clear approval would first require a
+recorded bounded engineering amendment and independent verification; it would
+not authorize automatic training or changing any scientific setting. The prior
+release/proof plan remains retained but explicitly deferred. No code/release
+commit or research artifact was created during this blocked preparation turn.
+
+## 102. Approved clock launcher identity v1 amendment (2026-09-12)
+
+The user replied `ok` to the pending narrow launcher-guard correction question,
+then instructed that routine in-scope work does not need repeated approval unless
+there is a security/privacy concern. This permits the engineering correction;
+it does not silently change research settings or waive release/integrity gates.
+Main reread the complete actual README, the complete frozen clock design and
+sections100-101, following the already completed full research-history reading.
+Both MILESTONES copies matched at SHA256
+c91b53ef939bbcebca08888c7d29dbafc14cb95ced7e278ef60bdcb928ffe190.
+Actual HEAD remains c65c3df7949b45f6e76b389409c28f80a3f51cb4; the staged README
+and MILESTONES blobs remain f0355703b4be5aae514fa0608bffcaf62daa3582 and
+8049d870ade230e876074daec698ce6b64d4eda4 respectively.
+
+Recorded V3_CLOCK_LAUNCHER_GUARD_V1.md before source changes as the bounded
+engineering amendment. Only clock process-identity logic, its regression tests
+and necessary source/amendment fingerprints may change. The complete scientific
+design remains frozen. Independent baseline recovery verification and separate
+process-parser review are underway before edits. No research operation or
+release/proof issuance is part of this repair stage. Preserve all section101
+failed preflights and previous static/mock-review limitations.
+
+### 102.1 Independent pre-edit recovery and baseline verification
+
+Independent read-only verification passed: the four named prospective affected
+clock source/test files are byte-identically recoverable from actual HEAD Git
+objects, with their exact pre-amendment hashes in the amendment. No new archive
+is needed for these small tracked files; the previous snapshot and its stated
+limits remain unchanged. All531 historical/540 current input pins,101 sources,
+227 dependencies,235 snapshot members and frozen46/47 runtime origins with
+CPython3.12.9/CPU8/8 passed. All26 reserved clock paths were absent and the staged
+document blobs were unchanged. This check ran no process guard, test, model
+operation, outcome analysis or simulation. Source modification may now begin
+within the recorded engineering boundary.
+
+### 102.2 Narrow launcher implementation and parser boundary
+
+Implemented only clock launcher-identity helpers and the process census check.
+The current worker must have its verified direct repository-venv parent; both
+executable command tokens must match their actual absolute executable paths,
+with sys.executable bound to the venv and sys._base_executable cross-checked
+against sys.base_prefix/python.exe. Missing, duplicated, malformed or cyclic
+identities fail closed. Every unrelated visible research worker still rejects.
+
+The prefix parser accepts properly quoted or unquoted executable paths, removes
+only the executable separator's spaces/tabs, and compares the entire remaining
+argument text verbatim. Interior/trailing whitespace, escaped quotes, backslashes,
+empty arguments and multiline code are not normalized. This follows the
+[version-correct launcher source](https://github.com/python/cpython/blob/v3.12.9/PC/launcher.c#L1410).
+It is deliberately not a validator for arbitrary Python argument syntax: malformed
+executable prefixes and NULs reject, but the already-running interpreter's opaque
+tail is not reparsed with an approximate quote balancer. This clarifies the
+amendment's command-validation scope without weakening identity/tail checks.
+
+Both future fingerprint inventories now bind the new engineering amendment
+(SHA25686d8ba8d8f447ec825407aecb9456c3b47336fe6493cce3bbc20ff1482979508).
+Only the auditor's changed runner/test hashes remain to be updated after review.
+The immutable531 historical pins and all scientific protocol fields are unchanged;
+the final inventory will be541 inputs with the same101 Python sources.
+Initial source Ruff found one E501 line-length error; wrapping that expression
+resolved it, and source Ruff passed. No semantic test or real Windows preflight
+has yet been run on the repair. Expanded regression fixtures and independent
+source review are in progress; no research release or experiment has started.
+
+### 102.3 Focused regression gate and independent source review
+
+Both independent source reviewers passed the narrow correction. Main also
+compared old/new ASTs: only PINNED, no_active_research and the two new helpers
+changed; all scientific functions, constants and entrypoints are unchanged.
+Expanded runner tests replace the seven inadequate process-mock cases and
+preserve every unrelated test. All357 focused cases passed in6.87s on the first
+semantic run. New-test Ruff initially found one101-character definition; that
+E501 was wrapped, and focused Ruff passed. No semantic test failed.
+
+Coverage includes realistic distinct executable-prefix strings, unchanged raw
+tails with quotes/backslashes/empty arguments/multiline code, all argument-tail
+differences, misleading whole-line-equal mocks, wrong executable tokens/paths,
+runtime identities, missing/duplicate/malformed census data, direct ancestry and
+competing/ancestor Python research workers. Fixtures are fabricated; they never
+execute the synthetic executable files or real research operations. Actual
+Windows preflight verification is a separate required non-driving check below.
+
+Reviewed runner SHA256:
+175c4a12d82f1e8f8cdf209924bc44ba506bd3759ebff0ab5689e0213b653bdd.
+Runner test SHA256:
+5cdb87b4164e7f91e5486a2e96a7f272417ab7938fa8d6b020320fbee088b7d7.
+Updated only these two necessary hard pins in the independent auditor, alongside
+the amendment pin. Auditor acceptance logic and its207 existing tests are
+unchanged. Final independent test review and actual-project full gates follow.
+
+A separate read-only PowerShell metadata-display attempt failed at parsing due
+to piping a foreach statement directly; it executed no inspection or write.
+This was not a test/research failure and supplies no evidence. Existing guarded
+hash checks remain the authoritative copy/verification evidence.
+
+### 102.4 Actual Windows launcher regression and final gates underway
+
+Independent final test review passed. AST comparison confirmed all54 retained
+test definitions and their imports/constants unchanged; only the old process
+test was replaced by21 focused definitions. Copied exactly the three reviewed
+changed source/test files into the actual repository after old/new SHA checks,
+and copied the research tail only after normalized append-prefix verification.
+The staged document blobs remained unchanged. Independent auditor SHA256 is
+78817c937206c77ea05a67c15d802b929a7f449b4750e0fb8972d0ea6d44badf;
+its only changes are the new amendment and the two updated source/test pins.
+
+The first actual non-driving preflight in the restricted sandbox failed because
+the CIM-enumeration subprocess exited1; the guard propagated the failure and
+did not report a successful check. No source was altered in response. The same
+visible venv -B -c verification with approved outside-sandbox process access
+passed at2026-09-12T20:59:53.391053+00:00. Worker20940 and direct parent52968
+had the installed base Python312/python.exe and repository .venv/Scripts/python.exe
+identities respectively. Actual command strings/tokens differed, complete
+argument tails matched, and the real guard passed without mocking its census.
+A second read-only census confirmed the relationship and executable tokens.
+No hidden stdin invocation, runtime spoof, process termination, model operation
+or research episode occurred. This verifies the real-platform case missed in101.
+
+Fresh actual-project full Ruff passed. The combined full gate began at
+2026-09-12T21:00:15.5079883Z; unchanged full pytest is still running and no
+completion is inferred yet.
+Post-copy independent retained-input and pin verification are also underway.
+No release/proof JSON or experiment stage has been created or executed.
+
+### 102.5 Actual-project full verification passed
+
+The combined actual-project gate completed with process exit0 at
+2026-09-12T21:01:28.4747868Z. Full Ruff passed and full pytest reported
+1491 passed,2 existing warnings in69.68s. Both warnings are the unchanged
+infinite Box bounds in tests/test_obstacle_route.py::test_gym_interface.
+The new total is1336 prior cases minus the seven replaced process mocks plus162
+new cases, a net increase of155; the focused runner suite contains357 cases.
+No semantic test failed. This required engineering suite retains its existing
+behavior; it is not a research experiment or a separate initialization measurement.
+
+Main post-test checks confirmed all reviewed actual source/test/amendment hashes
+unchanged and git diff --check passed. README bytes and both staged document blobs
+remain unchanged. The independent auditor diff is exactly its amendment pin and
+two updated runner/test pins; its existing207-case test file remains byte-identical.
+Final independent input/inventory verification precedes the four-path local
+engineering commit. No release/proof, model, research result, log or Git push is
+included, and all previous gate failures/policy designations remain preserved.
+
+### 102.6 Independent final integrity review and scoped commit preparation
+
+Independent post-copy verification passed: runner/auditor fingerprint structures
+match exactly with541 current inputs retaining all531 old pins,227 dependencies,
+101 Python sources,235 snapshot members and frozen46 installed/47 raw package
+origins under CPython3.12.9/CPU8/8. Every reviewed source/test hash is unchanged.
+Auditor AST comparison confirms all nodes outside PINNED unchanged; no obsolete
+runner/test pin remains in active source/configuration/result locations. All26
+reserved clock release/proof/research/lock paths remain absent. The reviewer ran
+no test, process census, model operation or outcome analysis during this check.
+
+Independent review passes the exact four-file local commit: the new bounded
+amendment, clock runner, runner tests and auditor pin update. Both pending
+documents and all historical source/model/result/log/data changes are excluded.
+The launcher blocker is resolved by engineering and actual Windows evidence;
+release/proof issuance remains the next bounded stage with fresh checks, not
+permission to skip them. Following the user's latest delegation, routine in-scope
+progress need not ask for approval again; security/privacy concerns remain an
+escalation boundary and scientific changes must still be prospectively recorded.
+
+### 102.7 Reviewed launcher repair committed locally
+
+Local commit738ce05351c9e74579910017dbc5fb7d594409d9 contains exactly the
+four reviewed engineering files,462 insertions and44 deletions. The72-line
+amendment is the sole new file. All prior source bytes remain recoverable from
+the pre-amendment Git commit; no completed release/result/checkpoint is replaced.
+The explicit path-scoped commit preserved staged README
+f0355703b4be5aae514fa0608bffcaf62daa3582 and staged MILESTONES
+8049d870ade230e876074daec698ce6b64d4eda4 before and after. Actual status remains
+staged README and staged-plus-unstaged MILESTONES. Research appends remain only
+in the working tail, excluded from that commit. No push or large artifacts.
+
+The narrow engineering correction is complete: independent source/test/integrity
+reviews,357 focused tests,1491 full tests and the actual Windows non-driving
+preflight passed. These are not new policy performance results. The next bounded
+work is fresh non-driving release/proof verification and issuance under the
+unchanged clock design plus this explicit engineering amendment. The existing
+follow-up is being updated through its supported interface to remove the resolved
+approval wait and honor the user's delegation; no successful update is claimed
+until its persisted text is read back and checked.
+
+### 102.8 Verified follow-up transition under standing delegation
+
+OpenAI Docs guided the supported follow-up update. Its saved update is
+2026-09-12T21:05:34.456Z (updated_at1789247134456),31214 prompt characters,
+UTF-8 SHA256a0c4add3f1b7d8415a4e7c25eae661a66d55c66838da3fd14b92461a7771e02e.
+The updating agent verified intended text against supported/persisted readback.
+Main independently parsed the saved configuration read-only, verified exact
+hash/length, read the completed-repair/current-plan/standing-authority text, and
+checked every metadata field against the prior state. Identity, name, heartbeat,
+ACTIVE status,30-minute cadence, task target, created_at1789109054456 and all
+other metadata remain unchanged. No raw automation file was written.
+
+The saved prompt preserves section101's defect and failures as history, records
+the completed repair/test/commit evidence, and removes the obsolete approval wait.
+Next work is only the two named release/proof JSONs, bound to the amendment,
+541 current input pins,101 sources,227 dependencies, retained snapshot/runtime,
+reviewed source HEAD738ce05351c9e74579910017dbc5fb7d594409d9 and fresh full
+Ruff/pytest with at least1491 passes. Independent proof/release review and
+hash-only verification remain mandatory. No research operation is authorized by
+that preparation stage itself. Later fixed stages may proceed autonomously under
+the user's standing delegation, separately bounded and only after their release,
+fresh tests, process/output/lock and predecessor checks actually pass. All science,
+no-rerun rules and staged-document preservation remain intact; quiet routine
+status requires no notification. No release or training was started in this turn.
+
+## 103. Clock release/proof preparation after launcher repair (2026-09-12)
+
+The user requested `continue dont stop` under the standing in-scope delegation.
+Proceed first through non-driving release/proof issuance, then a separately
+recorded first zero-arm training stage only if its fresh release/test/process/
+output/predecessor gates pass. No scientific settings, stage order, budgets,
+holdout protection or historical acceptance criteria change.
+
+Actual HEAD is738ce05351c9e74579910017dbc5fb7d594409d9. README remains at
+52c5b93040da9259eaae83616d9500236eff307170b8e7896f85bdf242da7134; both research
+record copies match at97724411f150dacab130d3500125d11ae7676d2b854f745a1183ff4daa760b34.
+The complete README/history was previously read; main reread the latest102 tail,
+complete frozen clock design and launcher amendment before changes. The preserved
+staged document blobs remain f0355703b4be5aae514fa0608bffcaf62daa3582 and
+8049d870ade230e876074daec698ce6b64d4eda4. Independent baseline verification
+and independent release/proof schema review are underway. No release has yet
+been created and no training/evaluation/model operation has started.
+
+### 103.1 Independent baseline/schema checks and serialized fresh gate
+
+Independent pre-release verification passed at the reviewed source HEAD: both
+protocol descriptions and541-input fingerprint structures match, retaining531
+historical pins,227 dependencies,101 sources,235 snapshot members and frozen
+CPython3.12.9/CPU8/8 with46 installed/47 raw package origins. All26 reserved
+release/proof/research/lock paths were absent, and staged documents unchanged.
+The independent helper exited before main's serialized process guard began.
+
+Independent schema review passed the exact proof/release contracts. The proof
+contains protocol, four fingerprint fields and six validation fields; release
+adds schema_version/status/created_utc and binds the proof-byte SHA in validation.
+Use actual fresh test count at least1491 and source HEAD738ce053..., not older
+internal validator floors or a later JSON-only commit. Preserve the deliberate
+64-zero evaluation-model placeholder and its explicit description; actual final
+model hashes are bound only by future stage evidence. Add no unsupported fields.
+
+Main's actual corrected Windows process guard,26-path absence and both baseline
+verification paths passed. Fresh full Ruff passed; full pytest is underway.
+The preparation captures the complete frozen proof data without creating any
+release/proof file, initializes no separate policy and executes no research stage.
+After tests, it must repeat process/output/source checks before draft review.
+
+### 103.2 Fresh full gate passed and proof drafted
+
+The serialized actual-project preparation exited0. Full Ruff passed and pytest
+reported1491 passed,2 existing obstacle-route Box warnings in69.59s. Test evidence
+completed at2026-09-12T21:28:56.102505+00:00. Both exact commands used the frozen
+venv interpreter: `-m ruff check .` and `-m pytest -p no:cacheprovider`.
+Ruff stdout SHA25682b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18;
+pytest stdout SHAd43c701f17f9150914bcbcd4a2800962f884f256acdea1d2ccf498dc41543744.
+Both stderr streams were empty (SHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855).
+
+Before and after tests, the corrected actual process guard and all26 absent-path
+checks passed. Runner/auditor current fingerprints remained equal to the captured
+pre-test541-input map; source HEAD remained738ce053.... No source changed or
+research operation ran. The six-field validation records these actual passing
+tests and the completed independent source/protocol/baseline/schema reviews;
+final serialized artifact review remains separate below.
+
+Drafted the exact proof JSON only in the maintenance workspace using apply_patch,
+preserving Python's original JSON numeric types. It is156469 bytes, SHA256
+b208c910efbdb516188744dca48b3aac76585411c6646d92907a3a720c908194.
+Independent draft review precedes exclusive publication into the actual repo.
+No actual release/proof path has yet been created; publication will copy reviewed
+bytes with overwrite=false, then verify actual bytes before binding the release.
+
+### 103.3 Proof reviewed and exclusively published; release drafted
+
+Independent draft-proof review passed exact bytes/schema/validation, the complete
+independent protocol and both541-input/227-dependency structures. Actual proof
+and release were absent at that review. Main then passed another serialized
+actual process guard, rechecked the reviewed proof hash and exclusively copied
+the proof into its actual reserved path with overwrite=false. Readback SHA
+remains b208c910efbdb516188744dca48b3aac76585411c6646d92907a3a720c908194.
+No existing file was replaced, no source changed and no model was initialized.
+
+Constructed a release draft from those actual verified proof bytes, binding their
+digest and created_utc2026-09-12T21:31:59.578375+00:00, after completed validation
+and proof publication. It is156664 bytes in the maintenance workspace only.
+Independent exact-byte release review is required before no-overwrite publication
+and both actual hash-only release validators. No research stage has started.
+
+### 103.4 Release independently reviewed, published and validated
+
+Independent release/proof review passed exact strict schemas, both541-input/
+227-dependency structures, frozen protocol, source HEAD,1491-test evidence,
+chronology and non-circular binding. Actual release and24 research paths remained
+absent during review. Exclusively published the reviewed release with
+overwrite=false and ran both actual frozen hash-only verify_release paths.
+Runner and independent auditor returned exactly equal releases; final release/
+proof hashes, source HEAD and24 absent research/lock paths all passed, exit0.
+
+Released configs/v3_clock_comparison_v1.release.json:156664 bytes, SHA256
+ddb388b1fe99bd5431b2467fed951a16fdc3e1eecfb4636fdcc7fd45e3cda6f3.
+Proof results/v3_clock_comparison_v1.release_verification.json:156469 bytes, SHA256
+b208c910efbdb516188744dca48b3aac76585411c6646d92907a3a720c908194.
+The validation source remains738ce05351c9e74579910017dbc5fb7d594409d9; a following
+JSON-only commit must not replace that reviewed source identity in either file.
+Both staged document blobs remained unchanged. No source, model or outcome was
+changed or inspected beyond retained hash checks. This release stage executed
+no research runner, checkpoint initialization/load, training, evaluation or replay.
+Only the two reviewed JSON paths will be locally committed; no documents, logs,
+models, large data or push. First training remains a separately gated stage.
+
+### 103.5 Reviewed release/proof commit complete
+
+Local commit20fb09c2f12fe7e0b009109b8e9f82e01b4da1e7 contains only the two
+new JSON files,3160 insertions. Their reviewed hashes are unchanged. The source
+validation identity remains738ce053... inside both artifacts; no scientific or
+execution source changed in this JSON-only commit. Both user-staged document
+blobs were checked before and after and preserved. No models/logs/data or push.
+The release/proof-only stage is complete; no research episode occurred in it.
+
+## 104. First bounded clock-comparison stage: zero-arm training (2026-09-12)
+
+Under the user's continuing authorization, launch only the first registered stage,
+zero train, once, from the actual project root. Use the released SHA below; no
+resume, retry, early stopping, callback-best selection or protocol override.
+Keep fresh seed42 PPO,116 inputs,192516 parameters, CPU8/8,200000 requested/
+200704 collected steps,1960 updates, unchanged20x50 internal validation episodes
+and eight checkpoints. The expected pre-learning tensor SHA remains
+d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec.
+The unchanged runner must verify the measured actual initialization before learn.
+
+Exact native command, followed only by shell exit-code propagation:
+
+```powershell
+& '.\.venv\Scripts\python.exe' -m scripts.run_clock_comparison_v1 zero train --release-sha256 ddb388b1fe99bd5431b2467fed951a16fdc3e1eecfb4636fdcc7fd45e3cda6f3 --refuse-overwrite
+exit $LASTEXITCODE
+```
+
+The independently reviewed direct module launch keeps the command visible to the
+Windows guard and introduces no hidden wrapper or additional output paths. The
+execution session captures the native exit code through PowerShell. The runner
+owns the preregistered train record, batch lock, stdout/stderr and model/log/summary
+paths; do not externally redirect to those same paths. Its fresh full1491-test
+gate, source/release/predecessor rechecks and process guards run before learning.
+Tool-session silence is expected while progress goes to the named internal logs.
+
+Do not advance solely on status=complete: the record precedes final marker and
+lock cleanup. Require actual native exit0, absent lock, exact final stdout marker
+and independently verified final checkpoint/summary/record hashes and contracts.
+Then the next bounded stage is clock train, never evaluation before both train
+stages finish. No current launch or successful initialization is claimed until
+confirmed below. Preserve failed/partial evidence and do not relaunch a stage.
+
+### 104.1 Exactly one zero-train process launched; its fresh gate is active
+
+Executed the exact104 command once. The unified execution session is38397,
+with native exit-code propagation retained for completion monitoring. Actual
+Windows census identified repository-venv launcher33944 and its direct base-Python
+worker52576, both created at2026-09-12T21:36:53Z (display rounded to seconds).
+Their visible commands match zero train and the exact released SHA. The owning
+record/lock and internal stdout/stderr were exclusively created; record status
+is running. First inspection found full Ruff passed, pytest still executing,
+initial_policy not yet measured and stderr empty. This confirms launch and the
+fresh engineering gate, not that learning has begun. No duplicate launch, second
+arm, evaluation or additional research stage was started.
+
+### 104.2 Stage tests and measured initialization passed; learning started
+
+The stage's own fresh full Ruff and pytest gate passed1491 tests in69.31s,
+with only the same two existing Box warnings. The running record now contains
+the measured192516-parameter initial policy SHA
+d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec,
+matching the frozen preparation exactly. It remains running with no error;
+stderr is empty and stdout reports CPU execution and logging to
+logs/ppo_v3_clock_zero_v1_seed42/PPO_1. This confirms learning startup after
+the initial-tensor gate, not training completion or any policy performance.
+Exact recorded start is2026-09-12T21:36:58.254360Z. Session38397 remains active.
+
+Independent read-only startup record/provenance review is underway without
+loading a checkpoint, repeating tests or invoking the process guard against the
+active training job. The supported follow-up is being retargeted from completed
+release preparation to monitoring this exact existing process, then the fixed
+next stages only after verified completion. No second launch has occurred.
+
+### 104.3 Independent startup review passed; progress is not a final result
+
+Independent read-only startup review passed at2026-09-12T21:40:47.556108Z.
+It verified the exact zero/train arguments, empty predecessors, release/proof
+pins and all541-input provenance, expected/measured initial tensor SHA and192516
+parameters, both exact passing test commands, and full1491-test completion at
+2026-09-12T21:38:10.964593Z. The owned lock identifies worker52576; CPU/PPO_1
+logger markers are present, error is absent and stderr empty. The reviewed
+startup record was111201 bytes, SHA256
+8503ebfacfc565d7c47e5a02f6d8bbd869cf55c336af9c8d846260a660eebccb.
+This is a mutable startup snapshot, NOT a frozen final-artifact or checkpoint pin.
+The reviewer performed no policy initialization/load/inference, rollout, repeated
+test run or process-guard invocation. Main observed2048 timesteps/two iterations,
+fps16 and n_updates10 in the owned stdout log. This establishes initial learning
+progress only, not completion, evaluation success or safety improvement.
+
+### 104.4 Active-run follow-up updated and independently read back
+
+Using the supported automation update, retargeted the existing active30-minute
+follow-up finish-v3-geometry-experiment to the actual running zero stage, session
+38397 and launcher33944/worker52576. OpenAI Docs guidance informed the durable
+follow-up instructions and explicit completion/stop conditions. No raw automation
+file write occurred. Saved prompt length is35662 characters, UTF-8 SHA256
+8728eb1ba1aa0134d9d5551f37c3b3cd0c491807b00c669fb6cade36314bdb7e,
+updated_at1789249381304 (2026-09-12T21:43:01.304Z). Independent main readback
+confirmed this exact length/hash, unchanged other metadata and the current
+release/startup/active-monitor/subsequent-stage/standing-authority blocks.
+
+The follow-up stays quiet while healthy, prohibits duplicate launches and extra
+full tests/competing-process guard calls during active training, and requires
+actual native exit0, exact final stdout marker, absent owned lock, no active
+worker/launcher and independent final artifact/model/provenance verification
+before advancement. Startup hashes remain explicitly non-final. Failed/partial
+evidence must be preserved without overwrite, automatic retry or resume. Only
+after verified zero completion may the frozen clock train stage start; both
+trainings precede zero evaluate and clock evaluate. Per-stage fresh tests and
+all scientific/holdout/budget/acceptance constraints remain unchanged. No policy
+promotion, performance result, additional research process or Git push is claimed.
+
+### 104.5 Zero training finished; native completion evidence captured (2026-09-13 UTC)
+
+The user requested a status check after the quiet healthy monitoring interval.
+The existing unified session38397 returned actual native exit0, observed at
+2026-09-13T02:07:44.8353838Z (tool completion chunk d20644). This is captured
+exit evidence from the original single launch with exit $LASTEXITCODE, not an
+inference from a missing PID. The record finished at
+2026-09-13T01:47:51.105275Z with status=complete and no error. Stdout ends with
+the exact absolute-path marker:
+
+```text
+Clock comparison zero train complete: C:\Users\hades\OneDrive\Documents\RL--Autonomus-car\results\ppo_v3_clock_zero_v1_seed42.train.run.json
+```
+
+Main's read-only lifecycle check passed at2026-09-13T02:08:58.8567095Z: launcher
+33944 and worker52576 are absent, the owned batch lock is absent, and the marker
+is the final nonempty stdout line. Stderr is empty. Training logged196 rollouts
+and200704 collected steps; the final model and training summary exist. The
+summary records the unchanged200000 requested-step protocol, actual116-input
+observation and original measured initial tensor SHA. Full checkpoint/provenance
+and callback-budget review is proceeding independently; no development success,
+collision or TTC rate is yet available for this arm.
+
+Captured final byte hashes (not the superseded mutable startup-record hash):
+- models/ppo_v3_clock_zero_v1_seed42.zip:
+  ce194ee4e3cfc9f06e296d559be99c2550ffe21d56cc7879e0f1a400771e9047.
+- results/ppo_v3_clock_zero_v1_seed42.training.json:
+  9c3a9b519b525a83247ccbd252a2d1b12194911942027496b095d0538c891d05.
+- results/ppo_v3_clock_zero_v1_seed42.train.run.json:
+  094e491939f542a094e7658270c3492bd31f7724d5297f44e437b78aebf5536f.
+
+Routine monitoring made no source/configuration changes or extra research runs.
+The first restricted-sandbox monitoring CIM read at22:17UTC was denied; the
+approved read-only identity check then passed at22:18:28.0590726Z, without a
+restart or research guard change. Subsequent identity checks used the approved
+read-only context. This tooling limitation was not a training failure. No
+stage was retried, and the historical completion/acceptance rules are unchanged.
+
+### 104.6 Independent completed-training audit passed
+
+Independent read-only audit finished2026-09-13T02:13:50.092855Z and its Python
+helper exited0 before main's serialized next-stage preflight. Both protocol and
+current-fingerprint implementations agree: exact release/proof,541 inputs
+retaining531 historical pins,227 dependencies,101 sources,235 snapshot members,
+46 installed/47 raw package origins and CPU8/8 all passed. The full record,
+arguments, empty predecessor map, chronology, expected/measured initial policy
+and exact summary schema matched. The stage's actual1491-test evidence and both
+native exit0 test commands were verified; no new test suite was run by this audit.
+
+The final model is2464091 bytes, summary111004 bytes and run record111430 bytes;
+all three SHA256 values match104.5. One independent inspection of the verified
+final checkpoint bytes passed CPU116-input/three-action spaces and bounds, all
+PPO settings/provenance,192516 parameters,200704 steps,1960 updates and the exact
+12 finite CPU float32 tensor inventory. Its original measured initialization
+remains d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec.
+No prediction, environment reset/step, learning or research episode occurred.
+
+The existing internal-validation NPZ contains exactly20 callback timesteps
+10000..200000 and20-by-50 finite reward/length arrays; eight scheduled checkpoint
+files occur at25000..200000. Callback scores were not calculated or used to
+select a checkpoint. Exact final stdout marker, empty stderr, absent owned lock
+and16 absent later-stage output paths were verified. Both staged document blobs
+remain unchanged. This accepts the completed training artifact, not a policy
+performance result, clock benefit or promotion; development evaluations remain
+unrun and the second arm must retain the frozen protocol without tuning.
+
+### 104.7 Serialized predecessor preflight and scoped results commit passed
+
+After the independent audit helper exited, main's frozen runner preflight passed
+at2026-09-13T02:14:59.921688Z, exit0. Before and after predecessor inspection,
+the verified Windows process guard passed. The unchanged release/proof and all
+541 inputs/227 dependencies passed, the next stage's outputs and batch lock were
+absent, and the runner's exact three-entry predecessor map matched the final
+model/summary/record hashes in104.5. Both evaluation stages remained absent.
+This was read-only checkpoint/provenance verification, with no research episodes.
+
+Local commit82b5cbf, Record verified zero-control training for clock comparison,
+contains only the reviewed train.run.json and training.json,2405 insertions.
+Their hashes and the ignored final model hash were checked before and after.
+Both user-staged document blobs were preserved. No source, configuration,
+checkpoint or raw log was committed and no Git push occurred. The release's
+reviewed execution-source validation remains738ce05351c9e74579910017dbc5fb7d594409d9;
+neither later JSON-only commit replaces that source identity.
+
+## 105. Second bounded clock-comparison stage: remaining-time training (2026-09-13 UTC)
+
+Zero training is complete and independently verified under104.5-104.7. Continue
+the already registered second stage, clock train, exactly once. This is not a
+new design, retry, extension or tuning from first-arm scores. Retain the same
+fresh seed42, CPU8/8,116-input/192516-parameter architecture, measured initial
+SHA d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec,
+200000 requested/200704 collected steps,1960 updates,20-by-50 internal validation
+episodes and eight checkpoints. The sole registered input difference is the
+remaining-time fraction from the unchanged frozen clock design. Rewards, seeds,
+reset streams, all PPO settings and scientific acceptance rules are unchanged.
+
+Exact native command from the actual repository root:
+
+```powershell
+& '.\.venv\Scripts\python.exe' -m scripts.run_clock_comparison_v1 clock train --release-sha256 ddb388b1fe99bd5431b2467fed951a16fdc3e1eecfb4636fdcc7fd45e3cda6f3 --refuse-overwrite
+exit $LASTEXITCODE
+```
+
+The runner must pass its own fresh full Ruff/at-least1491-test gate, reverify
+release/runtime/predecessors/process identity and measure actual initialization
+before any learning. The new record must bind exactly the three completed zero
+artifact hashes; it must not replace their bytes. Internal log ownership and
+exclusive output creation remain unchanged. Preserve failed/partial evidence;
+never overwrite, resume, repeat a launch or automatically delete a stale lock.
+
+After launch, require observed session/process identity and recorded test/initial
+policy evidence before reporting learning. Before accepting completion, require
+native exit0, departed owning processes, exact final absolute-path stdout marker,
+absent owned lock and independently verified final model/summary/record contracts.
+Only after both trainings complete may zero evaluate then clock evaluate run,
+each once on500 consumed-development seeds40042-40541. No holdout inspection,
+callback-best selection, performance claim or automatic promotion is authorized.
+
+### 105.1 Clock training launched once; fresh test gate active
+
+Executed exactly the native105 command once, with exit-code propagation.
+Unified session22545 is active. Read-only Windows identity verification at
+2026-09-13T02:17:39.5773581Z found repository-venv launcher58812 and its direct
+installed-base worker59172, created at02:16:56.780130Z and02:16:56.794019Z.
+Their visible commands match clock train and the exact released SHA. The
+PowerShell supervisor28724 is not a research worker. The record started at
+2026-09-13T02:17:02.552387Z, with exactly the three verified zero predecessor
+hashes. The owned lock identifies59172/clock/train; stderr is empty.
+
+At this first inspection the record was running, full Ruff had passed, pytest
+was active and actual initialization was still unmeasured. This confirms the
+single launch and fresh engineering gate only, not learning or completion.
+No second launch, protocol change, evaluation or additional research process
+was started. Zero's former session38397 and PIDs33944/52576 remain completed
+historical evidence, not current monitoring targets.
+
+### 105.2 Clock stage tests and measured initialization passed; learning started
+
+The clock stage's own fresh full Ruff passed and pytest reported1491 passed,
+2 existing obstacle-route Box warnings in69.53s. Both recorded commands exited0;
+the gate completed2026-09-13T02:18:16.590834Z. Ruff stdout SHA is
+82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18;
+pytest stdout SHA is
+cdf6f1e5d3cdc409e00468438c2f693b83c3b6d715a44b8fcafc2bdeaf474e26.
+Both command stderr streams have the empty SHA
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+
+Main read back the actual pre-learning policy:192516 parameters and SHA
+d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec,
+identical to the frozen preparation and zero arm's initialization. Status remains
+running with no error, the three zero predecessor hashes are unchanged, stderr
+is empty and stdout reports CPU and logs/ppo_v3_clock_remaining_v1_seed42/PPO_1.
+This establishes learning startup after the required gates, not completion or
+success/collision performance. Independent compact startup-record review is
+underway without model operations, tests, guards or additional research episodes.
+
+### 105.3 Independent clock startup review passed
+
+The compact stdlib-only checker passed at2026-09-13T02:20:17.720853Z and exited0.
+Exact clock/train arguments, release/proof-bound541-entry provenance and all
+three completed zero predecessor byte hashes matched. The running record has
+no error; measured/expected initialization both match the frozen d1c314ef...943a57ec
+SHA and192516 parameters. Both exact stage test commands exited0,1491 tests
+passed and the completion timestamp matches105.2. The owned lock is exactly
+worker59172/clock/train/start2026-09-13T02:17:02.553387Z; CPU and remaining/PPO_1
+logger markers are present and stderr is empty.
+
+The reviewed startup record is111579 bytes, SHA256
+4d9cac378f4e1b46ccd2ee701fde933a2de2c7f2aa71a50fa4f2f37999b19d47.
+This mutable startup snapshot is not a frozen final-record or checkpoint pin.
+The checker made no model/runtime imports, repeated full-inventory/test calls,
+process guard/census or research operations. Startup verification does not
+establish training completion, a success/collision rate, feature benefit or
+policy promotion. The supported follow-up will now track this verified active
+clock stage, not the completed zero stage.
+
+### 105.4 Follow-up retargeted to verified active clock training
+
+Updated the existing follow-up through the supported automation tool, using
+OpenAI Docs guidance for durable stage-specific instructions and completion/stop
+conditions. Main independently read the saved metadata and changed current-stage
+blocks. Prompt length is38924 characters; UTF-8 SHA256 is
+71eb1e7e6e6c1bec84ea7ae39b8b0700fc57af5bba9f8987b58ec4ba188f2924.
+Updated_at1789266127752 is2026-09-13T02:22:07.752Z. All other metadata is unchanged:
+same finish-v3-geometry-experiment ID, name, heartbeat kind, ACTIVE status,
+30-minute cadence, target task and original creation timestamp. No raw TOML write.
+
+The saved instructions preserve completed zero native-exit/audit/final-hash/commit
+evidence and now monitor session22545 with launcher58812/worker59172 and the
+remaining-time stage's own paths. The startup hash is explicitly mutable, not a
+final pin. Native exit0, exact final marker, departed processes, absent owned lock
+and independent final artifact/provenance/callback/predecessor validation remain
+mandatory before zero evaluate, then clock evaluate. All fixed scientific,
+holdout, budget, no-retry/no-overwrite, staging and notification constraints remain.
+Healthy training stays quiet; no repeated full tests or competing-process guard
+polls are permitted while it runs. Main also observed2048 initial training steps
+in the existing log; this is progress only, not a policy-performance result.
+
+### 105.5 Clock training finished; original native completion captured (2026-09-13 UTC)
+
+The scheduled read-only check captured actual native exit0 from the original
+unified session22545 at2026-09-13T07:25:47Z (tool chunk53b6e4). This is the
+single105 launch with native exit-code propagation, not an inference from PID
+loss. Its record finished2026-09-13T06:54:55.326386Z, status=complete, no error.
+The final nonempty stdout line is exactly:
+
+```text
+Clock comparison clock train complete: C:\Users\hades\OneDrive\Documents\RL--Autonomus-car\results\ppo_v3_clock_remaining_v1_seed42.train.run.json
+```
+
+The same compact check found both owning processes58812/59172 absent, the owned
+batch lock absent and stderr empty. Stdout last-write time is
+2026-09-13T06:54:55.3582569Z and logs196 rollouts/200704 collected steps. Both
+final root model and training summary exist. Captured final byte SHA256 values:
+
+- models/ppo_v3_clock_remaining_v1_seed42.zip:
+  5ad04a56d42f4d6b2bd3aad5702bf1b4cbc98cc1f0b9f260ba22bcf2646e40e3.
+- results/ppo_v3_clock_remaining_v1_seed42.training.json:
+  07da5237efed7f66bc8ad7c0f8ef7f33c76642e3e4d91ba08457c4e643266842.
+- results/ppo_v3_clock_remaining_v1_seed42.train.run.json:
+  20b73b7609cbd5e2620d1d7def1ac547c5b28054a252b22a1e0d4da246f9e5c9.
+
+These supersede only the mutable startup snapshot, not initialization evidence.
+Full independent artifact/provenance/model/callback/predecessor review is still
+pending at this entry. No development evaluation or success/collision/TTC result
+is claimed. Routine monitoring did not change sources, settings, seeds, reward,
+budgets or outputs, restart a process, or select a callback checkpoint. The
+previous README bytes and both user-staged document blobs remain unchanged.
+
+### 105.6 Independent completed-clock audit passed
+
+Independent final audit passed2026-09-13T07:28:14.253607Z; its helper session68679
+returned native exit0 before main's serialized next-stage preflight. Main also
+confirmed exact final-marker equality at07:28:24.8225761Z. Final model2464102
+bytes, summary111015 bytes and run record111808 bytes match all105.5 hashes.
+
+The strict clock record/summary/arguments/provenance, release/proof and current
+541 inputs retaining531 historical pins,227 dependencies,101 sources,235 snapshot
+members,46 installed/47 raw package origins and CPU8/8 passed. The three final
+zero predecessor byte hashes remain unchanged. Actual measured initialization
+is still d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec;
+the original1491-test evidence and02:18:16.590834Z completion timestamp passed.
+
+One independent load of verified final checkpoint bytes, on CPU and without an
+environment or inference, passed116-input/three-action spaces,192516 parameters,
+200704 steps,1960 updates, all12 finite CPU float32 tensors and exact PPO settings.
+The validation NPZ contains exactly20 callback times10000..200000 and20-by-50
+finite arrays; all eight scheduled checkpoints25000..200000 exist. NPZ16930
+bytes has SHA ff00ec299487291e926c40acec65c17ac2d378ea55075d18be5e2b035a393c9a.
+No callback scores were selected or used for tuning. All10 evaluation-stage
+paths remain absent; final marker, empty stderr and absent lock passed. Staged
+documents were preserved. This audit performed no tests, source writes, process
+guard/census, prediction, reset, step, learning or additional research episode.
+
+Both registered trainings are now genuinely complete. This accepts training
+integrity only; no development performance, clock benefit or policy promotion
+is established. The frozen zero-evaluate then clock-evaluate order remains.
+
+### 105.7 Serialized evaluation preflight and scoped training-record commit passed
+
+After the independent audit helper exited, main's frozen runner preflight passed
+at2026-09-13T07:29:43.214991Z, native exit0. Both process guards passed around
+read-only predecessor inspection; the release/proof,541 inputs and227 dependencies
+were unchanged. Zero-evaluation outputs and batch lock were absent, all later
+clock-evaluation paths were absent and the exact six-entry predecessor map
+matched both independently verified final model/summary/train-record triples.
+No environment reset, step, prediction, learning or research episode occurred.
+
+Local commit179df0eee5c97888ca3d39aa905cd63e69ec885f, Record verified remaining-time
+training for clock comparison, contains only the reviewed clock train.run.json
+and training.json,2409 insertions. Their hashes and the ignored final model
+hash were verified before/after. Both user-staged document blobs were preserved.
+No model, log, source, configuration or pending document was committed; no push.
+The release execution-source validation HEAD remains738ce05351c9e74579910017dbc5fb7d594409d9,
+not either later training-record commit.
+
+## 106. Third bounded clock-comparison stage: zero-control evaluation (2026-09-13 UTC)
+
+Both training stages are complete under104.5-104.7 and105.5-105.7. Execute the
+already registered zero evaluate stage exactly once, followed only after its
+verified completion by clock evaluate. This is not a new holdout, retry or
+protocol amendment. Use only models/ppo_v3_clock_zero_v1_seed42.zip, SHA
+ce194ee4e3cfc9f06e296d559be99c2550ffe21d56cc7879e0f1a400771e9047,
+with its original116-input zero-clock protocol and frozen configuration SHA
+a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7.
+
+Exact native command from the actual repository root:
+
+```powershell
+& '.\.venv\Scripts\python.exe' -m scripts.run_clock_comparison_v1 zero evaluate --release-sha256 ddb388b1fe99bd5431b2467fed951a16fdc3e1eecfb4636fdcc7fd45e3cda6f3 --refuse-overwrite
+exit $LASTEXITCODE
+```
+
+The unchanged runner must pass its own fresh full Ruff/at-least1491 tests,
+reverify release/runtime, six completed predecessor hashes and actual process
+identity before any evaluation episode. Keep CPU8/8, deterministic actions,
+inner factory bootstrap40042 and500 outer resets40042..40541, unsafe TTC<=2.0,
+unchanged eight metric columns and zero shield/intent/risk-fusion interventions.
+No callback-best selection, alternate action, extra episode or new holdout.
+
+Exclusively owned outputs are results/ppo_v3_clock_zero_v1_seed42.evaluate.run.json,
+results/ppo_v3_clock_zero_v1_development_seed40042.csv and its .summary.json;
+logs are logs/ppo_v3_clock_zero_v1_seed42.evaluate.stdout.log and .stderr.log.
+The runner owns the batch lock and all log/output creation; no external redirect.
+Failure preserves evidence and prevents advancement, without automatic retry,
+resume, overwrite, changed settings or stale-lock deletion.
+
+Native exit0, exact final absolute-path stdout marker, departed owning processes,
+absent lock and independently verified final artifact/provenance/500-row results
+are required before accepting completion. Do not infer success from a complete
+record alone. Evaluate clock only after verified zero completion, then apply
+all16 historical gates and five clock-benefit rules unchanged. Consumed-development
+results cannot establish independent generalization or real-world safety, and
+no automatic policy promotion is authorized. Preserve every historical rejection.
+
+### 106.1 Zero evaluation launched once; fresh test gate active
+
+Executed exactly the106 command once with exit-code propagation. Unified session
+49754 is active (launch tool chunkfb8d8b). Main's Windows identity check at
+2026-09-13T07:32:43.2628246Z verified repository-venv launcher18744 and direct
+installed-base worker5912, created07:32:07.469827Z and07:32:07.484528Z. Both exact
+visible commands name zero evaluate and the frozen release SHA. PowerShell
+supervisor59596 is not a research worker. The record began07:32:13.307914Z and
+owned lock07:32:13.308912Z binds5912/zero/evaluate.
+
+The running record has no error and binds the exact six unchanged training
+predecessor hashes, final zero model SHA and frozen evaluation arguments.
+Its initial-policy field is inherited verified training lineage, not a fresh
+evaluation-time initialization measurement. Full Ruff passed, pytest is still
+active and stderr is empty at this first inspection. This confirms the single
+launch and its engineering gate, not completed tests, episodes or results.
+No duplicate launch, research setting change or clock evaluation was started.
+
+### 106.2 Zero-evaluation fresh tests passed
+
+The stage's own full Ruff and1491 pytest cases passed, with only the two existing
+obstacle-route Box warnings, in70.13s. Both native test commands exited0; gate
+completion is2026-09-13T07:33:27.997347Z. Ruff stdout SHA is
+82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18;
+pytest stdout SHA is
+870ed716fdb75c4b7ff0079c6d65b415df63f10ae9d12a42ec9a7950a0bb074e.
+Both stderr streams have empty SHA
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+
+Main read back this evidence at07:33:44.1051134Z. The record remains running with
+no error and stderr is empty. This establishes that the required fresh test gate
+passed, not the number or outcome of any completed evaluation episodes. The
+runner retains its post-test release/predecessor/process/model checks before
+delegating the unchanged evaluator. No competing guard, repeat tests, duplicate
+launch or manual evaluation was invoked while the stage is active. A compact
+independent startup-record review is proceeding without RL/runtime imports or
+additional research operations.
+
+### 106.3 Independent zero-evaluation startup review passed
+
+The bounded stdlib-only checker passed at2026-09-13T07:35:20.462271Z and exited0.
+Exact evaluation arguments bind the final zero model,500 episodes, seed40042,
+unsafe TTC2.0, frozen configuration/reference and output. Release/proof-bound
+541-entry provenance and all six final training predecessor byte hashes matched.
+Carried initialization d1c314ef...943a57ec/192516 is verified training lineage,
+not a newly measured evaluation-time policy. Both exact fresh test commands
+exited0;1491 tests, stdout/empty-stderr hashes and07:33:27.997347Z match106.2.
+
+The record remains running/no error, with the exact worker5912/zero/evaluate
+lock started07:32:13.308912Z and empty stderr. The mutable startup record is
+111958 bytes, SHA af0c4bfe4b03182395c0045aa7223a99a5676eed0a7b4c0f5411ffa587aa6a52;
+this is not a final completion pin. The checker performed no outcome/stdout
+inspection, RL/runtime imports, full inventory/test/guard/census, model operations
+or research episodes. Main's source read confirms evaluate_policy prints only
+at finalization, not per episode. Silence after the test gate is expected and
+does not establish either an episode count or completion. The supported follow-up
+will track only this actual zero-evaluation process and its own paths.
+
+### 106.4 Supported follow-up retargeted to verified zero evaluation
+
+The existing follow-up was updated through the supported automation tool and
+independently read back. OpenAI Docs guidance informed its durable stage-specific
+completion/stop conditions, preserving quiet healthy monitoring. The saved prompt
+is41565 characters, UTF-8 SHA256
+2cb1a3593a882255148c4fddeebdab270b2ca5c2d21f02c118715c7def2661c8.
+Updated_at1789285102377 is2026-09-13T07:38:22.377Z. Only that metadata timestamp
+changed: same finish-v3-geometry-experiment ID, name, ACTIVE heartbeat,30-minute
+cadence, target task and original creation time. No raw TOML write.
+
+Main independently compared the full preceding historical/release/zero-training
+prefix and remaining scientific/staging/quiet constraints suffix. Only the
+registered current-stage transition, current-authority phase sentence and three
+milestone references105-to106 changed. Completed clock native-exit/audit/hash/
+commit evidence now precedes the actual active zero-evaluation session49754,
+launcher18744 and worker5912, own paths and verified fresh test/startup evidence.
+The mutable startup-record hash remains explicitly non-final and its initial
+policy is carried training lineage, not a new measurement. The evaluator has no
+intermediate progress output; no episode count may be inferred from quiet logs.
+
+Before clock evaluate, the saved task requires zero's actual native exit0, exact
+final marker, departed owners, absent lock and independent500-row/artifact/
+provenance verification. Then and only then the final fixed clock evaluation
+and full comparison audit may proceed. All protocol, budget, gate, no-retry,
+no-overwrite, no-holdout-inspection and no-promotion constraints remain unchanged.
+This monitoring update creates no extra research process or performance result.

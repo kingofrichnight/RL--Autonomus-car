@@ -6,6 +6,29 @@ SafeIntent-RL is a master's-level research project for studying whether inferred
 
 > **Research record:** See [MILESTONES.md](MILESTONES.md) for the complete chronological engineering log, mathematical formulation, experiment results, design decisions, failures, corrections, and planned milestones.
 
+## Current best development candidate: Geometry V2
+
+As explicitly selected by the user on 2026-09-11, **Geometry V2** is the current
+best development candidate: **78.8% success, 19.6% collision and 1.6% incomplete**
+on the 500 development seeds 40042--40541. This means
+`models/ppo_v3_predictive_geometry_v2_seed42.zip` with
+`configs/intersection_v3_predictive_geometry_v2.yaml`, not Reward V2, Intent V2
+or Fusion V2. Original V3 remains the preserved historical comparison baseline.
+
+This provisional designation does not rewrite Geometry V2's earlier failed
+mean-minimum-TTC gate or establish independent validation/real-world safety.
+Historical notes below retain the decisions made at their respective dates;
+their statements that original V3 is current best are superseded by this
+user-selected development ranking. See MILESTONES.md section 88 for the verified
+artifact fingerprints, limits and prospective decision.
+
+**Save before major changes:** preserve this checkpoint, configuration, source
+version and results before any substantial change. Keep the existing artifacts
+unchanged and use separately named experiments. Save a recoverable code/config
+snapshot and record its identity before major edits. Keep model checkpoints
+local and outside Git unless artifact storage is intentionally configured.
+The already-running sector comparison and its frozen protocol are unchanged.
+
 ## Reference-driven extension (separate from the intersection benchmark)
 
 ### New V3 successor: V3-PredictiveSafety v1

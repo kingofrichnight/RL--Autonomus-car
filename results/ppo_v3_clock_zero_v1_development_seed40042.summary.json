@@ -1,0 +1,1184 @@
+{
+  "episodes": 500.0,
+  "mean_reward": 4.380587951898355,
+  "mean_length": 45.486,
+  "success_rate": 0.738,
+  "collision_rate": 0.254,
+  "mean_travel_time": 9.0972,
+  "mean_min_ttc": 0.6402701746916755,
+  "mean_unsafe_ttc_events": 18.266,
+  "mean_safety_interventions": 0.0,
+  "model_path": "models\\ppo_v3_clock_zero_v1_seed42.zip",
+  "predictive_safety_observation": {
+    "horizon": 3.0,
+    "margin": 0.5,
+    "uncertainty_growth": 0.25,
+    "clearance_scale": 10.0,
+    "speed_scale": 9.0,
+    "max_neighbors": 14
+  },
+  "model_sha256": "ce194ee4e3cfc9f06e296d559be99c2550ffe21d56cc7879e0f1a400771e9047",
+  "config_path": "configs\\intersection_v3_predictive_geometry_v2.yaml",
+  "config_sha256": "a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7",
+  "first_seed": 40042,
+  "last_seed": 40541,
+  "safety_shield": false,
+  "safety_shield_type": null,
+  "unsafe_ttc_threshold": 2.0,
+  "cpa_time_threshold": null,
+  "cpa_distance_threshold": null,
+  "cpa_horizon": null,
+  "cpa_max_range": null,
+  "cpa_override_action": null,
+  "reference_csv_path": "results\\ppo_reward_v3_cpa_baseline_holdout_seed40042.csv",
+  "reference_csv_sha256": "aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4",
+  "risk_fusion": false,
+  "target_speed_observation": false,
+  "target_speed_scale": null,
+  "collision_first_reward": true,
+  "fusion_neighbors": 0,
+  "fusion_features_per_neighbor": 0,
+  "fusion_range_scale": null,
+  "fusion_relative_speed_scale": null,
+  "fusion_ttc_scale": null,
+  "fusion_cpa_horizon": null,
+  "fusion_cpa_distance_scale": null,
+  "intent_model_path": null,
+  "intent_model_sha256": null,
+  "intent_neighbors": 0,
+  "intent_history_length": null,
+  "intent_history_tracking_neighbors": null,
+  "intent_device": null,
+  "observation_protocol": "predictive_post_spawn_clock_zero_v1",
+  "clock_comparison_arm": "zero",
+  "clock_duration": 30,
+  "initial_policy": {
+    "parameter_count": 192516,
+    "sha256": "d1c314ef787fa038568eeaff5dfc6c1a3851aba5f39a4dd8ba767634943a57ec"
+  },
+  "clock_provenance": {
+    "release_sha256": "ddb388b1fe99bd5431b2467fed951a16fdc3e1eecfb4636fdcc7fd45e3cda6f3",
+    "input_sha256": {
+      ".gitignore": "bb5b240533a55427361c766758f9d10b55bd090317f76744d1ab07c2705581d2",
+      "C:/Users/hades/AppData/Local/Programs/Python/Python312/python312.dll": "b6227a506a9963e7c8182785a54e14a193af51f7b277a61dda04492b499f49ad",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/absl_py-2.5.0.dist-info/METADATA": "24eb8b2dbab3053ea20e46ae02ddb3b9157b5be7e7a38ad931fd0c596f517015",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/cloudpickle-3.1.2.dist-info/METADATA": "3d0263bfe9ee4f23b244bdcaff73acbe7a1957ebf82743b6ae42693adc48d721",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/colorama-0.4.6.dist-info/METADATA": "7baed29eb50c3b29bdb33ff84e3177bf1bc05784f7685ecdcaa4471c7dd810cc",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/contourpy-1.3.3.dist-info/METADATA": "c43cef86baef09cff9c77975e578fa8cca0c9454df40dc176938b499a63de54a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/cycler-0.12.1.dist-info/METADATA": "23289e19b76f1e01394227696e6af2b6cd1ce79e89731209bf9195148b18ed36",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/farama_notifications-0.0.6.dist-info/METADATA": "aa6a96a09328edb70604a65fca1b2d0b0d444c26801e5cf36f325662835c199c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/filelock-3.32.5.dist-info/METADATA": "7886b747148c0aa7889c4ec33f3529b8c21f15142063b5e1ddbb96a8a5442724",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/fonttools-4.64.0.dist-info/METADATA": "21cd28d3f6a9ee91128b26bbcac9ace04fe413185da65e99d504f9c7ff3fde9b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/fsspec-2026.7.0.dist-info/METADATA": "88b1657585de14e3bb82aa5278aa9595b30aa4ca74ead073d8950615c808099d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/grpcio-1.83.1.dist-info/METADATA": "8a6ea9ac58c0af69c898bb8be9d55a1a4631f7a4ac27dd8f2e86830ac79ab377",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium-1.3.0.dist-info/METADATA": "4e8ca97d517ff8c1eb7d2d97f1661bf2e5a8bd47da10cd9c4be19d5bcb054e48",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/__init__.py": "98f7ecc957123d8194869b6543a567758019a6b686a2630a37ad468bd5fda651",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/core.py": "245745bf21d7b6f6f6d187260c17fd3c19988806ce12fc9c606b2bbe813d37a8",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/__init__.py": "09bdc250983295525c0686bce80fe5cacd74934fde8cef60c3d6ae2f88208b49",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/box2d/__init__.py": "1d464a316b8fff0a12150f23274c11168ee909098d9bb298436e1e9de0df8b19",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/box2d/bipedal_walker.py": "4b14c0bba0cef544c98853d3bf00e97baa035f8bb31ab85766ee0893a80e051a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/box2d/car_dynamics.py": "8f0f8dfb3be3607fc8cbcd4b52d16ef4888842e424dc6e8b7c3f953a728136c1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/box2d/car_racing.py": "d4e7f439d9e9a7f657a18ff52dd806065ead12292a51307347c04a5b92493267",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/box2d/lunar_lander.py": "1935836fc6395a9f20a700211de62d73450657b12ac34ee2d2be377cdbc2a14d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/classic_control/__init__.py": "08141190ce8d50d91d17d3d85dec8fc82b34ee95a73eb82f1d5c307cb6c30ce1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/classic_control/acrobot.py": "81ac9d2a2f7866ac46bc73c63856de99cfd94ecc2826a0346d3ff3533d5c4ef7",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/classic_control/cartpole.py": "ebc780f2612334901df9423e869be0368e3c719eabc8c8a3dad5f26c990c33d8",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/classic_control/continuous_mountain_car.py": "63edd6c0e1876977990953260560ed1457a23444a6febb42d874a28fcab3645e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/classic_control/mountain_car.py": "5465a274e5ea348dcdf85cd0b01726dfd5127f2171e704225042f2ad3566550e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/classic_control/pendulum.py": "01d7006351060606167f617ba8784c39eb5a3e81a959a827387cd557635fe552",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/classic_control/utils.py": "5077e47a6ef0e49a9f65eced4032567be21a837270898f6066b08067d3aec962",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/functional_jax_env.py": "7707d44b76ab519adb8c8ba305a678e97d812df91ab3c3402e7fdd10dcaf056f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/__init__.py": "c618be292f1a918d6a137f39d8f55048142acabf870888c698f82d9ce8fe83f1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/ant_v4.py": "a27201f0fe07160848d7a6914fb4a85b2ff6a95376127b99a023e9be643b313d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/ant_v5.py": "03be9596a1fbc17157b6969e3ee48291600ff689c27fa02e178de3976eedddf9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/half_cheetah_v4.py": "4810409fe42f8d2dfbae969f1462703c17de26f65f03cb3b821661710e95a7f6",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/half_cheetah_v5.py": "c6520e364985f4715d42016284f694f7ba601acedbfb0221a43888ac49affcf3",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/hopper_v4.py": "2148f81627c28abf95d402aef36ddb744b0bf858a9eca58b9ee061df17e2fdc9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/hopper_v5.py": "723d00eb50ed68428c1cc4733495c5894a57ff86e8fc9a06fa952611518c13f7",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/humanoid_v4.py": "7e309f094c6bfc266da0bb9c97fef219bb4325479a640163fa73ab0c8c3d4920",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/humanoid_v5.py": "079e98c842d76ff53a28ac5e35f8a12d1aa2d916ca0adb1cb36abdb0d38a13cf",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/humanoidstandup_v4.py": "4ddefc45628ead5d8824e0de38f586ee2ac5026cc096d57478cc4712fa0d66d9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/humanoidstandup_v5.py": "93679f8ed1128764b1f5d28b5fa196cb0bea595d3b29a3eaeb9d6ed726cd5ed7",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/inverted_double_pendulum_v4.py": "43d80146560c39b8f3efa1760f15ba3dade5efa9599ee46ef4fce5c350048910",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/inverted_double_pendulum_v5.py": "7c5ab772a407b662d3b1f60f59c39c1e4a372c7cb16808226bab90cb2abd1c5c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/inverted_pendulum_v4.py": "201ae53714cd8e8986a4828fe0f8663a12043d096eae325f3e7763454c455638",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/inverted_pendulum_v5.py": "860e8436475689a42ae10003638e5320668d32d39a9bedc502957b8e7b3aac48",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/mujoco_env.py": "665f3d68d86e8212361f67eb4d36bde247b2411c8f9dff34bfadeba9d923ce82",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/mujoco_py_env.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/mujoco_rendering.py": "e919194c9d98e5226487487bf0a6765360d9f2e2537e38729caab38078500dc4",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/pusher_v4.py": "46d7e11502d84aa4b77f9eca0736b7d5f015ce4f96d6f01708e0fd5a9a9c0098",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/pusher_v5.py": "e51893fd93ab0e7275e6eabf7cd286fdf26ca4ca6d243e851ee9cc147e783cc6",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/reacher_v4.py": "a06022f166ef32bb6cf8f5149458701fc663f55ab4c63e59ee5a3010501dd6c9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/reacher_v5.py": "75ba6456dd32b2032b439fbd4eac95ea4d472752c202fe220c22b1c0dbd96f09",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/swimmer_v4.py": "b8698696c7ec5ac799320310746e5d2336f81e1ca065353501178497e820302c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/swimmer_v5.py": "49a516d3a9ff2b7adc3e76a4c4ab20ffe7768a14cd9f4b837c3bd482178cb109",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/utils.py": "2e4ff6b345c2e905159622a575dde80c0caf252e1c7e50d8352e82dbd24b596b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/walker2d_v4.py": "bc4b14f1c27d158415489169909a4b790caa86b43b530bd6610df4d8b82bb22a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/mujoco/walker2d_v5.py": "064ee7b160ae7f965b2aec7725db878e12514a942c06ad3137a67791dd80864d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/phys2d/__init__.py": "e736bd5bd0182caf23dec6eed6263780ac9be399a5c75845005c5d172cf1eadb",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/phys2d/cartpole.py": "e8e936922dc305735f802c3ee5dea19074d79bbcaf67eea34a76aebf4bb5ab44",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/phys2d/pendulum.py": "f10898656febe28c8076289dcd087e2d98d02782966ddf9f1d0e29ecd8426797",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/registration.py": "0b9213cc2b77d3af390e8b25cee0ac7fbd0795f994b106ef9020a86a19b1a319",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/tabular/__init__.py": "6c13365ba437831d78caf359fecbc26704d2791b62ece145e571165f1a1e982e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/tabular/blackjack.py": "5b7c7e4748083c7011a829c59164a6b1fd1e1816191c6e611ba3ccbcd0d2282a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/tabular/cliffwalking.py": "c0b8882505af0fdd1d9a0b6a08390789c13b06b2140153887d1a374d60ccbe20",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/toy_text/__init__.py": "f83ab20355879835e86f285421ecc1c32bb1fe648b0bc70bb542c17cb53b8b93",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/toy_text/blackjack.py": "e29415ed45feb49a9a0eb733e7c48cf7d61baf63528b80abdab479f619880b90",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/toy_text/cliffwalking.py": "f632b94f8ad1a9506a6c66726840c30c6d2661e96e399dfc60afcb06d95a5fae",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/toy_text/frozen_lake.py": "5769d6ed89fe0aba4947f773b9cafa8b23e18f23bd66a82ca74937adf046c81d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/toy_text/taxi.py": "82074dd93e1f8198fa7372c6cf0b77ef34d7628c8dbc67cc3af6db84681f0b3e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/envs/toy_text/utils.py": "3739667fe0ded69624599a9e6b8d3305de70a8f3675e47c6a5a8b8bc1aafcf22",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/error.py": "44f44e8666b5bd41a15d9a58fb88b3fced3fb054be0e197acebf893ed310c53c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/experimental/__init__.py": "b852b64cecf40b44e9b793a26e12afcb169a55a24d7ddfa1ff9674dd09249ab4",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/experimental/functional.py": "fa9ae663b09a314583df28cf7b7cc6020f900c7d39797e04ca66661e82d35599",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/logger.py": "f849ee31366983c1cbf2a6410b1e1b2db1f6840ae08ed6d4ce6b06168fedc45b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/__init__.py": "9a55b31888484e33c250e4a24a79053059ae473eb626fc9307bbadb779daa949",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/box.py": "d4d291c0a8508828cc893b4a82af30a6c975b713687bec0b450d7d0251c1a2a1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/dict.py": "78ab5d62cdbc997f1597c5421a708a0fdf14a73dc2b4440a28aa0229fce63809",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/discrete.py": "ed5cb75621d8f9042cf2ec1ac7346cd834495eafed2b94185ccd62e712db3c98",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/graph.py": "f72a6e0a29e2166a20687194079897ad967913fb62ae9e3e02e58f92b1afb985",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/multi_binary.py": "762a20f17023b8c5880c099ea66c613a8ac88cd0d77146fd10e808962170ae58",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/multi_discrete.py": "968b869ece9218c027b062f4a9315acb7aa3b2fd081c67dd472e52c582098370",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/oneof.py": "74a0654a5d7b52dca0aeb922356c0e1fa98acc062cf62c58bdb23084aea0c68a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/sequence.py": "c7bfe52e60d5e96bbdb5ad2ac9062e87486bafaa58b908d463e17f696f5b04bf",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/space.py": "5effa8302c0a7c29c4b939616baea27c5fc403a68dceb974605b1e9502532d2c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/text.py": "ca4ddf45a20365c84879425a8452f6bb0df408fb90789968181c90c73250aa76",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/tuple.py": "edadf173d704b165f190dba18222b59df4491571fdf307f3e832811edcb9586e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/spaces/utils.py": "954391acc33853074406ae6739d34758b52eb6b9d361e0a519147725ead4c823",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/__init__.py": "28f8ea88e375f797a46c1c395654166f931ba42768df5ca3875cbcabc9ab4eca",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/colorize.py": "5a84ebf93548d49b051799812e50995f11dc243bc85b9b11b07c7dc252031b1c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/env_checker.py": "b93fb036bd0d74e917163727b17264316af91b6c80b70660971a055496fce201",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/env_match.py": "2d751bce6fe0caca0ad2c7edb40d4d2f900b0460619c900a6a46dcdb129400e9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/ezpickle.py": "a2a1f863d1bb180b49c66874cb609fb26974e6cd10a8c138de5da8e9a8b9b4e0",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/passive_env_checker.py": "13457c9b3fdbde8b875dedabdf96e4e3935bde507fa2ac52ec447f77542b5288",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/performance.py": "37cc5672beba3d0e23d3a3416455697fe9ded4c042ae08ee04cc561f1dff9883",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/play.py": "a3bfb6097b69cecb8c2d6b02329dbef730dba124a0797271e467331eeb3ee1a9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/record_constructor.py": "6cc738e70aac81fd18d10c16e72e8a91f11177b369c13ba555e5c8ffb3cf04bf",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/save_video.py": "1bf03b2681560fae20c1d6b6a16852ea2beb57adea49d707bbe09f76e7746970",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/seeding.py": "eb2a223b92604b7d1df2a859338e4a175c60f3fb11b87f8f316f306f1b97de53",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/utils/step_api_compatibility.py": "7f992d1c937121de7f8ac7ab053b2b9c0797791f1bcf5377a6160308d32c7bd9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/vector/__init__.py": "916f221d45a3f90d50b9572d6219087f7d1b7fdebc0ee700e15755c80b6d2c68",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/vector/async_vector_env.py": "1646a8b5145d080afacc15082ba6798ece0e8127c7e835e11fd1ace6061f74db",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/vector/sync_vector_env.py": "149c4bb49005582b8a6e4eef9b99134edca30cbdf9e2561ff8e529ce7e24531c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/vector/utils/__init__.py": "f60cad25b3e191f7d2372c582751ecdedd71af6335186fe6986d1f34c81d4821",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/vector/utils/misc.py": "6be15b2559cc3265032f5acb258a5c21ced81cb1d238a030fe2a3212a65cff1a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/vector/utils/shared_memory.py": "6d14cf973e92d0aee8ebe1f5aca2d4398652adfd3d47851bc487bb6b68eecd32",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/vector/utils/space_utils.py": "16577cca06f34d6102b8e62999828004d7200d9e645e7c21e63440f8eb7effac",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/vector/vector_env.py": "82b9fe35700c2cc4b1579dfefe4cd42b874f1106944615cf7461c4ce00e0d30e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/__init__.py": "d534380a02fdc0c1782c9fff31676c73b2b91284dc9c2b0ca748afd2de517b5e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/array_conversion.py": "0649f65374b6e835a1fef82abef340a0e2545849f8c800e5f89b0866ebdc3ffb",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/atari_preprocessing.py": "abbf79c1a65e72606fa9cd8979060384d48a37a435e956ab6fa1b214c4a911aa",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/common.py": "2a2cd78973296d5871af0ae1334f4c567cacef380bc69b4a759fcc29cbcff51a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/jax_to_numpy.py": "494d8318212dc69a4a8ba2f2b62ebe518c89bc29554fa24ff7aeafeaa0ec2f12",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/jax_to_torch.py": "b57e75753bdf846429334d3367924ce61fdc34edabbdfc8ecf7607b921e25880",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/numpy_to_torch.py": "030c9a2ee3615162a677109afe06abc549a54085c5e4740f2ed46778e9bb047d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/rendering.py": "a72d5636194b3be7752461d1eb9900989582fbad103d85fc8431b488af161a69",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/stateful_action.py": "d002443ea6f74528477c90a8b812f336873bb09c94b915f8b654adf2b8c8556b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/stateful_observation.py": "225d9906f9e53815eeff812fb6c6206eece8f88cea1d58e5548ee7a9e376a405",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/stateful_reward.py": "0ac072d2b9f0a4c186c1932200447528bf7b39c20c95c7259d574d4ac37f866a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/transform_action.py": "01265d0da3e2fb374e698b9fda274daa6486feda59955c6cf1b348da040663cc",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/transform_observation.py": "1fd0ddca6200289048a6b71b53597720bd1b097e1b90a0dcfe44d4bd882a654f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/transform_reward.py": "46aa7026e4b9c4bb2a589292a5d6703d6c4c8341c800cd66d446b3df1c64501b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/utils.py": "f0e977dd265c993ae5dba44b3254568bd47d765ffbe13e129609c84efd9734c5",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/__init__.py": "ba044c997ce16803bf86bfd00a38fb6471a610bd4e39832d9add19a9103a9dad",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/array_conversion.py": "34abdf234aaeeea36f999cf340e28b205c35a12cc8bb3ea82de26009a8b969bb",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/common.py": "328be05e7a384c56d824492d4db2f60bf621989c7b2c996ad2229575c8534e03",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/dict_info_to_list.py": "1eec5efc27a1a350c29a03e4095b4cc4fdd84b9fbbb03478286b08c3833017ca",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/jax_to_numpy.py": "8e80422876c09af316e2405aed6127da61b200c3767160e6b1820a51986da278",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/jax_to_torch.py": "3e21534f0ed4d8348dbca22d94004551b0f73ea75cdc808a0c5257c34989583b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/numpy_to_torch.py": "d32400ab17075342481c4af5679651afecc88dedd7cbaf09da52800d78622510",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/rendering.py": "bc4997a4088a0934080b5a3fc3bd6faa7bfae295e1173f5365a44bba20d5b94b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/stateful_observation.py": "8e67dad134c229b250823b9b536feaceb1bc3f4fbfa7788994f8c074f1506803",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/stateful_reward.py": "a18ee74c3034b7408e098ffdc3c9ac806968787a40a4befd0d23572291bc2b7d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/vectorize_action.py": "4116fa1031e39ec2f574dd9a2116277a0a12d92fbaa6e8ba8083f19d9dbbc13a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/vectorize_observation.py": "5ed69cfa4309cd78c4671971b40cc8395b91e08aa729e56a0b7c49cd58240104",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium/wrappers/vector/vectorize_reward.py": "5d32dad9ec270953f1666d0368ad38a7bd77b289a787a6dc7aa6053a63c704be",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env-1.12.1.dist-info/METADATA": "e5b5e31587be003c663e1641f41ab7d7e7cda472e0688c425b40f796f478b0e7",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/__init__.py": "36e5f86ee5b4b0a7c53940d30a01e8ca632b5633bfea1b376ceee46bd8ba430b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/__init__.py": "c6309bf4a743f7fdad05dc05cc45ddad4101a15f4f36c9b715fafdd1c5b1fcc3",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/common/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/common/abstract.py": "a86e262123ee8921c22518f9f4409f856ed71003802e4d143686ab99e981be8e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/common/action.py": "ea6f446ee03d53b76c263fc3e0544fddd90a7695cdae6ecae41aa9c1753060c3",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/common/finite_mdp.py": "9d8820d918634b428461951d8b3b3735c16ea990e5f3ac24f7bb34d1cd42ae58",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/common/graphics.py": "d5b3ff4a693df90cec4bb4b2f85a0eab35264966d1cc2ce037803522831e93c0",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/common/observation.py": "8550216b3f60420fab4b61969f321747fd1458aacdd03c7000997029059ad63d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/exit_env.py": "1a5de1512bb91bb67b02ecee00d69e032a677354182808c3473cfbe46dbb219c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/highway_env.py": "f89701d99471962d81e911f431b4051db407cd9529caa976e93b6c43443eb5b1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/intersection_env.py": "c6d89414f6283e1eda7a74ede512ca859a74213a9de6b19104591259fe638a65",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/lane_keeping_env.py": "3aaecca44d31b639858098bc6eed484d9fb3d12c47b65ab7a33710e127125609",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/merge_env.py": "d27d689e3377dbd72f59c4011b6037befd6cf6faae7be8e4050bac958d333281",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/parking_env.py": "c3f93eb33219a5709c724f41735440063060ebb5ee83ec9beebea3df11106400",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/racetrack_env.py": "10562b03135357b4f6a81a9ef00ec548208783446f31c05ef9da0a70c93c2200",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/roundabout_env.py": "91b51850f8250ad431a2ca64127ab29f8aee8c7ffcee209b8626a87cfc57ed71",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/two_way_env.py": "38181707c9e14c0e3217f4afb755e5ac01c5c0b1359a76d1ff1c85cf33ca3aff",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/envs/u_turn_env.py": "d1517e31af5b5fb382b3791f06b73232475f90040d061bddf2ff9a9d8012943e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/interval.py": "d7e2512a5708b8541695f5219382c1d5002482154622f77b1cfd63d7edb5241c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/road/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/road/graphics.py": "ab3052136e08fb39be4dbb3ca8f05e5e4fbe5645b9ce11b96e7603e19ff4f91c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/road/lane.py": "eba8586e22930047e74059872b396cccf0b8ae9a27a783bd1cc4eae60b42856f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/road/regulation.py": "b55e9597952f42c88eeb9245042c04a930b07d2ae46e6a328a0e9bfdda83078e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/road/road.py": "22dedf61bd5fddb194e4b4720cc2396bc5db95309add7ae64f9995a79cdbd04e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/road/spline.py": "1fa16c7ac592c268252da030b00c6b04e228585411585e9337ec4d1ece807297",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/utils.py": "ac765ebab52bf67fa8b8b6eeceb2fb2337dc61815339eb730cad4938f22aec17",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/behavior.py": "fc1256a110faf2f8cbb46a3cb50ca995d6c3e1cc13e064122df9d7d6083cdecf",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/controller.py": "78a58ab162e0486deedec3b299d3909ea9c8472f2c2d7ff7b0391a204dca0070",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/dynamics.py": "13e5ed1f4e62c610a2934c52be0ff47baa8009ced2601b4e923d64234baebc9d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/graphics.py": "a676c0d404b6a5daed241caf6f0bd2ee3fd22238b65b66dcaa4a7db909831a89",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/kinematics.py": "5013eb5508c5137eab161dcbd65455b403be26d2b446d5ae73b5bd18c0d0c891",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/objects.py": "47151395360d89383afa53f6abe264fd09dfc4179862925716be9b56360a527f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/uncertainty/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/uncertainty/estimation.py": "e7b841885b7ab14c5733024f0cb2bef27f1c33f390c456758b05426efeb3c72e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env/vehicle/uncertainty/prediction.py": "ab1a06163cd12a2aa5f4fed16fe64a4250b99f60ff6f12d6e3d9dcdab28fbc3e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/iniconfig-2.3.0.dist-info/METADATA": "40d773f84e4e112f495bbf4f1be9cbd2d456c0aeb6ef5311f75d1bf322f2165b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/jinja2-3.1.6.dist-info/METADATA": "68c5548fb67c4132a13898d9b31ec50c6bea2abdd915d921f214355c3a6499c8",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/kiwisolver-1.5.1.dist-info/METADATA": "4e635948bf0b496e7e1bf6b8f7f577504670453459bd98e8dcfb0b919257d476",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/markdown-3.10.3.dist-info/METADATA": "bc042410d66775c021e253fe22ef2247df9f9d3ef47fa619b604f1d3bdd83915",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/markupsafe-3.0.3.dist-info/METADATA": "f0ae5dbb09d50fb5f7632c3d53f0220995ef76019e5892e0a545740136a4e3cb",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/matplotlib-3.11.1.dist-info/METADATA": "e42a4867d0c790804bce9ccd38972e1e71e24a81f2dbc9633efc71e63ce69f59",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/mpmath-1.3.0.dist-info/METADATA": "44b66ea444b9c0d19ae94815d356bf047ae6b680c19268b5c265687cd6a81406",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/networkx-3.6.1.dist-info/METADATA": "aca5d94a97d1f70f301d033addb635f6e66be8973a00aba4127637eed2ef316a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/numpy-2.5.2.dist-info/METADATA": "9a895d801184d2176f926af84eb47f2db1af2756afac99d64a2bf482d5d5e024",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/numpy/_core/_multiarray_umath.cp312-win_amd64.pyd": "63169915c2d78aba0984bd5e235a92936c319d228c35919a41758b20cd8683c1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/packaging-26.3.dist-info/METADATA": "70fdb89fc4d4a9a043bf7372b8972bcc883fddff34ab55e9cf80d73875384763",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pandas-2.3.3.dist-info/METADATA": "243674e606b51e70e5858596c7bfc9b58875d531d56577927c0a9944693f6c2f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pillow-12.3.0.dist-info/METADATA": "2c4378001803cfac65809a50722d46e0da4ce8061e717f103e5d52734bab30f5",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pip-26.2.1.dist-info/METADATA": "3a561005822841f2c45f442f6c7a7505172c8c376c9fe274d876c8ac912968cb",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pluggy-1.6.0.dist-info/METADATA": "7438c35ee25a095eb7416f84b461c2d74425c5e734ad54c3912453c65244e01c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/protobuf-7.36.1.dist-info/METADATA": "947ed3f132e70411555388d7fcd36712fdd60c8db6345001fb23bb56a2c6cab7",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pygame_ce-2.5.8.dist-info/METADATA": "c4c3c1d7303e913414ba3423b185118ddc7f10b9dcd01b406354e01f6263e6a8",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pygments-2.21.0.dist-info/METADATA": "1dde075570136774c706bf0009183a793fe0ee262e4a5590cc6eff8453eedd43",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pyparsing-3.3.2.dist-info/METADATA": "3311a8b949d70f71a2b9788a9327f11d9d5a6a8012d6c046ca254ad2de877f45",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pytest-8.4.2.dist-info/METADATA": "93d6c5ef0a9714d53716243035037b77fa7d5f970596c48433887cf57f7f675a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/METADATA": "a9d436da322be808332f98d88325998e87cb693a678a9969feb4cfad729a6e93",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pytz-2026.3.post1.dist-info/METADATA": "25ef8a562377a28d8c6bd8c5c9e80d761d0e22ac4a7bed24e512f589644ed33d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pyyaml-6.0.3.dist-info/METADATA": "847a701020334386852b6e07bad1053cb0ce3da9ee1846e7e9d02b24e8bb3f8d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/ruff-0.16.5.dist-info/METADATA": "0a56569591c7a8b7c892bfb280065332a3012b97c1636f0b13bc5d6521946391",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/safeintent_rl-0.1.0.dist-info/METADATA": "875afbe19b971145e3d7b29fb8d5e70e0551d32cac577f8ac4464f9d73231cbf",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/setuptools-84.0.0.dist-info/METADATA": "3ef2975718dd31cabdd5829455e9b868ca14dbf79ed8fed2de0af4e87347006e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/six-1.17.0.dist-info/METADATA": "562042078c2752549f6d8a7c86dbc5dd708088a7be6d80672ec7b07100b72468",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3-2.9.0.dist-info/METADATA": "0696fb0f1ae5e766507d8161fbc57337f11ccb6df37b03a0677bb68583e52d32",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/__init__.py": "a8d5d1b88605932e9d03c6acc37eadc54319bb1b563faf00cd173fbfdf059cf6",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/a2c/__init__.py": "7460d0bedd470910de7e98474e1f41cef76b46c8f1b213e116e9c117e7620c7b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/a2c/a2c.py": "fc827af05ad7a72d3ca5fc44139496ccb5f101b3ee6602a915a92f77d46353ab",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/a2c/policies.py": "ad8cd1b486fb1b9b7d4e962d8ed7ade01c58229e60c61f7c6fc0fbce55a41864",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/atari_wrappers.py": "4e1a42ae65a568ad8d403d066aea7eccdfbac67cb15b1f8de2bf9c2f54e8b14c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/base_class.py": "8e142f3efc4397a94dbe8bbb0ee1998cfe9e809b2fb34a9297f737ed4d81ab63",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/buffers.py": "21db27f000048615f5848facf18af9afc22e6e2a1c26148911c2cba542d1988d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/callbacks.py": "29c3b9668239ef872fbf94a2ef37c672889947b0531c9a6ec963fd12c00d255e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/distributions.py": "416b40a1bc3bf6435f45e79553fc553d796b58f95d28e49d3aa4437dcfe6e251",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/env_checker.py": "db0cd1ea93d97be869d1af0377b8b058d1745b0e51c0a3e8b9c1cbae8f6b665e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/env_util.py": "aea5a270db0068bca2d139ecf693775cb85330c79e07b0d837c5711285e72b33",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/envs/__init__.py": "2a167d3e4775a647367e385a25ebee4603b59b7f4a88170915a071f0e4076580",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/envs/bit_flipping_env.py": "3f997047675ca74713639f0e81c792a1c2f9a1d6cb3d0c36bcc8aa780d90f6a7",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/envs/identity_env.py": "94bd53493d7e84058c836c3f829dff86594f2b233e78ff2f05777ed16d4d0900",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/envs/multi_input_envs.py": "d3f7f06fd7ea4f4a0f70b2b8f3cb93bb7e99ea1a626ea2ecd9aee66508da513c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/evaluation.py": "a60cc695f1b0fa70c008efffd59fb5e3b1b590601e7992099cfd8b07665983d8",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/logger.py": "d2533d0fe929aa533ecb373c040a5e7f1c88852667e367f0a8d923e1efe5fa5e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/monitor.py": "f3c9dd25dee5b6132225a5720e6ef46922575908bf5160ecd07d874b2238db5f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/noise.py": "335d9e322c8b5bf1b43703ac284951a01bb7980822cb30c8c2b94b0f48dc4e1f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/off_policy_algorithm.py": "ec895fa4b7ce96550b0acdfea3a73561db568f863b24c0b77d106f3f67e540a7",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/on_policy_algorithm.py": "ce1984ea8e8a2d969443a484ab159194b9d70ff92a7ef1bc25fcc183e391e35c",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/policies.py": "40bfc915633e216d9d620724e3d80029a6e2a2a9c7607ddc75782b2c8cc281e1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/preprocessing.py": "e35af31b1dd7fd3c01a41040435c27b64835af49a9cfc023f26d9ded5bf170ad",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/results_plotter.py": "dc199121e78745d487fe86b54a08ed87cf82e469b92c87be27f83e972dd4c70f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/running_mean_std.py": "39f3ac4243d10fd7375deb9c43db1b94e6f878bf53bc5e633b6dcf12917c21d1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/save_util.py": "5dc9afe3aa245830fbdf8784e7ce77df8132944ab48e570eefd6b073ae0e83a1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/sb2_compat/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/sb2_compat/rmsprop_tf_like.py": "61c582750a854c8157acbfc19a985ce540a019abe2587e845a4b7d4b954fc3cc",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/torch_layers.py": "5b3293b1139e5175fa77d65434d153a406ea470d75212b6a6d1bdc6e5fa08a40",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/type_aliases.py": "8f46aeae705bd86725393a7676d89805abc2d3b704e9229dad73e5001b48a85d",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/utils.py": "c95c6d88f810e48ac32b488511cd63d87b83ef7b459b8a0a9e5e955a9856d809",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/__init__.py": "eca2b74420b2e1386f88c1225c84a1e3019491b21bf00a36469545a4fac90f29",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/base_vec_env.py": "1e7da85077c947fc1ec81941de793cabcc039a8ff8e0172b6b7078bd492ddf80",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/dummy_vec_env.py": "e9086bccdee89800a03e32fad09b2baa4195bb72ada97a12f381afe211c7c32b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/patch_gym.py": "8669d9c71cb5894903a8e87ed86855b8e4207c73b82635e8996a06061bb8fe11",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/stacked_observations.py": "d24e220f98d321dbcb0dc53ace0f9f49ef2d4827d2aa309c139b9c67fae374bf",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py": "6e31549805997337a2b38eaa7b54d4d00310a6b7c58e42a6cb6fb6f6c4e9d572",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/util.py": "494267f8dbb1e25d181ab6a2af05e4633b9e75fe91365ec40cc0f85733f4ae7e",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/vec_check_nan.py": "d5484253a50c2bb3fea2376fa7d3d075b3ef038ea7db834f03e0a8e605ca4456",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/vec_extract_dict_obs.py": "951d2418b83d48ff5fabc78cf7a7a0e0dc1085bfec754593a0763fa9b504e253",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/vec_frame_stack.py": "d1f9c1a1de8442da389560af54a344dc3644be0ded71da2736889a7cf147931f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/vec_monitor.py": "6e1c5dbfec5e619970da40a7b48398ea2b67952dc112685f23f1f633039448c4",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/vec_normalize.py": "1a6e5e84fe9836d79cd188ae345644c16215df7e94755d29dbc39e15ea83c9d9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/vec_transpose.py": "9668fc34d7bd664f26cae80700090a6d4ff927b2a3b519129ca1c02772955cad",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/common/vec_env/vec_video_recorder.py": "081046e535a4f84c67d5f559eaea0ce45a21e6040ae34d9db9ba648119a4b6d9",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/ddpg/__init__.py": "57e45661eec3f611c62a8e611c0da01dd3cf387cd97cf6695e4f7dc8d5df82ac",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/ddpg/ddpg.py": "b890170cdf28b32782b44ebe28a41ca3f4cd8bbe28a6e9dd0104c1eca463c219",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/ddpg/policies.py": "4645b42a6194a324b5e2f947a447dae5e98f5426bf30d06ae7143e257db360e5",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/dqn/__init__.py": "cfd2589e94384d46957425565fedd1af6e78ce1cb127218754a25b4a85b80b37",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/dqn/dqn.py": "6ef7cb21b31d0ed1d6e4e69b485bcfe5d0f6e285bd1622e2d9c365b308852d52",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/dqn/policies.py": "70eb2287995955a0a2b7c6351ff8fd0f7c167c7b0e76b7e460d6ebc07f507e4b",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/her/__init__.py": "22d38de4cbc7c52b8b518b51efe6e16e8a5a02ec0cfc617d2cc373aa58c4d218",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/her/goal_selection_strategy.py": "c747b071a5d85410c5cc508ffe4f0eb43d6d009afa2ce60e22015a8c7542baab",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/her/her_replay_buffer.py": "e1812453fdfe4796e353bc3725ccadab040e6107ec0bee326576e3bf63a262d7",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/ppo/__init__.py": "1c3be462460c36578c74cd724325e9606a0bcce139bd66d4ebfdbc12b1212b9f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/ppo/policies.py": "1dbfff512b3d669c16d933dce377286f2ec7559efcd5f5ddaeab46493f092abf",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/ppo/ppo.py": "724a5f6324bd3c6160e6e3125147df597c0ea9d3c6f5cc0dbc1bcb8731cdb12a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/sac/__init__.py": "d916666b183a8e1bb8b853c96a83ef336c4fb1264adf15033d67cf8dc6ca9a37",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/sac/policies.py": "83b04f459da6cbc7a0a207d9796e79e513e7f4a3eca4a99bdec45e7b808f4b90",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/sac/sac.py": "ead503c743da378ccb5183bba5a3fb7387ec079aa6aa611d3043fa172355e8b6",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/td3/__init__.py": "fbccd748b1dee1ae45376d665822db374ca7bc1edd7bb07abdf2d471d95dad1a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/td3/policies.py": "5b81fa2347e9e3ce85956b570cb3008f58778d62ad1598c3bc89217c3a143062",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3/td3/td3.py": "45107ef95f85cca1224741b666a3de2afa57838a501cc301331fd7e9a41cc2e0",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/sympy-1.14.0.dist-info/METADATA": "b756c2fbfd5be05ac5bdb0ebca61f55618f30f633ed92d88a5687429313a7595",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/tensorboard-2.21.0.dist-info/METADATA": "819632abede8687d314bc65aeb4ac89512873ce31eb97e57c2c11f51ace59d23",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/tensorboard_data_server-0.7.2.dist-info/METADATA": "6b38aea33eeccd55a2644d9b7eb6c61d574a496188f4ac498e68e6230b1b9096",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/torch-2.13.0.dist-info/METADATA": "a3fefb38f5e4d5d694e2e3b1fd9eae070bafdc6db6d43993da3d631bdb5be59f",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/torch/_C.cp312-win_amd64.pyd": "e436e07e4794ffbe04ff1ee84a0e2c15e83d6dee4cd916c77cb5322086363f63",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/torch/lib/torch_cpu.dll": "beead1d98b0d1dd23bbc570f54e919b55adb7618baf5b434bce4c8d83e21ffb3",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/torch/lib/torch_python.dll": "99c9b6ccfa750e7f5281347ddc1468544b3ce5f92851a0236713b1614505333a",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/typing_extensions-4.16.0.dist-info/METADATA": "b05084ca1d50879865178d9fff9fabeab61bdfb1f361bfbde95421ffc8f9be46",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/tzdata-2026.3.dist-info/METADATA": "511c019df477939fe7f4c38e32ad74a570c4ebb05b13fd2fffd0f0f2dbe6f7b1",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/werkzeug-3.1.8.dist-info/METADATA": "f57d29864fb04c6cbf2b4e844c108d62331f4621fd163cbced288f90dfd6d392",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Scripts/python.exe": "3638cd6a1236660910fe5e278994d309c073fb4bb49ee061f48bd4ccaaa0a191",
+      "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/safeintent_rl.egg-info/PKG-INFO": "875afbe19b971145e3d7b29fb8d5e70e0551d32cac577f8ac4464f9d73231cbf",
+      "README.md": "52c5b93040da9259eaae83616d9500236eff307170b8e7896f85bdf242da7134",
+      "REFERENCE.md": "13f3ff5a9a03cf2524e7fd5693557f18bf6f9b7691f0ae4e056d026b5e37e853",
+      "STRESS_TEST_RESULTS.md": "111fd81357c2ba3160b7fb7de170f16a8540010b8cbfa56c260cf068d5079013",
+      "V3_CLOCK_LAUNCHER_GUARD_V1.md": "86d8ba8d8f447ec825407aecb9456c3b47336fe6493cce3bbc20ff1482979508",
+      "V3_CLOCK_OBSERVATION_V1.md": "3266b72e0687e309816375a63377e7f4a7d3fe9d9c4e8461840b8fde7153973c",
+      "V3_PREDICTIVE_SAFETY.md": "61f1de8394e038d3b629935bff2315869f3c8649e5d48bd0083fc7a78c7aa540",
+      "V3_RL_RESEARCH_NEXT.md": "9469ee5ba12519e4f0762b4a1ffd2526ec5b1ca323d64a70f0e44bcc2d7c53c2",
+      "V3_SECTOR_COMPARISON_V1.md": "fbc0a4383a0d6224a78f6e4cbd7686cb6fa9593f471daa67a78686b99f74d56d",
+      "V3_SECTOR_OBSERVATION_V1.md": "104f05ac18377cb6247e7b5bebcac960fa73f6dc35b45ee47830e84c6bb85b6e",
+      "V3_SECTOR_TIMEOUT_DIAGNOSTIC_V1.md": "4846e927192fed546e569d90a98b410d7d665c97b3742d08f97d0363a5abb087",
+      "configs/fusion_timing_v1.json": "374d4556e282e8753d42c63af37557bd3e3ae6b31d598286739c27c860eda0dc",
+      "configs/intersection.yaml": "4efc503a0fcb409a2ecb9f1fe6daed929de4a4aee32584afa018b3d8031cebd7",
+      "configs/intersection_reward_v2.yaml": "4df8daa59edff620c75208b8c56565e2d64b96aa25fbb1830892555ba8039b52",
+      "configs/intersection_reward_v3.yaml": "433e6972cdf49668761bd5e55ad74b4910ed5a0128be44662d6c4577287fae69",
+      "configs/intersection_reward_v3_collision_first.yaml": "4478ae622b1a9c8d38b4163deb51589aec1acd9074aecdce23e3c8fa7546878f",
+      "configs/intersection_reward_v4.yaml": "dac2cfd76956d77a203f445013c8680e2ce26e4eaa9dfb38f94be92f6a587c20",
+      "configs/intersection_v3_predictive_geometry_v2.yaml": "a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7",
+      "configs/intersection_v3_predictive_safety_v1.yaml": "e355448e7ab438840ab34b3c88d3883063dbbfba6f5327e16a2dda9adb4fca14",
+      "configs/obstacle_route_v1.json": "3da86256869eceaf8892169e2e3613b7858f53fd2d736b5f379dd659e2428857",
+      "configs/v3_predictive_stress_v1.json": "6c3851362df84a0aef76ee76dfad33bc203573aa843dde6c0d3c21dcd1142d47",
+      "configs/v3_sector_timeout_diagnostic_v1.release.json": "af45b9e044dae3e418df7c04704810ca667673cd53ca0ebac53ecfea699ebe67",
+      "data/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "logs/v3_sector_timeout_diagnostic_v1/complete.json": "06de7c97d66b54345c526e009781e1b3aba8ab08bee3cee26559f025a27b76c8",
+      "logs/v3_sector_timeout_diagnostic_v1/episodes.jsonl": "f5eb5a7bbe462d30b5da186fbaa38e756427b8334941b804e2237925ae02749b",
+      "logs/v3_sector_timeout_diagnostic_v1/geometry.trace.jsonl.gz": "6cca858bd5480cbec57e00b2551b6240ab3ad55f59329ad83393e1dc1e212491",
+      "logs/v3_sector_timeout_diagnostic_v1/padding.trace.jsonl.gz": "1f5ba8dbf80920be6e348ccc0e3cb7d24e2f424cff34282c11b87cf8e76ec17e",
+      "logs/v3_sector_timeout_diagnostic_v1/sector.trace.jsonl.gz": "320329b2ea21372296e29715f17bf66d195725ca626e5d11b251b29a04af5805",
+      "logs/v3_sector_timeout_diagnostic_v1/started.json": "f76ab82bbe3406ed32038663421efeab7c52069031f13865bd978b48d40b65d5",
+      "logs/v3_sector_timeout_diagnostic_v1_snapshot_20260912T0949Z/manifest.json": "1f5f638d020b464c88cee753546fffe83a8e7d7a0e155e29b9d63e86a26b29f2",
+      "logs/v3_sector_timeout_diagnostic_v1_snapshot_20260912T0949Z/snapshot.zip": "68b9c311587cf9fe801d0a879f23f6251be209e6946a72037012385543173406",
+      "models/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "models/ppo_v3_predictive_geometry_v2_seed42.zip": "f3bfeaa9826f989ab1934b71a46a92a97cef159c8a800c56b23b4530c17636d2",
+      "models/ppo_v3_predictive_sync_v1_retry01_seed42.zip": "8a363a7b5e7caef621d6b616890175c10d457531b4d4a213d05fc2011244f395",
+      "models/ppo_v3_sector_features_v1_seed42.zip": "0695d09d098ecdae60ae63d33b919c691af8844f782af5a66649c33e497bfaef",
+      "models/ppo_v3_sector_padding_v1_seed42.zip": "82da273ff74b39776b7486a6523c96102428b5e84d72499e130d9c7c22fddbd6",
+      "pyproject.toml": "392dbf3fbb7ad30fbc6cde3ab8156a95e8245e5cdd1289fd369a22f74ba59196",
+      "requirements.txt": "d5b9ef417e64f71be8d4098aa6d85d14c2bfbd7cdff4c262e3f893548276eca2",
+      "results/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "results/fusion_timing_v1_development_seed40042.json": "86e1e6b81e29f0a9761dbcf7637a7d094cbe59c2b1400d1474b530f4888de3f9",
+      "results/intent_dataset_seed42.summary.json": "52083e82a5441d55800598338b49b71c8b3731d23d09bfc78d641d0cca0ec1d6",
+      "results/intent_gru_h8_seed42.metrics.json": "33c33367cd40250d9e1b42600bcbf9bf87a4052e5c6cf7f4fa377b2f42636b1f",
+      "results/intent_gru_h8_seed42.training.json": "a368a1140b5539a7d992db827a9353128187b9eae01ad9ce106a84bc63b03caf",
+      "results/intent_gru_seed42.metrics.json": "7e4fcf349049dcc969c449aa00b38bbaac777b3ecf4e4608ec11555cd71a73f2",
+      "results/obstacle_route_v1_b0_engineering_seed7.json": "1eb0620da774e231c7dacb029009eee821ba56d53993df70ba762ee7acb590d8",
+      "results/ppo_baseline_seed42.csv": "2a1f5cfa457554f326c96f98798973e876b18ab428f8e7054142895dc3181194",
+      "results/ppo_baseline_seed42.summary.json": "920fef47be057da255b96d667d8b595d93fdcbe47bdea4b47ff0ac22257b284b",
+      "results/ppo_fusion_cf_control_development_seed40042.console.txt": "9b3d04f96c7b109e2596a395a53a6bf03c11797ccbbd5bbdb51d5d84b90b37b3",
+      "results/ppo_fusion_cf_control_development_seed40042.csv": "121c1c69c643c591740dd8d15c0f668579152bd4c2b006df118f6565a8cd6005",
+      "results/ppo_fusion_cf_control_development_seed40042.summary.json": "e30c0a414f96c75349eba9160170fc010ff8401c26885efc54432b3702217980",
+      "results/ppo_fusion_cf_control_seed42.training.json": "83924df16058fd830cd74085ac3a3a1ffb9ee1c282493dcf4d0eac44b907b1bd",
+      "results/ppo_fusion_cf_target_development_seed40042.console.txt": "f36d1ed834923d1a322567a3665dbb691bffc4533f760983c8bafa8784ea1ff5",
+      "results/ppo_fusion_cf_target_development_seed40042.csv": "e22790267eac961d1943d49e0152c7a34ba59fdebb9c1c374f4a14f33b394237",
+      "results/ppo_fusion_cf_target_development_seed40042.summary.json": "4699a86bf5563fbef9601e5b41a312642c61c716827ae3e9d03a6e13e60d309a",
+      "results/ppo_fusion_cf_target_seed42.training.json": "9b77f9b0cf94111ddeddbd1440fc0e35774784d1520d309af711c658659f9943",
+      "results/ppo_fusion_v1_development_seed40042.csv": "1c54c4d36525bd84daf82c2773729aee3e4429c68db83d5ec67563b86605d632",
+      "results/ppo_fusion_v1_development_seed40042.summary.json": "ef286f04a0a7bca4d40059c2bd7baadbe6f33ac541cc8c0a926579a2a783b7da",
+      "results/ppo_fusion_v1_seed42.training.json": "62713bca9d6c9c2bf5df15b9d179e447c882c065f0ee8854fd0d9e9ea8404ec7",
+      "results/ppo_fusion_v2_development_seed40042.csv": "4d5100a13ee82ceff4f1114440e51178f0a3ee940a71166818a6a23ef2533589",
+      "results/ppo_fusion_v2_development_seed40042.summary.json": "e0cfda3bb507c58fb53ea94ee834c64632674a38c43098f70b8fca40e4339193",
+      "results/ppo_fusion_v2_multienv_seed42.training.json": "0f8f080f31f6026af2c02d41ffa68709939996ada9c9172022db97c2099e869f",
+      "results/ppo_intent_v1_history_coverage_curve_seed10042.json": "b364e39e104197b32670c9305806c74c972be5fa9e5497888ecd340d664be101",
+      "results/ppo_intent_v1_holdout_seed10042.csv": "72fe15fb876e5ad16007c97e01a8811aa62c5935468c21dac49df8edcdebb498",
+      "results/ppo_intent_v1_holdout_seed10042.summary.json": "95ace2dc9cd3904e7b3e0119e56b3a039cdf7b57d0c7904614eacdcf896d6ccf",
+      "results/ppo_intent_v1_online_diagnostics_seed10042.json": "c39ffdc93c6f46ab75b4624b8b48ec04caab877ef310bbf14148e1d9504e4045",
+      "results/ppo_intent_v1_seed42.training.json": "408619b0274972b735f7bef40fc1779a086c08620e318367a83351e3f1c69263",
+      "results/ppo_intent_v1_shadow_history_diagnostics_seed10042.json": "d22140fa855aab867978ebd439d222a7622d3c97ed94fcf549cc89b623f2a844",
+      "results/ppo_intent_v2_holdout_seed20042.csv": "a54ddbdd564e9af28de7c2d2fe631c113bf3ce570d79a43d037ef69aa5f27c17",
+      "results/ppo_intent_v2_holdout_seed20042.summary.json": "89450da5c36edce191ab181662c743c010722e5843eec07d96ae1623d42e0430",
+      "results/ppo_intent_v2_seed42.training.json": "5d5b7138239670892744df958a2668a3828f14509f1a7d5eab5eb4680ae511d0",
+      "results/ppo_reward_v2_seed42.csv": "1b61e0a8b16b0950638803f75c6d5da3f595b8259bd7b14d41f83f1f187e064b",
+      "results/ppo_reward_v2_seed42.summary.json": "3d10a563e3f35f72c453b729dac1646f4df42ea2e1d4a453168306f85d15550f",
+      "results/ppo_reward_v3_best120k_seed30042.csv": "055a203af42d5f299ff9d757e92e8995ed943cb83796261f51d4712011c68951",
+      "results/ppo_reward_v3_best120k_seed30042.summary.json": "afc390d237769e58c1dafbc3df2ac1c7d0e53cecf4408c5b96967ba554565ce8",
+      "results/ppo_reward_v3_conflict_diagnostics_seed10042.json": "b0f052838d44ffd0256c43a0a7f134132bb86dfcaf240163fdda4be3656829ae",
+      "results/ppo_reward_v3_cpa_baseline_holdout_seed40042.csv": "aab91174c49090dedb8702651c913f0913f89b50d3a321befa97399f84a47fb4",
+      "results/ppo_reward_v3_cpa_baseline_holdout_seed40042.summary.json": "51fe8e4aa86f62b2bbb5b66a7e8979655305e3a03ad571ca631d40828c7556a1",
+      "results/ppo_reward_v3_cpa_brake_development_seed40042.csv": "64d32187cb0a4407eba2d2e9bd8dc6896a913487143fed6b8df08c9511ac52a3",
+      "results/ppo_reward_v3_cpa_brake_development_seed40042.summary.json": "20a09d44d7cb771e8d445e8fe3e78458930a362800618c5e6b65756d5c198f1f",
+      "results/ppo_reward_v3_cpa_shield_holdout_seed40042.csv": "18a997fd0bca8bd3a724019240d755d56ab3b53a1718fd1812f2aebe890a41ff",
+      "results/ppo_reward_v3_cpa_shield_holdout_seed40042.summary.json": "f234962ede4d871db94972c87cd6a932bdb326562f54ca68857803c3e9289bbd",
+      "results/ppo_reward_v3_final200k_seed30042.csv": "fa36efa8afb82745a3652c60504d07d3cf054496b7fea74933ee51e67eab60de",
+      "results/ppo_reward_v3_final200k_seed30042.summary.json": "520bfcb14d5ba93b014e246db1c923674894d0c17f37d3972bb9f4909101a837",
+      "results/ppo_reward_v3_holdout_seed10042.csv": "642a0a34841f6bc351acd573b5c057a95c53ddcc2348553de1f10adee0286c09",
+      "results/ppo_reward_v3_holdout_seed10042.summary.json": "a17b27f5a0d4239b2862e3075cf5fb67e3bcce7d177df79a521349577a257261",
+      "results/ppo_reward_v3_holdout_seed20042.csv": "f57d357da61ac309b8542e54ab8e74c5bcf456ee98c5ef459e25d83d40523f65",
+      "results/ppo_reward_v3_holdout_seed20042.summary.json": "505bcae5d8d2c1ebd7fab0429d0d984e55adbe267f357d7f4bacd833ad59abd2",
+      "results/ppo_reward_v3_seed42.csv": "2f2f54c6c2c66a6679bb2dd81d89d2eab70dc8f2604c586f8fefa302ed124f26",
+      "results/ppo_reward_v3_seed42.summary.json": "d14db75e81b20989c981808cb7e9e403a26d5a4df22829108d64f96d28cd5546",
+      "results/ppo_reward_v3_shield_holdout_seed10042.csv": "397a3c897302773c1af697395cdd1f74252f5ace490e261e6adffff2db793215",
+      "results/ppo_reward_v3_shield_holdout_seed10042.summary.json": "e94fe9ea13a1ef0c4e25dd5f869936f9be929927555fded7643da7056106e2fd",
+      "results/ppo_reward_v4_holdout_seed10042.csv": "449842c235e23b861d0fde1cce67101760064893daa28f87e25097207d52e3e5",
+      "results/ppo_reward_v4_holdout_seed10042.summary.json": "ff7c50a441a4b1ecba4f962eed8149a90f77d3d307f0d9f697e8e011f1a83283",
+      "results/ppo_v3_predictive_control_development_seed40042.csv": "33ce4dc8b0e0a914033095a163cb26197ea31cf15788f9c0684e4e7818d711a3",
+      "results/ppo_v3_predictive_control_development_seed40042.summary.json": "f4a3a623c75c6f643d14ac499d9dd5ce5f9b444c67ca25ba0388234d75929000",
+      "results/ppo_v3_predictive_control_seed42.training.json": "8701584bc5a6175c30b0c1ce0acbca300715bdee2083272cae8413ad67a4fb08",
+      "results/ppo_v3_predictive_geometry_v2_development_seed40042.audit.json": "9465c90a6e68b0478c6c47e55b577c82734f8950cb4668739024f97c2cbbcf9e",
+      "results/ppo_v3_predictive_geometry_v2_development_seed40042.csv": "e145084f4ccce3d419c34886bd9434c0b5a817fb6fa3c1ceab616a89e1929030",
+      "results/ppo_v3_predictive_geometry_v2_development_seed40042.summary.json": "227675bacf3f113209d970ec28763ccb57a86e352cfcd546f4ee8f6b1b5ecc61",
+      "results/ppo_v3_predictive_geometry_v2_seed42.training.json": "6ab05310433ca6186874861f66bc2bc35e54a7474e7bbaa572b14d6220ebb861",
+      "results/ppo_v3_predictive_safety_v1_development_seed40042.csv": "c5a50b1147fafa4aa61c55f9c8784455b4ce77b57ac9617dfd7466a48daae535",
+      "results/ppo_v3_predictive_safety_v1_development_seed40042.summary.json": "f9521709fa74cd3a369809f9040d216384cc2ad0cb72f965b42d32acce1134eb",
+      "results/ppo_v3_predictive_safety_v1_seed42.training.json": "306b3931c0cca58b4c480b420ebb39ab8a5c36de733d1add09e30f66cc15f91e",
+      "results/ppo_v3_predictive_sync_v1_retry01_development_seed40042.audit.json": "0292a40705889a3b6e75874c4955ecfb5e5ac19420b1909c88d1c104476bd30a",
+      "results/ppo_v3_predictive_sync_v1_retry01_development_seed40042.csv": "b2865f8d45db051a450744eb94f95850fd742089f6f12445820d6067a3514dfc",
+      "results/ppo_v3_predictive_sync_v1_retry01_development_seed40042.summary.json": "763cfef6e8c4a9364f69896c5ede4a6ece7e3f6dcf0e54ea33b0df140da2338d",
+      "results/ppo_v3_predictive_sync_v1_retry01_seed42.evaluate.run.json": "da3e4e4b98d1f4d754d521d687e300dfa3fee0afb7ed243020d5adef209b5d2d",
+      "results/ppo_v3_predictive_sync_v1_retry01_seed42.train.run.json": "de38b7ab02ceb7378ec07de76b3b2c95b8a25306a8ba437e42a06c9f58b97dba",
+      "results/ppo_v3_predictive_sync_v1_retry01_seed42.training.json": "e858bc356e2f430e409ae96d53c62f164204376ed0799fa75f43fe3524d0edfa",
+      "results/ppo_v3_predictive_sync_v1_seed42.interruption.json": "ab64f59b8d8b891213612948cc1cb7817cca39b30501c4b321ed14e9b3fc1ea7",
+      "results/ppo_v3_predictive_sync_v1_seed42.train.run.json": "4a884209aaeb320255416eedbf9d170bbecaee946a6e9fa998005618f1ec60a7",
+      "results/ppo_v3_sector_comparison_v1.verification.json": "8daeeb58af987d990f0d98d126c214a7c959e3278b0be6d929e6fbad861a0b1b",
+      "results/ppo_v3_sector_comparison_v1_development_seed40042.audit.json": "791a2ced1df57d7cd24668a1d6e13c964c6223b0ac8f3c67120fab76c629ce05",
+      "results/ppo_v3_sector_features_v1_development_seed40042.csv": "68e7259e0c08519978b9a07bc48b812878b4f1b6481afd12d20e30abe5199cbb",
+      "results/ppo_v3_sector_features_v1_development_seed40042.summary.json": "5b5c01f105b3ef018f08ac2aeccd2384c0351ce5eecec15e65fa380f7984453d",
+      "results/ppo_v3_sector_features_v1_seed42.evaluate.run.json": "144b8df605a1edb7c52a5d2c3ba47d7d2c76965268448a9aa6b481b5916674c1",
+      "results/ppo_v3_sector_features_v1_seed42.train.run.json": "0829a00096ed593a71f5aabab5d3e3c79d4d96406e1cb32b924948e09740469b",
+      "results/ppo_v3_sector_features_v1_seed42.training.json": "42b838eca81e1a93bc741568fc994dc02383708e4c69aa0f54022f26bd28a28c",
+      "results/ppo_v3_sector_features_v1_seed42.verification.json": "5a54fdd19c2d1ca173bc99784327badab222514f6cf450dfe5dd2d5448cf8941",
+      "results/ppo_v3_sector_padding_v1_development_seed40042.csv": "b35aa0e97aee4417870a40433e8f0d7a36235771f7abf2ea4981c3a087c54e96",
+      "results/ppo_v3_sector_padding_v1_development_seed40042.summary.json": "53db2479022478371f6555f4a7eecd521a0a58481d274182c61d207b0c3aa53b",
+      "results/ppo_v3_sector_padding_v1_seed42.evaluate.run.json": "cf7eee76af7a437fba2e1f19e6c939d59dd3b840a7d79758d0413e840e481863",
+      "results/ppo_v3_sector_padding_v1_seed42.evaluate.verification.json": "25e163802cdb05773794ea3675392d1811fab8623ee1c4a6ddd010b8ce502965",
+      "results/ppo_v3_sector_padding_v1_seed42.train.run.json": "6077b4f778fa817a07d6a5933e219ca7c22b1489b1cc6dcd9407f67a60c0b19b",
+      "results/ppo_v3_sector_padding_v1_seed42.training.json": "b8c73b0e901aefc98dfbcba890e9f26c61c971725e01ec6a0bf38b37f8795b2c",
+      "results/ppo_v3_sector_padding_v1_seed42.verification.json": "5485bbeb7a8de2b9e39c8a699d412449ec071610d0d53333d030763508daf3c0",
+      "results/rule_based_seed42.csv": "224a9897c51bea23ba0e9ff2c7ab1b74d752e800845b04eb8693b219e842a801",
+      "results/rule_based_seed42.summary.json": "caa45449c51e990b5b14df6f60eca1b2adb3eeb658565d88307bc0c1f03cc754",
+      "results/v3_clock_observation_v1.preparation.json": "f25260c79a2a8bbb535a8130b52d6526c2100093f5e6bb399dc028a7fa37f2a9",
+      "results/v3_predictive_failure_diagnostic_v1/candidate.aggressive.trace.jsonl.gz": "03fb1bbfb2010cfedb9d6ccb08e7b744f9d230678bc453b57a8ab7438ac55efe",
+      "results/v3_predictive_failure_diagnostic_v1/candidate.dense.trace.jsonl.gz": "27fbe5dec4ea6b1f68b35fa8e7c104cde5e08ce7fce912c16fde42a1c7633abe",
+      "results/v3_predictive_failure_diagnostic_v1/control.aggressive.trace.jsonl.gz": "dfc6696c9634869cb286f2d7a3d65e2a68d92537981d4b457b7185b0f9790645",
+      "results/v3_predictive_failure_diagnostic_v1/control.dense.trace.jsonl.gz": "4d149504129311ea56e7513645ed7e8cc9582a1d89fd36152faa45dc7b6aa157",
+      "results/v3_predictive_failure_diagnostic_v1/episode_checks.jsonl": "fa3400bce6b11dd8374d5521bd6d4e291eaf3e7f15d5979e9a41f55caa4416cf",
+      "results/v3_predictive_failure_diagnostic_v1/report.json": "6709f894606fd49693967c17cd873e67489a82b1967a02cfdf94c66eb1e6adc1",
+      "results/v3_predictive_safety_v1_engineering_seed7.json": "30f312f4eb93a83a774b4ef34c619f1ccef2657695cc028730a60b0c5dc910ca",
+      "results/v3_predictive_stress_v1/candidate/dense.episodes.jsonl": "51c870363fb0787783cd1836cbb29921be2e8031f5e5e4d98af01c632799545f",
+      "results/v3_predictive_stress_v1/candidate/light.episodes.jsonl": "85e434b274396387686495401a520c108d903b96ada9ef928181c0a6eaeee4f5",
+      "results/v3_predictive_stress_v1/candidate/light.summary.json": "caa23a2633ff64d715a30bbe95a32cc9dbe843aa7be1de8b8ea4627de01dea66",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/aggressive.episodes.jsonl": "26b551251e557b874784b95323fedc978aaf649ae5cf80df6a72159bd81a0bcc",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/aggressive.summary.json": "8632cf9be21e1508bc4318c370e1bcdf7f339232c78637ecc5f45e00003d16a3",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/cautious.episodes.jsonl": "9611778c2900528d4f18b5459beb722bdc292edff32c2e999f79759f550ec9c7",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/cautious.summary.json": "c6605faadc53ca540d7ce13232cb6226f9ef6b2ed728a4221ae1b0843b453ff9",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/dense.episodes.jsonl": "704e397962df63a6980b8d82980c9a210e2130f23b80a9ef2e49f197222702bd",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/dense.summary.json": "6f8719cb2d759815fd6c48b7f0b9fc009efbcef3736502b83c5d74fb278fc356",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/light.episodes.jsonl": "85e434b274396387686495401a520c108d903b96ada9ef928181c0a6eaeee4f5",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/light.summary.json": "caa23a2633ff64d715a30bbe95a32cc9dbe843aa7be1de8b8ea4627de01dea66",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/mixed.episodes.jsonl": "28f19183f37c072968d0aaed84c2aa85aa731fc8cf243fdc6353546e0a8cadc1",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/mixed.summary.json": "8128ea4cac6d6a2637e0ff12626572fd3a4c1076187ba5e6a0f36e6376bb29f6",
+      "results/v3_predictive_stress_v1/candidate_recovery_01/report.json": "6938f68d2bcfe5e2bbd0fe133af1406454a9d5713b06b31b61d3a854e7f35a16",
+      "results/v3_predictive_stress_v1/control/aggressive.episodes.jsonl": "5982a83f4763687ce120c0349e40bfadca728fd5970b3a4f34eb5e7660771792",
+      "results/v3_predictive_stress_v1/control/aggressive.summary.json": "95fa6339ab2064138ee38b325370397fee3df330845a2b6e30f3d87b3c5eb9f6",
+      "results/v3_predictive_stress_v1/control/cautious.episodes.jsonl": "47661548dc739628da079c75eaaf2e762757dd446dfb7beed186614c9fde9b71",
+      "results/v3_predictive_stress_v1/control/cautious.summary.json": "5c49ed068a6f78d54de0c13f1bc0515b0378dfa99d7e5b998c466679a0f722f6",
+      "results/v3_predictive_stress_v1/control/dense.episodes.jsonl": "17a47296ab9f827ada11a49f2a6c8933f69b0e2442b5c8620e1087f6348fdb95",
+      "results/v3_predictive_stress_v1/control/dense.summary.json": "32d5f69dd99c4467762d00fd23b92064aaaca3049ee4904099c392f00953c33b",
+      "results/v3_predictive_stress_v1/control/light.episodes.jsonl": "05af6edf5b4381e4f1c7099913357d2f762fd6c1f2368bae4b3c526fa6d90a90",
+      "results/v3_predictive_stress_v1/control/light.summary.json": "5fe59da7a0d4eb2718e910f577806f8c1e687c0ebd1419c199345231db807886",
+      "results/v3_predictive_stress_v1/control/mixed.episodes.jsonl": "acac64f1b79bdd3c439fa55cdf84b38b3256d67c99ab52f72d60a2f5be0f6a90",
+      "results/v3_predictive_stress_v1/control/mixed.summary.json": "9474b8ffa2b6a92d1c5e9977d289b12d3bcfe92f48a1039e42343376540c68a1",
+      "results/v3_predictive_stress_v1/control/report.json": "0d499b8feafb80ce40105a89d4d5f43e1288614390b2b25e81e9bd62fec61721",
+      "results/v3_predictive_stress_v1/verified_summary.json": "61ebf55be7ad25deeb5af7776fecffe19e6647401db7b19669970c526330ba97",
+      "results/v3_sector_timeout_diagnostic_v1.analysis.json": "ac193ba5925672de86149547865e977d1d94d74824c0d45107c50be3f2d03c32",
+      "results/v3_sector_timeout_diagnostic_v1.release_verification.json": "ab7ac9af93a0f2755b0cdef0658ba06a6c4654059b55224af4cf15b60f22cda9",
+      "results/v3_sector_timeout_diagnostic_v1.summary.json": "a443b95ac7beb0b70b6fd7e43f3730695377bbc12eac67c6a5e93a4e024c2f4e",
+      "results/v3_sector_timeout_trace_v1.preparation.json": "8cddf592bc42c52467322f830f1576f5b5f313e9d4acc4199cd9c2718f5efcf3",
+      "safeintent_rl/__init__.py": "9dd1b057bff98bfc286c79adb3c0aea9d1bbfa32596d4652f981bc9d3d9cafed",
+      "safeintent_rl/agents/__init__.py": "059f29f921a0610b1bcdf303a7c904116021d9ed0583a6ee0ddaa29e75ce86bf",
+      "safeintent_rl/agents/route_graph.py": "61ad8b1284cbced0bf3746453c01a32f797419bab8a3ceef124048ed7d870f02",
+      "safeintent_rl/agents/rule_based.py": "b98f97196692ec29daafc317e5800983b9cec09308f797474dcb73151ddba53d",
+      "safeintent_rl/config.py": "ecafe11d690a08f7932c946f94ec482ee7b3921b13c38235ea4282e4e71cbaa0",
+      "safeintent_rl/envs/__init__.py": "28f192b2e1cf553d3556c073e781a799692220087fe277612df0ff8ebae00baa",
+      "safeintent_rl/envs/driver_behavior.py": "e45179f38c1d0e32a55566dc55440d5d1a2ce0a68aebde1b8ed7e8fc8a80eedf",
+      "safeintent_rl/envs/intersection.py": "eca1191c1f676600ea68998642f8c417f654b14e810c948cdbd614842e03d52c",
+      "safeintent_rl/envs/obstacle_route.py": "717cec59aaa8787669501e6d7ccae6e356132ff32ee955ffddf497b53fadb104",
+      "safeintent_rl/envs/reward.py": "87b3e297274806190e912df2e5175e83b8030e7939441a6ec3959a18da9f9285",
+      "safeintent_rl/evaluation/__init__.py": "363257a8cd11b4cf46f292d2a2038eb7d94f22e5f9a4032752251e04b5ea7fab",
+      "safeintent_rl/evaluation/metrics.py": "5a647b7a5616b5cc5f9a5743feb13dda386bab2e387a82d6c5af249c5342ed6b",
+      "safeintent_rl/intent/__init__.py": "573eade9ff1749ac3378009fab8107d0c786697543e877635fa75e868e6c60c4",
+      "safeintent_rl/intent/dataset.py": "899c0aab246b98482edaad0ac18fffe571fdf7197ebfb6242de2abd1774532e2",
+      "safeintent_rl/intent/diagnostics.py": "94fad66d35461d79f2c808e844f572deddea30885a596e05412da5ad9fcde4a4",
+      "safeintent_rl/intent/evaluation.py": "e4740c4430a3874246ea317eab4b4d3966925ea1721425d1b6b8bf078858d89a",
+      "safeintent_rl/intent/inference.py": "fab08683051458a8cdf82eb45eb98b06051eb6c1fc4925026f6eb309966ab030",
+      "safeintent_rl/intent/model.py": "0d0ef6cb97122003ac263d015124a5369c345b5c997711410972291778bae9f5",
+      "safeintent_rl/intent/training.py": "674bb65224431fbbf5318fc9285c6649e0266f4d4fc39f71b780bf13942b2271",
+      "safeintent_rl/intent/wrapper.py": "c25bad61566bc272e3d067f600500daa2d313aab35e901ed3e6723e89bea1505",
+      "safeintent_rl/safety/__init__.py": "a39a8a4f99411802e76b5da9cb06f49ba6b1b47597db69eb3b5ed5a0111aabd6",
+      "safeintent_rl/safety/conflict.py": "85e430866f688a0af25efe8a27ed880e79d48e504fd53c46c2dbffab0ff9c888",
+      "safeintent_rl/safety/shield.py": "8ae8d371a2eb5c197dc6c0051c8bd1ae2b903eb7077f6b08c508e0caee7e153f",
+      "safeintent_rl/safety/ttc.py": "75565975fa3beb8eabf6f6af75cf26eedbdad1805e7ae568630cb0575c0ae2c0",
+      "safeintent_rl/sensors/__init__.py": "1c4b338bf34e46a2180bacb4b7d4695f69797d8ca42138b2a6e2d0d108b48820",
+      "safeintent_rl/sensors/controller_state.py": "10d965e217989f1afb2ad82596f1556b623b95ebce33bb417a1a4c828c8855a8",
+      "safeintent_rl/sensors/fusion.py": "1add3b69dbcfc9422abc4bf3983e60536ff8bd756642d562bfd5790040fdaae1",
+      "safeintent_rl/sensors/predictive.py": "2d3880359d26a6408cef8e5d7ae7dfc30ab2a9c4813a6888593935258fc86e2f",
+      "safeintent_rl/sensors/synchronized_predictive.py": "758d665d2c635d88693b1c71845b547d735580221830392c3f328724f68eb200",
+      "scripts/analyze_predictive_stress.py": "e38dfaae22e2ace4c65275f384604b826da98871dc6eb2f19cd6c2c130cc2d58",
+      "scripts/analyze_sector_timeouts_v1.py": "2074e226b4423288b7602608dc87dea6f4a39363df47f1ad4128e0244876a80d",
+      "scripts/audit_clock_comparison_v1.py": "78817c937206c77ea05a67c15d802b929a7f449b4750e0fb8972d0ea6d44badf",
+      "scripts/audit_geometry_development.py": "80d98ac72d453b172a729f6eac2b5eef9f962172bdb7d1d3a66af75833c274d0",
+      "scripts/audit_sector_comparison_v1.py": "2fac2274eacdd24c788fc676774d1b01272f22809f0d0c92a736460f4a593736",
+      "scripts/audit_synchronized_retry.py": "0c7ebea4537425f81edf0a9abed0cd2a1cae13e825403a764c0292127bfc2fd7",
+      "scripts/check_predictive_safety.py": "24c96eb3ef70d81c93b1bc830d38493d7047aa0afe8e6135e95d5a07a4ab32bf",
+      "scripts/clock_observation_v1.py": "c441bcbbcdac563a29675010430260f9bb3f52810ca73dce5e9558995d46c136",
+      "scripts/collect_intent_data.py": "26c24d988eb5d03e2d7da700cbb98087844c88ec03a633bde3d2a99ac5800d56",
+      "scripts/diagnose_conflicts.py": "233974bac88345c726f3d3c62ea55f4d1325f6dec564144c15504a408b371ca4",
+      "scripts/diagnose_fusion_timing.py": "9c9a16f8bfb2c6767f7e70b69e556fd143956dbc8666b6780ce67203dd3c69e6",
+      "scripts/diagnose_intent_rollout.py": "8ffa451451aaa0a04114e170bb5b423165f73a5add4a72a5e8679690a51b1b39",
+      "scripts/diagnose_predictive_failures.py": "516c8c358ad66b4d0f093c6c7c30347bd8389ea0cc20c27cdf6815f1d9bbfee2",
+      "scripts/evaluate_intent.py": "6833c6dc5343ec976e99249543d7a1c2b205d7d69ac3a32dd4ca9fcc50b9afc4",
+      "scripts/evaluate_obstacle_route.py": "0888f227963363f66e1709cb801f227e7e8f1bb11c0a553f41eea1a805c7d8bb",
+      "scripts/evaluate_policy.py": "922b9f4a722b3c3a79a94e36753d4adb45c24a6d1faabb14c0c15604696aa55a",
+      "scripts/evaluate_predictive_stress.py": "ed8e18328e88a9aa082f4bd7d45f05e3af17c11d8579e30c9e2cdffd8a291e5a",
+      "scripts/evaluate_rule_based.py": "42f847263abef5a0a998f180d103f05e4c2dd2aa8dd5792c3217ff8573ee863a",
+      "scripts/plot_results.py": "ae24ff7563f6bedd3445f09a7a1537add6d8839ca3784e630c57809f85f76d20",
+      "scripts/preserve_timeout_baseline_v1.py": "a1530df7544a86c5c665182b416e25578ed0da07ce3a7730c2c6a8c61e2953cc",
+      "scripts/random_agent.py": "6899f03eb7c2e58b421d2f19e3d815a0d0b30a3c135a76b5e535e03c7efab172",
+      "scripts/record_episode.py": "71f8a7bd4b0a7ad0e1f93e5f065bfc652910ef814928b87f0e63c46346062218",
+      "scripts/recover_predictive_stress.py": "c7e12ff25dca50b41a895a8aefece0bf76955bf1093ed79a95add27eb0c1466d",
+      "scripts/run_clock_comparison_v1.py": "175c4a12d82f1e8f8cdf209924bc44ba506bd3759ebff0ab5689e0213b653bdd",
+      "scripts/run_sector_comparison_v1.py": "e825ed428fe5ea228e4527f9e3e5daa82f9798f7f3da4064106a87cb115609aa",
+      "scripts/run_sector_timeout_diagnostic_v1.py": "e27866d46b1d661a2efb2abcb553c273848c7ed0be1e38e5673ce6ef9c29901c",
+      "scripts/run_synchronized_predictive.py": "9ab2dfbbb90b89f425cdca8e52f7c61f11e24f481efb2f5e0a8b87dc82fe4823",
+      "scripts/run_synchronized_retry.py": "bb9dfa47723325176b2727ef74fbbed0b7157dc343479e9712e7f7e003def577",
+      "scripts/sector_observation_v1.py": "f0a78c5befe3c8e0edcc101ee49e7b2bb18c80be3afc6840e359653f99762919",
+      "scripts/sector_timeout_protocol_v1.py": "7be46a561157313865117d9589c237cbbf0b7c48a80b1b76a8b474e7ce1254cd",
+      "scripts/sector_timeout_trace_v1.py": "be4e23b57faf3593136b910b5f54b8ca73a206be2e1359f81c37a0211b67f94d",
+      "scripts/train_intent.py": "028f335f1fa30c91c76ba70ea3f39b04363b23d27c65d332d0f00a13e2041342",
+      "scripts/train_ppo.py": "6dd20e7059bb0fd33f9516d3bb942003e8b2e0c386386252b9cb4e3c6d3dccc8",
+      "scripts/watch_policy.py": "9795ad293c65b026ca7a300e3d80dce704689754d89486122a670f56feaa593c",
+      "tests/test_clock_comparison_audit_v1.py": "8f07d13ba340af7e30757671879545232c88efbca81895de9ed5a1df700c5f78",
+      "tests/test_clock_comparison_v1.py": "5cdb87b4164e7f91e5486a2e96a7f272417ab7938fa8d6b020320fbee088b7d7",
+      "tests/test_clock_observation_v1.py": "a59a6fc03593a60f1dc725dd208262c8a5331123cc598044142ae75c7525f958",
+      "tests/test_conflict_diagnostic.py": "1eee3a06a74fac91b5367f29fa87ff1678b451cdb8492c142353344adca5095c",
+      "tests/test_controller_state_observation.py": "b9fac6a999836c3e72d6e0a54e5a6b0bf480d493ee6efc425136f1599c5b9cfe",
+      "tests/test_cpa_shield.py": "608574ee6ce276f7f9cd95742a2eb30c7086b56216841d497f320efeeabc6dca",
+      "tests/test_driver_behavior.py": "3bf4aa2964e35bc17b20c47c0324f6dc9009c5d2a39da221c993275d2e617942",
+      "tests/test_fusion_timing_diagnostic.py": "8a314dc01c4e0cfbcc967fe2dce7f1ea67dd3f445c44d657b94ea43ed002956c",
+      "tests/test_geometry_development_audit.py": "8294a2a16dab9751d78b12a96f634b7885be3e73bf5cef8acd4d900cfd24b98d",
+      "tests/test_intent_diagnostics.py": "9ce6a2c9810f2954568c586cb723a0ef85db89bd8d29b6743b495c0f2cbd4016",
+      "tests/test_intent_pipeline.py": "7dfa2854e413de147afafafac923829402ed976171fd84070c57723913547f3b",
+      "tests/test_intent_rollout_diagnostic.py": "2d33dcfde305761eec755473ebefeed6472dab7e3a559432c5078be0b25121ab",
+      "tests/test_intent_wrapper.py": "fc0e2f6ea2e81ee9f6d2489b68fd950ce853da061718395b2351d4feb9c0bb56",
+      "tests/test_metrics.py": "19a4eb3b9b933a56bf1b904f21fd3842ecb9f621ca41ff2f39ee28e2dcb80a0d",
+      "tests/test_obstacle_route.py": "78ae23acebfffddc3eb546da69bdf7e1dd78f44612368c37d70ff1c9c8488815",
+      "tests/test_predictive_failure_diagnostic.py": "e2482c0ec876e56260f50f17bd9e6f649bef9f2897e2b3bd88cf325aa803ceab",
+      "tests/test_predictive_geometry.py": "44eea7fc4058666b892c4ec25683e33ad69f7e0bfb13cdd31f76205d176ad642",
+      "tests/test_predictive_safety.py": "348c15b7fde696422d20b2761c656c2087b2bfbf7769976ba00badc25124c14d",
+      "tests/test_predictive_stress.py": "cc93e7dafc5cc618834aea11bdb855309c4453d882f27803b215b514e6d06d5d",
+      "tests/test_progress_reward.py": "d00f13a59bd0eea603acaac9a92668145ffc79f150b1a5b31ced2aa0d873e220",
+      "tests/test_reward_v2_config.py": "4d3347f6c7846eaa0cf58a2c04ffb8afba3b2198dd3cc2019efba7ba8d2e6db3",
+      "tests/test_rule_based.py": "0e4d33daade5f352c8e43d5afc3bb8aff168c473a796c2c3ac62bdd02e460d92",
+      "tests/test_sector_comparison_audit.py": "7c12f5e134e6addd4568e72ddd83fc048d965eb1bd5ffed6ce44819c587a8a67",
+      "tests/test_sector_comparison_v1.py": "1a671e1a0c8b636f1b94c8e66475b32377bffc0d84843be79fbb01e14296946a",
+      "tests/test_sector_observation_v1.py": "308d30e1e2b24a340aae1a5030b65219cb94f7febe08f2bff67d4cd0f1d751f2",
+      "tests/test_sector_timeout_analysis_v1.py": "2284fefeade854b26a3c2c8f3bc38898e44652aac6b6e85e7f83c63e97d8b2e1",
+      "tests/test_sector_timeout_protocol_v1.py": "24afe3dad911cc1537636816cc932cf37b6c86c5b66547b1b0502d22b2949f00",
+      "tests/test_sector_timeout_runner_v1.py": "e87ff30fb570ed804159944963d63f7e13a569f11b6e54af0f2739f5bf5e5a35",
+      "tests/test_sector_timeout_trace_v1.py": "5ddb2cdbb7793166458806f276992b6c12a44757c5c0c049336473093126c1b2",
+      "tests/test_sensor_fusion.py": "1532cd9f682fc6f11fc024b411f2dc0549dccb79c3ee120400ccdc83200bbd18",
+      "tests/test_stress_analysis.py": "2bb0590b61ac51b277983cf25f705a5027e1ad7cbef1606eff81683b92a7e5e4",
+      "tests/test_synchronized_predictive.py": "a0779818894ee417f0a63650c3f5afaed91dee03f634456a79e35ab0660fb48b",
+      "tests/test_synchronized_retry.py": "a793f50bf9d40c4ef4a25b2eeb72ab2e0b27b1ed79e06de17d90ad52e2729f79",
+      "tests/test_synchronized_retry_audit.py": "019453632bc0b6b21520ddfe2ae47e242af8b3fd4b6111f6fc1b938cbc2b6b96",
+      "tests/test_synchronized_runner.py": "be6bcc0b779a35a3981cb52bd16ab1e2bf7b2663627fc0b61c2345ecec7ee2d1",
+      "tests/test_timeout_baseline_snapshot.py": "a47fd932fd84fcfbaedbe75c334667e7159157b7cf18f8e958998203ff07ee2d",
+      "tests/test_train_ppo_protocol.py": "cbfb75a0acfcbd217dca936ee84cc5d81b8f4cf37428ce58944a33b34127aa2e",
+      "tests/test_ttc.py": "0cde263e6c1484f4f30a8dd076164bb9f7013390fbdf09b4fe131a87ff4e6f3d"
+    },
+    "runtime": {
+      "discovered_packages": [
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/farama_notifications-0.0.6.dist-info/METADATA": "aa6a96a09328edb70604a65fca1b2d0b0d444c26801e5cf36f325662835c199c"
+          },
+          "name": "Farama-Notifications",
+          "version": "0.0.6"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/jinja2-3.1.6.dist-info/METADATA": "68c5548fb67c4132a13898d9b31ec50c6bea2abdd915d921f214355c3a6499c8"
+          },
+          "name": "Jinja2",
+          "version": "3.1.6"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/markdown-3.10.3.dist-info/METADATA": "bc042410d66775c021e253fe22ef2247df9f9d3ef47fa619b604f1d3bdd83915"
+          },
+          "name": "Markdown",
+          "version": "3.10.3"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/markupsafe-3.0.3.dist-info/METADATA": "f0ae5dbb09d50fb5f7632c3d53f0220995ef76019e5892e0a545740136a4e3cb"
+          },
+          "name": "MarkupSafe",
+          "version": "3.0.3"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pyyaml-6.0.3.dist-info/METADATA": "847a701020334386852b6e07bad1053cb0ce3da9ee1846e7e9d02b24e8bb3f8d"
+          },
+          "name": "PyYAML",
+          "version": "6.0.3"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pygments-2.21.0.dist-info/METADATA": "1dde075570136774c706bf0009183a793fe0ee262e4a5590cc6eff8453eedd43"
+          },
+          "name": "Pygments",
+          "version": "2.21.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/werkzeug-3.1.8.dist-info/METADATA": "f57d29864fb04c6cbf2b4e844c108d62331f4621fd163cbced288f90dfd6d392"
+          },
+          "name": "Werkzeug",
+          "version": "3.1.8"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/absl_py-2.5.0.dist-info/METADATA": "24eb8b2dbab3053ea20e46ae02ddb3b9157b5be7e7a38ad931fd0c596f517015"
+          },
+          "name": "absl-py",
+          "version": "2.5.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/cloudpickle-3.1.2.dist-info/METADATA": "3d0263bfe9ee4f23b244bdcaff73acbe7a1957ebf82743b6ae42693adc48d721"
+          },
+          "name": "cloudpickle",
+          "version": "3.1.2"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/colorama-0.4.6.dist-info/METADATA": "7baed29eb50c3b29bdb33ff84e3177bf1bc05784f7685ecdcaa4471c7dd810cc"
+          },
+          "name": "colorama",
+          "version": "0.4.6"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/contourpy-1.3.3.dist-info/METADATA": "c43cef86baef09cff9c77975e578fa8cca0c9454df40dc176938b499a63de54a"
+          },
+          "name": "contourpy",
+          "version": "1.3.3"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/cycler-0.12.1.dist-info/METADATA": "23289e19b76f1e01394227696e6af2b6cd1ce79e89731209bf9195148b18ed36"
+          },
+          "name": "cycler",
+          "version": "0.12.1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/filelock-3.32.5.dist-info/METADATA": "7886b747148c0aa7889c4ec33f3529b8c21f15142063b5e1ddbb96a8a5442724"
+          },
+          "name": "filelock",
+          "version": "3.32.5"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/fonttools-4.64.0.dist-info/METADATA": "21cd28d3f6a9ee91128b26bbcac9ace04fe413185da65e99d504f9c7ff3fde9b"
+          },
+          "name": "fonttools",
+          "version": "4.64.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/fsspec-2026.7.0.dist-info/METADATA": "88b1657585de14e3bb82aa5278aa9595b30aa4ca74ead073d8950615c808099d"
+          },
+          "name": "fsspec",
+          "version": "2026.7.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/grpcio-1.83.1.dist-info/METADATA": "8a6ea9ac58c0af69c898bb8be9d55a1a4631f7a4ac27dd8f2e86830ac79ab377"
+          },
+          "name": "grpcio",
+          "version": "1.83.1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/gymnasium-1.3.0.dist-info/METADATA": "4e8ca97d517ff8c1eb7d2d97f1661bf2e5a8bd47da10cd9c4be19d5bcb054e48"
+          },
+          "name": "gymnasium",
+          "version": "1.3.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/highway_env-1.12.1.dist-info/METADATA": "e5b5e31587be003c663e1641f41ab7d7e7cda472e0688c425b40f796f478b0e7"
+          },
+          "name": "highway-env",
+          "version": "1.12.1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/iniconfig-2.3.0.dist-info/METADATA": "40d773f84e4e112f495bbf4f1be9cbd2d456c0aeb6ef5311f75d1bf322f2165b"
+          },
+          "name": "iniconfig",
+          "version": "2.3.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/kiwisolver-1.5.1.dist-info/METADATA": "4e635948bf0b496e7e1bf6b8f7f577504670453459bd98e8dcfb0b919257d476"
+          },
+          "name": "kiwisolver",
+          "version": "1.5.1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/matplotlib-3.11.1.dist-info/METADATA": "e42a4867d0c790804bce9ccd38972e1e71e24a81f2dbc9633efc71e63ce69f59"
+          },
+          "name": "matplotlib",
+          "version": "3.11.1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/mpmath-1.3.0.dist-info/METADATA": "44b66ea444b9c0d19ae94815d356bf047ae6b680c19268b5c265687cd6a81406"
+          },
+          "name": "mpmath",
+          "version": "1.3.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/networkx-3.6.1.dist-info/METADATA": "aca5d94a97d1f70f301d033addb635f6e66be8973a00aba4127637eed2ef316a"
+          },
+          "name": "networkx",
+          "version": "3.6.1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/numpy-2.5.2.dist-info/METADATA": "9a895d801184d2176f926af84eb47f2db1af2756afac99d64a2bf482d5d5e024"
+          },
+          "name": "numpy",
+          "version": "2.5.2"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/packaging-26.3.dist-info/METADATA": "70fdb89fc4d4a9a043bf7372b8972bcc883fddff34ab55e9cf80d73875384763"
+          },
+          "name": "packaging",
+          "version": "26.3"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pandas-2.3.3.dist-info/METADATA": "243674e606b51e70e5858596c7bfc9b58875d531d56577927c0a9944693f6c2f"
+          },
+          "name": "pandas",
+          "version": "2.3.3"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pillow-12.3.0.dist-info/METADATA": "2c4378001803cfac65809a50722d46e0da4ce8061e717f103e5d52734bab30f5"
+          },
+          "name": "pillow",
+          "version": "12.3.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pip-26.2.1.dist-info/METADATA": "3a561005822841f2c45f442f6c7a7505172c8c376c9fe274d876c8ac912968cb"
+          },
+          "name": "pip",
+          "version": "26.2.1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pluggy-1.6.0.dist-info/METADATA": "7438c35ee25a095eb7416f84b461c2d74425c5e734ad54c3912453c65244e01c"
+          },
+          "name": "pluggy",
+          "version": "1.6.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/protobuf-7.36.1.dist-info/METADATA": "947ed3f132e70411555388d7fcd36712fdd60c8db6345001fb23bb56a2c6cab7"
+          },
+          "name": "protobuf",
+          "version": "7.36.1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pygame_ce-2.5.8.dist-info/METADATA": "c4c3c1d7303e913414ba3423b185118ddc7f10b9dcd01b406354e01f6263e6a8"
+          },
+          "name": "pygame-ce",
+          "version": "2.5.8"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pyparsing-3.3.2.dist-info/METADATA": "3311a8b949d70f71a2b9788a9327f11d9d5a6a8012d6c046ca254ad2de877f45"
+          },
+          "name": "pyparsing",
+          "version": "3.3.2"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pytest-8.4.2.dist-info/METADATA": "93d6c5ef0a9714d53716243035037b77fa7d5f970596c48433887cf57f7f675a"
+          },
+          "name": "pytest",
+          "version": "8.4.2"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/METADATA": "a9d436da322be808332f98d88325998e87cb693a678a9969feb4cfad729a6e93"
+          },
+          "name": "python-dateutil",
+          "version": "2.9.0.post0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/pytz-2026.3.post1.dist-info/METADATA": "25ef8a562377a28d8c6bd8c5c9e80d761d0e22ac4a7bed24e512f589644ed33d"
+          },
+          "name": "pytz",
+          "version": "2026.3.post1"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/ruff-0.16.5.dist-info/METADATA": "0a56569591c7a8b7c892bfb280065332a3012b97c1636f0b13bc5d6521946391"
+          },
+          "name": "ruff",
+          "version": "0.16.5"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/safeintent_rl.egg-info/PKG-INFO": "875afbe19b971145e3d7b29fb8d5e70e0551d32cac577f8ac4464f9d73231cbf"
+          },
+          "name": "safeintent-rl",
+          "version": "0.1.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/safeintent_rl-0.1.0.dist-info/METADATA": "875afbe19b971145e3d7b29fb8d5e70e0551d32cac577f8ac4464f9d73231cbf"
+          },
+          "name": "safeintent-rl",
+          "version": "0.1.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/setuptools-84.0.0.dist-info/METADATA": "3ef2975718dd31cabdd5829455e9b868ca14dbf79ed8fed2de0af4e87347006e"
+          },
+          "name": "setuptools",
+          "version": "84.0.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/six-1.17.0.dist-info/METADATA": "562042078c2752549f6d8a7c86dbc5dd708088a7be6d80672ec7b07100b72468"
+          },
+          "name": "six",
+          "version": "1.17.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/stable_baselines3-2.9.0.dist-info/METADATA": "0696fb0f1ae5e766507d8161fbc57337f11ccb6df37b03a0677bb68583e52d32"
+          },
+          "name": "stable_baselines3",
+          "version": "2.9.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/sympy-1.14.0.dist-info/METADATA": "b756c2fbfd5be05ac5bdb0ebca61f55618f30f633ed92d88a5687429313a7595"
+          },
+          "name": "sympy",
+          "version": "1.14.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/tensorboard-2.21.0.dist-info/METADATA": "819632abede8687d314bc65aeb4ac89512873ce31eb97e57c2c11f51ace59d23"
+          },
+          "name": "tensorboard",
+          "version": "2.21.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/tensorboard_data_server-0.7.2.dist-info/METADATA": "6b38aea33eeccd55a2644d9b7eb6c61d574a496188f4ac498e68e6230b1b9096"
+          },
+          "name": "tensorboard-data-server",
+          "version": "0.7.2"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/torch-2.13.0.dist-info/METADATA": "a3fefb38f5e4d5d694e2e3b1fd9eae070bafdc6db6d43993da3d631bdb5be59f"
+          },
+          "name": "torch",
+          "version": "2.13.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/typing_extensions-4.16.0.dist-info/METADATA": "b05084ca1d50879865178d9fff9fabeab61bdfb1f361bfbde95421ffc8f9be46"
+          },
+          "name": "typing_extensions",
+          "version": "4.16.0"
+        },
+        {
+          "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages",
+          "metadata_sha256": {
+            "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/.venv/Lib/site-packages/tzdata-2026.3.dist-info/METADATA": "511c019df477939fe7f4c38e32ad74a570c4ebb05b13fd2fffd0f0f2dbe6f7b1"
+          },
+          "name": "tzdata",
+          "version": "2026.3"
+        }
+      ],
+      "excluded_local_project_metadata": {
+        "location": "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car",
+        "metadata_sha256": {
+          "C:/Users/hades/OneDrive/Documents/RL--Autonomus-car/safeintent_rl.egg-info/PKG-INFO": "875afbe19b971145e3d7b29fb8d5e70e0551d32cac577f8ac4464f9d73231cbf"
+        },
+        "name": "safeintent-rl",
+        "version": "0.1.0"
+      },
+      "executable": "C:\\Users\\hades\\OneDrive\\Documents\\RL--Autonomus-car\\.venv\\Scripts\\python.exe",
+      "implementation": "CPython",
+      "packages": [
+        {
+          "name": "Farama-Notifications",
+          "version": "0.0.6"
+        },
+        {
+          "name": "Jinja2",
+          "version": "3.1.6"
+        },
+        {
+          "name": "Markdown",
+          "version": "3.10.3"
+        },
+        {
+          "name": "MarkupSafe",
+          "version": "3.0.3"
+        },
+        {
+          "name": "PyYAML",
+          "version": "6.0.3"
+        },
+        {
+          "name": "Pygments",
+          "version": "2.21.0"
+        },
+        {
+          "name": "Werkzeug",
+          "version": "3.1.8"
+        },
+        {
+          "name": "absl-py",
+          "version": "2.5.0"
+        },
+        {
+          "name": "cloudpickle",
+          "version": "3.1.2"
+        },
+        {
+          "name": "colorama",
+          "version": "0.4.6"
+        },
+        {
+          "name": "contourpy",
+          "version": "1.3.3"
+        },
+        {
+          "name": "cycler",
+          "version": "0.12.1"
+        },
+        {
+          "name": "filelock",
+          "version": "3.32.5"
+        },
+        {
+          "name": "fonttools",
+          "version": "4.64.0"
+        },
+        {
+          "name": "fsspec",
+          "version": "2026.7.0"
+        },
+        {
+          "name": "grpcio",
+          "version": "1.83.1"
+        },
+        {
+          "name": "gymnasium",
+          "version": "1.3.0"
+        },
+        {
+          "name": "highway-env",
+          "version": "1.12.1"
+        },
+        {
+          "name": "iniconfig",
+          "version": "2.3.0"
+        },
+        {
+          "name": "kiwisolver",
+          "version": "1.5.1"
+        },
+        {
+          "name": "matplotlib",
+          "version": "3.11.1"
+        },
+        {
+          "name": "mpmath",
+          "version": "1.3.0"
+        },
+        {
+          "name": "networkx",
+          "version": "3.6.1"
+        },
+        {
+          "name": "numpy",
+          "version": "2.5.2"
+        },
+        {
+          "name": "packaging",
+          "version": "26.3"
+        },
+        {
+          "name": "pandas",
+          "version": "2.3.3"
+        },
+        {
+          "name": "pillow",
+          "version": "12.3.0"
+        },
+        {
+          "name": "pip",
+          "version": "26.2.1"
+        },
+        {
+          "name": "pluggy",
+          "version": "1.6.0"
+        },
+        {
+          "name": "protobuf",
+          "version": "7.36.1"
+        },
+        {
+          "name": "pygame-ce",
+          "version": "2.5.8"
+        },
+        {
+          "name": "pyparsing",
+          "version": "3.3.2"
+        },
+        {
+          "name": "pytest",
+          "version": "8.4.2"
+        },
+        {
+          "name": "python-dateutil",
+          "version": "2.9.0.post0"
+        },
+        {
+          "name": "pytz",
+          "version": "2026.3.post1"
+        },
+        {
+          "name": "ruff",
+          "version": "0.16.5"
+        },
+        {
+          "name": "safeintent-rl",
+          "version": "0.1.0"
+        },
+        {
+          "name": "setuptools",
+          "version": "84.0.0"
+        },
+        {
+          "name": "six",
+          "version": "1.17.0"
+        },
+        {
+          "name": "stable_baselines3",
+          "version": "2.9.0"
+        },
+        {
+          "name": "sympy",
+          "version": "1.14.0"
+        },
+        {
+          "name": "tensorboard",
+          "version": "2.21.0"
+        },
+        {
+          "name": "tensorboard-data-server",
+          "version": "0.7.2"
+        },
+        {
+          "name": "torch",
+          "version": "2.13.0"
+        },
+        {
+          "name": "typing_extensions",
+          "version": "4.16.0"
+        },
+        {
+          "name": "tzdata",
+          "version": "2026.3"
+        }
+      ],
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.12.9"
+    },
+    "config_sha256": "a9629f60c2261325c5cdae996573a716698b7bc65168d1cea33c04bb530c93e7"
+  }
+}
