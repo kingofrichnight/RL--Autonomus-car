@@ -1,0 +1,32 @@
+{
+  "status": "pass",
+  "url": "http://127.0.0.1:8884/CITY_REPLAY.html",
+  "release_sha256": "c32d358cfa9aba60ca610a66502a26b15ce1a39530594f9c27f6133074477d57",
+  "standstill_seconds": 40,
+  "movement_anchor_radius_m": 0.5,
+  "no_total_duration_limit": true,
+  "focused_engineering_tests": 23,
+  "fresh_runs": 4,
+  "retained_compatible_completions": 26,
+  "new_decisions_audited": 3213,
+  "displayed_decisions": 19563,
+  "browser_cases": 30,
+  "browser_errors": 0,
+  "outcomes": {
+    "complete": 26,
+    "timeout_40s": 4
+  },
+  "native_models_geometry_traffic_assist_unchanged": true,
+  "posthoc_validation_correction": "The sealed optional compatibility checker assumed identical traffic lists at the old cutoff; it failed on hybrid actor46, which had passed its road endpoint by10.0356m. Continuing the episode correctly invokes traffic maintenance, skipped by the old terminal run. The original checker/error are preserved; this separate read-only checker verifies the exact removal geometry. Native episode and primary audit were successful and unchanged.",
+  "limitations": "One saved model seed per observed scenario. Deadline extension does not fix existing heavy-jam waiting behaviour. Retained completions originally recorded under20s; all remain valid under40s because they never reached20s standstill.",
+  "files_sha256": {
+    "PACKAGE_VALIDATION.json": "8b216be63b48ce7d8603197d6cf52a032d0b2d07936b8010eebce70420e57a0c",
+    "BROWSER_VALIDATION.json": "8931e4506ff874ccfd1bde6bc5ebee574575b95aecd73650842da19ed0b52950",
+    "TIMEOUT_COMPATIBILITY.json": "e2e8591b37541bbfef1ee3b827bce2eac5d27136e3f2dcc9d17e93e328e4dd71",
+    "audit_timeout_compatibility_posthoc.py": "cd6547b12e410b1d1010b4932457d4459d981b4486aa8475c7fe12028dff612b",
+    "compatibility.stderr.log": "6cac89d6fb013b0121ca9bd0499efae934a8ab5e7f82e918de47713528923e5b",
+    "CHANGE_REVIEW.json": "d1a4577746f4cef6188c1301c6b46d6586c4180bc8c669d7cef022828fbf9305",
+    "TIMEOUT40_VERIFIED.jpg": "ca4b3289e57b6fbe53b21f110dd5e92095d9804f9c103efa2077574ba8ec2489",
+    "STILL_ACTIVE_AT_30_SECONDS.jpg": "e764d5a4a982ee73a050d0708732c1ffcf4db27083fe0abb5a2cbd17ab00d542"
+  }
+}

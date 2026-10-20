@@ -1,0 +1,7 @@
+{
+  "status": "pass",
+  "tests": 23,
+  "exit_code": 0,
+  "stderr_bytes": 0,
+  "scope": "Focused environment regression:40-second exact boundary and movement reset on all3maps; collision precedence, finish and no overall duration cap. Unchanged guard/assist remain bound to v12."
+}

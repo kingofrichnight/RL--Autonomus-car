@@ -1,0 +1,130 @@
+{
+  "artifacts": [
+    {
+      "path": "models/intent_gru_h8_seed42.pt",
+      "bytes": 1046357,
+      "sha256": "74a72cf2b99b115bb5b4d55fdb350b55e20551876f6ba41be5266d8953b7fc05",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/intent_gru_seed42.pt",
+      "bytes": 1045349,
+      "sha256": "10483649f77416b33a8c6dda8dffbb80655194781bd50630f1a2bc4bc36abb05",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_baseline_seed42.zip",
+      "bytes": 2278270,
+      "sha256": "bf6cdb5d258c795aba37e3ab8a1b93fb1bfc6f88b5fca2b77b7808e6f3b34901",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_fusion_cf_control_seed42.zip",
+      "bytes": 2710973,
+      "sha256": "f35892f6830b1d9bc23301229ea1813c3e309a2ecd4e5293fe689cbc54c88b77",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_fusion_cf_target_seed42.zip",
+      "bytes": 2717153,
+      "sha256": "5ddbe06533e9dcce84ec2339db6226dadf6d5b2331fa0c87e0172e26f4f416fd",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_fusion_v1_seed42.zip",
+      "bytes": 2710965,
+      "sha256": "690d90d738892c1428c6b1eb4f85769ef39f3827daaa96deb9078155a84644e3",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_fusion_v2_multienv_seed42.zip",
+      "bytes": 2713777,
+      "sha256": "7253cf4a64785bd9d851bf91dbe3c5c2b96d159910d238f0eb5640fea7cb38b9",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_intent_v1_seed42.zip",
+      "bytes": 2370824,
+      "sha256": "954a1d4ef9431ca451de367213d6b65c087d11f277802f9d7bc1ac38c47471e8",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_intent_v2_seed42.zip",
+      "bytes": 2370824,
+      "sha256": "4fc855e064c366b0d0b94b807066b235a46f8cf3c7bfb06edceb6a56fa9b1773",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_reward_v2_seed42.zip",
+      "bytes": 2278271,
+      "sha256": "4a2f6575c996bfb003f8f09ef22dfc7f015feabd3de14d1beee25e8bce8a0028",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_reward_v3_seed42.zip",
+      "bytes": 2278271,
+      "sha256": "f46964bfac1a21ddc7356aabbaf916b12cb0584295206460d62d3787bd6a706c",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_reward_v4_seed42.zip",
+      "bytes": 2278271,
+      "sha256": "b5396b2fdccfd95d40f9c2459ec08ab72d4e16e7909dacb60b46b501e464ca8b",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_v3_clock_remaining_v1_seed42.zip",
+      "bytes": 2464102,
+      "sha256": "5ad04a56d42f4d6b2bd3aad5702bf1b4cbc98cc1f0b9f260ba22bcf2646e40e3",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_v3_clock_zero_v1_seed42.zip",
+      "bytes": 2464091,
+      "sha256": "ce194ee4e3cfc9f06e296d559be99c2550ffe21d56cc7879e0f1a400771e9047",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_v3_predictive_control_seed42.zip",
+      "bytes": 2284262,
+      "sha256": "172260972c4aad6ed73ea7080ae3458282cf046819c868820754c9d637c01473",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_v3_predictive_geometry_v2_seed42.zip",
+      "bytes": 2339927,
+      "sha256": "f3bfeaa9826f989ab1934b71a46a92a97cef159c8a800c56b23b4530c17636d2",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_v3_predictive_safety_v1_seed42.zip",
+      "bytes": 2339925,
+      "sha256": "935dbd281c4f59326fdbd40a53038713629d7f74b7a48aa22566d88dce83b406",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_v3_predictive_sync_v1_retry01_seed42.zip",
+      "bytes": 2340003,
+      "sha256": "8a363a7b5e7caef621d6b616890175c10d457531b4d4a213d05fc2011244f395",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_v3_sector_features_v1_seed42.zip",
+      "bytes": 2637042,
+      "sha256": "0695d09d098ecdae60ae63d33b919c691af8844f782af5a66649c33e497bfaef",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "models/ppo_v3_sector_padding_v1_seed42.zip",
+      "bytes": 2637043,
+      "sha256": "82da273ff74b39776b7486a6523c96102428b5e84d72499e130d9c7c22fddbd6",
+      "distribution": "local-only; remote storage not configured"
+    },
+    {
+      "path": "data/intent_trajectories_seed42.npz",
+      "bytes": 5415856,
+      "sha256": "56433621bdcc5fe9a635f57f068e096a9cb3d47036179a64ab390311fab302b0",
+      "distribution": "local-only; remote storage not configured"
+    }
+  ]
+}

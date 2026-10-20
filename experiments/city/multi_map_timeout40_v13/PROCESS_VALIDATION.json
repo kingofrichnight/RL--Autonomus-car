@@ -1,0 +1,33 @@
+{
+  "released_inputs_unchanged": true,
+  "owners": [
+    {
+      "exact_owner_departed": true,
+      "pid": 102968,
+      "creation": "2026-10-11T23:33:07.81521-04:00",
+      "pid_present": false
+    },
+    {
+      "exact_owner_departed": true,
+      "pid": 115068,
+      "creation": "2026-10-11T23:33:08.249808-04:00",
+      "pid_present": false
+    },
+    {
+      "exact_owner_departed": true,
+      "pid": 112196,
+      "creation": "2026-10-11T23:33:08.268537-04:00",
+      "pid_present": false
+    }
+  ],
+  "release_sha256": "c32d358cfa9aba60ca610a66502a26b15ce1a39530594f9c27f6133074477d57",
+  "empty_closed_stderr": true,
+  "checked_utc": "2026-10-12T03:38:36.6188230Z",
+  "closed_stdout": true,
+  "marker": "CITY_CHECK_COMPLETE",
+  "status": "pass",
+  "native_exit": {
+    "ended_utc": "2026-10-12T03:38:03.057206Z",
+    "exit_code": 0
+  }
+}

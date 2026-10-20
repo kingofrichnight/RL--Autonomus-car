@@ -1,0 +1,71 @@
+{
+  "name": "Jammed-route cross-traffic demo v14",
+  "authorization": "User reported that the jammed three-turn intersections show no NPCs entering from cross streets and requested the issue be checked. Add NPCs to the already drawn branch lanes, give the ego explicit junction reservation priority on this development map, and rerun the fixed 5 policy x 2 traffic combinations once from the initial saved scenario seed. No model training or policy tuning.",
+  "stage_order": [
+    "jam_medium_ppo", "jam_medium_qr", "jam_medium_hybrid025", "jam_medium_cape", "jam_medium_cage",
+    "jam_heavy_ppo", "jam_heavy_qr", "jam_heavy_hybrid025", "jam_heavy_cape", "jam_heavy_cage"
+  ],
+  "episode_budget": 10,
+  "training_budget": 0,
+  "saved_training_seed": 42,
+  "scenario_seeds": {
+    "district": 72042,
+    "highway": 73042,
+    "jam": 74042
+  },
+  "seconds_per_episode": null,
+  "decisions_per_episode": null,
+  "stopping_rule": {
+    "fixed_duration": null,
+    "standstill_seconds": 40,
+    "radius_m": 0.5,
+    "physics_hz": 15,
+    "definition": "At reset anchor=ego position, last_movement_step=0. At each physics tick, displacement strictly greater than 0.5m resets anchor and last_movement_step. Timeout when 600 ticks have elapsed since the most recent movement-anchor reset. Collision, off-route and completion take precedence. Applies to queues as well as avoidable stops. Simulation seconds, not wall time."
+  },
+  "limits": "Development demonstrations on the already observed jam scenario seed 74042, one saved model seed 42, five assisted policies and two traffic levels. Ten new evaluation-only recordings, zero training. Cross traffic and ego junction reservation change the scenario and should not be compared as if they were the prior version. This does not establish safety, superiority or generalization.",
+  "npc_guard": "Continuous oriented-rectangle translation test with conservative rotation envelope and 0.2 m clearance, plus native one-tick collision forecast. Rejected steps are kinematic holds. Unlike the prior circular guard, safe adjacent lanes can pass. Ego unshielded; real queues may still stop.",
+  "approach": {
+    "extension_m": 40,
+    "ego_initial_distance_before_entry_m": 35,
+    "clear_of_queued_npcs": true,
+    "original_turn_geometry": "unchanged",
+    "standstill_rule_applies_from_spawn": true
+  },
+  "finish": "Finite lane-width finish segment touching ego body after all turns. Evaluated every physics tick on all maps/policies. Collision/off-route take precedence.",
+  "npc_forward_only": "Both queue and crossing NPC subclasses clamp speed to >=0 before and after each native physics tick. Native positions, steering and impact handling retained. No change to ego speed/action or saved policies.",
+  "reuse": "26 successful prior recordings kept unchanged after40second compatibility audit;4 prior heavy-jam timeouts rerun from start. No continuation, resume or padded frozen frames.",
+  "npc_junctions": "The jam map's three drawn intersections now contain four opposing NPC cross-traffic lanes each. Cars spawn outside the conflict boxes, enter on the crossing roads, and are recorded in the policy observation when eligible. FIFO reservation logic controls NPC-NPC movement. On the jam map only, crossing NPCs also yield when the ego is in or approaching the same conflict zone; ego steering and policy actions are not overridden by this rule. This is kinematic simulation coordination, not a real traffic signal.",
+  "observation_correction": "For the ego on every map, retain existing distance limit and rear filter but rank eligible actors by Euclidean distance before selecting 14. Kinematics and action forecasts use the identical selector. This deliberately changes input ordering for fixed saved weights; this is a labelled transfer demonstration, not unchanged scientific evaluation.",
+  "spawn_timing": "Scheduled traffic admission and removal happen after physics and before the next returned observation. No actors may appear between a recorded observation and its chosen action. Bare Gym observation and wrappers all reflect the updated scene.",
+  "unchanged_control": "Saved model weights/formulas unchanged; separate labelled memory assist may override speed actions using recorded forecasts and known route turn distance. Steering remains route controller.",
+  "width_change": {
+    "city_route_m": 8,
+    "city_traffic_m": 6,
+    "city_traffic_offset_from_route_axis_m": 8,
+    "city_straight_edge_gap_m": 1,
+    "highway_route_m": 7,
+    "highway_traffic_m": 6,
+    "jam_route_m": 6,
+    "jam_traffic_m": 5
+  },
+  "intersection_change": "Jammed route adds populated NPC approaches to existing visual branch lanes and a jam-only ego-priority reservation rule. City and highway traffic geometry are unchanged from v13.",
+  "assist": {
+    "name": "Progress Assist v1",
+    "scope": "All five policies, explicitly labelled assisted",
+    "entry_clearance_m": 3,
+    "exit_clearance_m": 2,
+    "required_forecast_horizon": 1,
+    "entry_consecutive_decisions": 5,
+    "turn_target_cap_mps": 4.5,
+    "turn_approach_m": 15,
+    "straight_target_cap_mps": 9,
+    "rule": "Fastest positive target under cap with predicted clearance/horizon, latch after1s of clear forecasts, reconsider every0.2s; retain model until latch, block nonpositive selected forecasts, cap turn target. No claim of safety."
+  },
+  "timeout_change": {
+    "from_seconds": 20,
+    "to_seconds": 40,
+    "physics_ticks": 600,
+    "movement_reset_radius_m": 0.5,
+    "no_total_duration_cap": true
+  }
+}

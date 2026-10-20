@@ -1,0 +1,50 @@
+{
+  "stage": "jam_heavy_ppo",
+  "traffic": true,
+  "density": "heavy",
+  "arm": "ppo",
+  "map_id": "jam",
+  "scenario_seed": 74042,
+  "model_seed": 42,
+  "decisions": 407,
+  "success": false,
+  "collision": false,
+  "off_route": false,
+  "timeout": true,
+  "timeout_reason": "standstill_40s",
+  "standstill_seconds": 40.0,
+  "turns_completed": 0,
+  "route_progress_m": 93.19999999999992,
+  "route_length_m": 357.1238898038469,
+  "route_fraction": 0.2504800229519569,
+  "simulated_seconds": 81.26666666666667,
+  "diagnostic_reward": 4.750000000000022,
+  "action_counts": [
+    231,
+    152,
+    24
+  ],
+  "wall_seconds": 39.436952100135386,
+  "required_turns": 3,
+  "interventions": 0,
+  "assist_interventions": 132,
+  "initial_traffic": 47,
+  "peak_traffic": 61,
+  "peak_background_crashes": 0,
+  "npc_guard_holds_total": 3,
+  "peak_crossing_traffic": 21,
+  "peak_crossing_by_junction": [
+    3,
+    4,
+    4
+  ],
+  "decisions_with_cross_traffic_inside_junction": 396,
+  "crossing_junction_actor_ticks": 2987,
+  "crossing_actor_ticks_by_junction": [
+    619,
+    876,
+    1492
+  ],
+  "minimum_center_distance_m": 5.0015099515662325,
+  "stopped_decisions": 299
+}

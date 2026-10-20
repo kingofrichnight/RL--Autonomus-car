@@ -1,0 +1,28 @@
+{
+  "assets": [
+    {
+      "file": "core-models-and-dataset.zip",
+      "bytes": 46210473,
+      "sha256": "7f40e23dfe63510f11ab42c732ed992aea7871d6e05c639a7bb9b7a6399aea8c",
+      "files": 21
+    },
+    {
+      "file": "multi_map_jam_cross_v14.zip",
+      "bytes": 12544457,
+      "sha256": "5dea76015c7233b80f31af1d7023cbe89e83a4eeae8d6a903e6fa6cc465a3899",
+      "files": 76
+    },
+    {
+      "file": "multi_map_timeout40_v13.zip",
+      "bytes": 37472114,
+      "sha256": "ecc95b0d2176ebab7c5f00db3d92133d3b392c13ae2b519cdd8df423eaeb189f",
+      "files": 109
+    },
+    {
+      "file": "city-policy-checkpoints-and-vendor.zip",
+      "bytes": 19397713,
+      "sha256": "6f17d6bfd60fb745fd6560c3bfed6e57259fd6eb5d8c14a709d902d1930625a6",
+      "files": 64
+    }
+  ]
+}

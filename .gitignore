@@ -21,3 +21,12 @@ data/*.csv
 !results/.gitkeep
 !data/.gitkeep
 
+
+# Local environments, build products, traces and optional smoke outputs
+build/
+dist/
+*.log
+**/__pycache__/
+artifacts/local/
+results/quickstart_smoke*
+.test-tmp*/

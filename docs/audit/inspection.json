@@ -1,0 +1,44 @@
+{
+  "format_counts": {
+    "": 5,
+    ".yml": 1,
+    ".md": 30,
+    ".json": 165,
+    ".yaml": 7,
+    ".csv": 27,
+    ".py": 171,
+    ".ps1": 4,
+    ".txt": 10,
+    ".html": 2,
+    ".toml": 1,
+    ".gz": 4,
+    ".jsonl": 13
+  },
+  "format_issues": [],
+  "machine_specific_source_paths": [
+    "experiments/city/multi_map_jam_cross_v14/city_env.py",
+    "experiments/city/multi_map_jam_cross_v14/launch_check.ps1",
+    "experiments/city/multi_map_timeout40_v13/city_env.py",
+    "experiments/city/multi_map_timeout40_v13/launch_check.ps1",
+    "experiments/runtime/ppo_qrdqn_hybrid_recovery_v2/hybrid_models.py",
+    "tests/test_clock_comparison_v1.py",
+    "tests/test_sector_timeout_protocol_v1.py",
+    "tests/test_timeout_baseline_snapshot.py"
+  ],
+  "original_files_unchanged": 253,
+  "original_files_changed": [
+    ".gitignore",
+    "MILESTONES.md",
+    "README.md",
+    "REFERENCE.md",
+    "STRESS_TEST_RESULTS.md",
+    "V3_CLOCK_LAUNCHER_GUARD_V1.md",
+    "V3_CLOCK_OBSERVATION_V1.md",
+    "V3_PREDICTIVE_SAFETY.md",
+    "V3_RL_RESEARCH_NEXT.md",
+    "V3_SECTOR_COMPARISON_V1.md",
+    "V3_SECTOR_OBSERVATION_V1.md",
+    "V3_SECTOR_TIMEOUT_DIAGNOSTIC_V1.md"
+  ],
+  "scope": "All candidate files read; syntax/format checks are not a line-by-line algorithm correctness review."
+}

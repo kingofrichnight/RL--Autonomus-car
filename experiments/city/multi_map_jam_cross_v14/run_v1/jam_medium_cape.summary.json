@@ -1,0 +1,50 @@
+{
+  "stage": "jam_medium_cape",
+  "traffic": true,
+  "density": "medium",
+  "arm": "cape",
+  "map_id": "jam",
+  "scenario_seed": 74042,
+  "model_seed": 42,
+  "decisions": 272,
+  "success": false,
+  "collision": false,
+  "off_route": false,
+  "timeout": true,
+  "timeout_reason": "standstill_40s",
+  "standstill_seconds": 40.0,
+  "turns_completed": 0,
+  "route_progress_m": 93.19999999999996,
+  "route_length_m": 357.1238898038469,
+  "route_fraction": 0.25048002295195704,
+  "simulated_seconds": 54.4,
+  "diagnostic_reward": 6.100000000000021,
+  "action_counts": [
+    218,
+    33,
+    21
+  ],
+  "wall_seconds": 14.2436962001957,
+  "required_turns": 3,
+  "interventions": 0,
+  "assist_interventions": 113,
+  "initial_traffic": 30,
+  "peak_traffic": 33,
+  "peak_background_crashes": 0,
+  "npc_guard_holds_total": 0,
+  "peak_crossing_traffic": 14,
+  "peak_crossing_by_junction": [
+    2,
+    4,
+    4
+  ],
+  "decisions_with_cross_traffic_inside_junction": 230,
+  "crossing_junction_actor_ticks": 1156,
+  "crossing_actor_ticks_by_junction": [
+    298,
+    393,
+    459
+  ],
+  "minimum_center_distance_m": 5.054298693820068,
+  "stopped_decisions": 202
+}

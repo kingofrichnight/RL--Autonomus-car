@@ -1,0 +1,33 @@
+{
+  "identity_fields": [
+    "ProcessId",
+    "ParentProcessId",
+    "CreationDate",
+    "ExecutablePath",
+    "CommandLine"
+  ],
+  "release_sha256": "31732fe2b4ee915ed3e2b564eb4705fcc02751514385df9e228d92979d5feb9a",
+  "marker": "CITY_CHECK_COMPLETE",
+  "native_exit_code": 0,
+  "checked_utc": "2026-10-16T07:01:48.6860012Z",
+  "owners": [
+    {
+      "pid_reused": false,
+      "pid": 50716,
+      "exact_identity_departed": true
+    },
+    {
+      "pid_reused": false,
+      "pid": 88376,
+      "exact_identity_departed": true
+    },
+    {
+      "pid_reused": false,
+      "pid": 127796,
+      "exact_identity_departed": true
+    }
+  ],
+  "absent_owned_lock": true,
+  "status": "pass",
+  "empty_closed_stderr": true
+}

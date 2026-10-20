@@ -1,0 +1,23 @@
+[
+  {
+    "ProcessId": 102968,
+    "ParentProcessId": 112772,
+    "CreationDate": "2026-10-11T23:33:07.81521-04:00",
+    "ExecutablePath": "C:\\Users\\hades\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "CommandLine": "\"C:\\Users\\hades\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe\" -NoProfile -File \"C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_timeout40_v13\\launch_check.ps1\""
+  },
+  {
+    "ProcessId": 115068,
+    "ParentProcessId": 102968,
+    "CreationDate": "2026-10-11T23:33:08.249808-04:00",
+    "ExecutablePath": "C:\\Users\\hades\\OneDrive\\Documents\\RL--Autonomus-car\\.venv\\Scripts\\python.exe",
+    "CommandLine": "\"C:\\Users\\hades\\OneDrive\\Documents\\RL--Autonomus-car\\.venv\\Scripts\\python.exe\" -B \"C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_timeout40_v13\\run_check.py\""
+  },
+  {
+    "ProcessId": 112196,
+    "ParentProcessId": 115068,
+    "CreationDate": "2026-10-11T23:33:08.268537-04:00",
+    "ExecutablePath": "C:\\Users\\hades\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "CommandLine": "\"C:\\Users\\hades\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" -B \"C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_timeout40_v13\\run_check.py\""
+  }
+]
