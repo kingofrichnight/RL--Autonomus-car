@@ -1,0 +1,174 @@
+{
+  "status": "pass",
+  "recordings": 30,
+  "checks": [
+    {
+      "stage": "highway_medium_ppo",
+      "frames": 524,
+      "replay_sha256": "1ff6e9ad03e5d0f6442e56f8dbef5f69813f2c4807d4b87616ee758764ff59ba"
+    },
+    {
+      "stage": "highway_medium_qr",
+      "frames": 524,
+      "replay_sha256": "0274a2786b10f61f12b9dbd7084ad4c2295e726fa6f6cbcfe7d625ccca2b3c09"
+    },
+    {
+      "stage": "highway_medium_hybrid025",
+      "frames": 524,
+      "replay_sha256": "2a69d4e70aebbfe3b49f3b699c44174e5e8158912d7bbfdb5284a0abb4dc91e7"
+    },
+    {
+      "stage": "highway_medium_cape",
+      "frames": 524,
+      "replay_sha256": "a6ee2db3364a2c00de9d899ef2a41a8ea83328158baf11dfdf0cfef24c60aa19"
+    },
+    {
+      "stage": "highway_medium_cage",
+      "frames": 524,
+      "replay_sha256": "a6ee2db3364a2c00de9d899ef2a41a8ea83328158baf11dfdf0cfef24c60aa19"
+    },
+    {
+      "stage": "highway_heavy_ppo",
+      "frames": 550,
+      "replay_sha256": "5afe49e27c01178784326af8084f0d072395da966d075f84a159204dbafffc16"
+    },
+    {
+      "stage": "highway_heavy_qr",
+      "frames": 553,
+      "replay_sha256": "c6d1594677dcf7f1c22e8dac693cf0f6e3a7004bd4d9569bccd456f0088c1c7f"
+    },
+    {
+      "stage": "highway_heavy_hybrid025",
+      "frames": 553,
+      "replay_sha256": "45ca3eb59ec2a64a6742fcbcb79bd36cfe686cc9f1486a0ecd1d18eefd2285b5"
+    },
+    {
+      "stage": "highway_heavy_cape",
+      "frames": 555,
+      "replay_sha256": "c03df78ce2151ca60816d9c9fb019c9d2b0e738745cf0d3578153d6882afb6a1"
+    },
+    {
+      "stage": "highway_heavy_cage",
+      "frames": 555,
+      "replay_sha256": "c03df78ce2151ca60816d9c9fb019c9d2b0e738745cf0d3578153d6882afb6a1"
+    },
+    {
+      "stage": "jam_medium_ppo",
+      "frames": 435,
+      "replay_sha256": "e3480d09bef4438c157e1461d675a4390bb678a6fb7fbccb81464936f394f695"
+    },
+    {
+      "stage": "jam_medium_qr",
+      "frames": 434,
+      "replay_sha256": "ba3e914d8db965adc36de84d5fc07948acb13feb29193f1d4c47c678de068e09"
+    },
+    {
+      "stage": "jam_medium_hybrid025",
+      "frames": 436,
+      "replay_sha256": "2884154fc04f640ae73d6d55683da660c13f0fd172990d47b47c1b1ef07e9075"
+    },
+    {
+      "stage": "jam_medium_cape",
+      "frames": 434,
+      "replay_sha256": "e3614d38f96421c60f04d7c11f3fe7e84fcb68849ab4368727e6467faf43fbcc"
+    },
+    {
+      "stage": "jam_medium_cage",
+      "frames": 434,
+      "replay_sha256": "e3614d38f96421c60f04d7c11f3fe7e84fcb68849ab4368727e6467faf43fbcc"
+    },
+    {
+      "stage": "jam_heavy_ppo",
+      "frames": 959,
+      "replay_sha256": "ae749737fa2abcde7c702b49f4ab54fd5d86e7c14db11815adc2618d2243f74d"
+    },
+    {
+      "stage": "district_medium_ppo",
+      "frames": 840,
+      "replay_sha256": "b1052b5cfef2158143824dcea2e9e1531b44a13561625a451197abcfe97a21e7"
+    },
+    {
+      "stage": "district_medium_qr",
+      "frames": 757,
+      "replay_sha256": "1a6a7e0e30da938151479a6f3ccff8857bcfcba520a17edcaa219cf3e50f98ce"
+    },
+    {
+      "stage": "district_medium_hybrid025",
+      "frames": 757,
+      "replay_sha256": "e6bfc6bf4c7297341eea44108038674024b6a11dc5d78d1d134902edcaf4065d"
+    },
+    {
+      "stage": "district_medium_cape",
+      "frames": 757,
+      "replay_sha256": "622256061e6a66850ee58bade4c9f292d8271f6982e42ac64b1c3fd9345f326f"
+    },
+    {
+      "stage": "district_medium_cage",
+      "frames": 757,
+      "replay_sha256": "622256061e6a66850ee58bade4c9f292d8271f6982e42ac64b1c3fd9345f326f"
+    },
+    {
+      "stage": "district_heavy_ppo",
+      "frames": 802,
+      "replay_sha256": "58dd082bf3d595cc2e5d5c92ac70f7b2987066f14d4a637183446fdb71efd5cf"
+    },
+    {
+      "stage": "district_heavy_qr",
+      "frames": 797,
+      "replay_sha256": "3c3ba7bf2d84cd153ab3fb863de9048980713638e9ba2d5b085fcdefa54faf1f"
+    },
+    {
+      "stage": "district_heavy_hybrid025",
+      "frames": 797,
+      "replay_sha256": "89d1756db89f04c4ca5a853608ef17705045f1c04eb520727df6c65b59eb2e0b"
+    },
+    {
+      "stage": "district_heavy_cape",
+      "frames": 797,
+      "replay_sha256": "2a768339033c3fc68f6c373b93f6239feba271ec3b98c6288accbe43ea8a0ab0"
+    },
+    {
+      "stage": "district_heavy_cage",
+      "frames": 797,
+      "replay_sha256": "2a768339033c3fc68f6c373b93f6239feba271ec3b98c6288accbe43ea8a0ab0"
+    },
+    {
+      "stage": "jam_heavy_qr",
+      "frames": 802,
+      "replay_sha256": "8b9c319477a77160ca42258d21e8c9535ed1a38918ece981953735818aae9084"
+    },
+    {
+      "stage": "jam_heavy_hybrid025",
+      "frames": 811,
+      "replay_sha256": "ceea4de376b59c9236d808e340b4a8cb28bcf29deb5d1597a4b5e51aebb08b6b"
+    },
+    {
+      "stage": "jam_heavy_cape",
+      "frames": 802,
+      "replay_sha256": "d7da4b2c069ec4e5aacb8810f8ef68e527be385867ca9dfca29ee684c29f0b8e"
+    },
+    {
+      "stage": "jam_heavy_cage",
+      "frames": 802,
+      "replay_sha256": "d7da4b2c069ec4e5aacb8810f8ef68e527be385867ca9dfca29ee684c29f0b8e"
+    }
+  ],
+  "saved_proposals_and_assist_receipts_match": true,
+  "road_and_finish_widths_match": true,
+  "files_sha256": {
+    "release.json": "c32d358cfa9aba60ca610a66502a26b15ce1a39530594f9c27f6133074477d57",
+    "protocol.json": "b91bb671b888b26816c5b66c0729e5dedc0270c657320daadf945c3ab8339912",
+    "run_v1/complete.json": "1dffb575cab9380888d059f355e513451b31be829f9dde078c532ffa4318330c",
+    "run_v1/audit.json": "c40214c3012fc1b5b7a5dd7d8ec0379441ad2b290fb957fdfa75ce8ec6c01f91",
+    "CONTROL_REVIEW.json": "7f5b65d8784c83a077a2c366b0002317483fab6b64c74bf2607dff48e3f0b3a8",
+    "TIMEOUT_COMPATIBILITY.json": "e2e8591b37541bbfef1ee3b827bce2eac5d27136e3f2dcc9d17e93e328e4dd71",
+    "ASSIST_REVIEW.json": "7f1fad5e1e72d01768746143530d4e92dd9804238cc616ae949a4723c6c0f13e",
+    "DELIVERY_VALIDATION.json": "e027a992be4be1aca13dc9d6e65da09def78ef5adf77f18d2b9fcd64baeedbc5",
+    "PROCESS_VALIDATION.json": "a49cb153c71681f69f6fa1835bfcc7c0bfa0e90778eb3b533194257cb4cd8cc5",
+    "README.md": "433e07d490e11d2314702276c4f8b6237781b9eb41f2753ba3eb71d710c481d3",
+    "RESULTS.md": "43079ae6b6ebe94803f738a5b73852a7a9e67fea8541886d4a523707e6cb0b01",
+    "CITY_REPLAY.html": "669aaaf1f36bce89b755cbb208af7b3aa8eed702a3b26b5210054fc304043b8b",
+    "catalog.json": "d9e72703ef07de80a3c39b945a4eb4c24c87d2e61d6b5e085ed5e2a31ab5fc4a"
+  },
+  "scope": "All recorded decisions and delivered frames; browser interaction and visual inspection recorded separately."
+}

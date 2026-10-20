@@ -1,0 +1,444 @@
+{
+  "status": "pass",
+  "maps": 3,
+  "policies": 5,
+  "traffic_levels": 2,
+  "runs": 30,
+  "displayed_decisions": 19563,
+  "new_native_episodes": 4,
+  "preserved_recordings": 26,
+  "new_training_interactions": 0,
+  "all_30_combinations_present": true,
+  "release_and_output_hashes": "all match",
+  "scientific_validation": "strict_trace_audit_pass",
+  "replay_frames_match_source": true,
+  "source_decisions": 19563,
+  "finish_contact_checks": [
+    {
+      "stage": "highway_medium_ppo",
+      "end_seconds": 104.46666666666667,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 104.46666666666667,
+      "frames_retained": 524,
+      "source_frames": 524
+    },
+    {
+      "stage": "highway_medium_qr",
+      "end_seconds": 104.46666666666667,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 104.46666666666667,
+      "frames_retained": 524,
+      "source_frames": 524
+    },
+    {
+      "stage": "highway_medium_hybrid025",
+      "end_seconds": 104.46666666666667,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 104.46666666666667,
+      "frames_retained": 524,
+      "source_frames": 524
+    },
+    {
+      "stage": "highway_medium_cape",
+      "end_seconds": 104.46666666666667,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 104.46666666666667,
+      "frames_retained": 524,
+      "source_frames": 524
+    },
+    {
+      "stage": "highway_medium_cage",
+      "end_seconds": 104.46666666666667,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 104.46666666666667,
+      "frames_retained": 524,
+      "source_frames": 524
+    },
+    {
+      "stage": "highway_heavy_ppo",
+      "end_seconds": 109.66666666666667,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 109.66666666666667,
+      "frames_retained": 550,
+      "source_frames": 550
+    },
+    {
+      "stage": "highway_heavy_qr",
+      "end_seconds": 110.26666666666667,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 110.26666666666667,
+      "frames_retained": 553,
+      "source_frames": 553
+    },
+    {
+      "stage": "highway_heavy_hybrid025",
+      "end_seconds": 110.26666666666667,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 110.26666666666667,
+      "frames_retained": 553,
+      "source_frames": 553
+    },
+    {
+      "stage": "highway_heavy_cape",
+      "end_seconds": 110.73333333333333,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 110.73333333333333,
+      "frames_retained": 555,
+      "source_frames": 555
+    },
+    {
+      "stage": "highway_heavy_cage",
+      "end_seconds": 110.73333333333333,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 110.73333333333333,
+      "frames_retained": 555,
+      "source_frames": 555
+    },
+    {
+      "stage": "jam_medium_ppo",
+      "end_seconds": 86.73333333333333,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 86.73333333333333,
+      "frames_retained": 435,
+      "source_frames": 435
+    },
+    {
+      "stage": "jam_medium_qr",
+      "end_seconds": 86.6,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 86.6,
+      "frames_retained": 434,
+      "source_frames": 434
+    },
+    {
+      "stage": "jam_medium_hybrid025",
+      "end_seconds": 86.93333333333334,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 86.93333333333334,
+      "frames_retained": 436,
+      "source_frames": 436
+    },
+    {
+      "stage": "jam_medium_cape",
+      "end_seconds": 86.6,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 86.6,
+      "frames_retained": 434,
+      "source_frames": 434
+    },
+    {
+      "stage": "jam_medium_cage",
+      "end_seconds": 86.6,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 86.6,
+      "frames_retained": 434,
+      "source_frames": 434
+    },
+    {
+      "stage": "jam_heavy_ppo",
+      "end_seconds": 191.6,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 191.6,
+      "frames_retained": 959,
+      "source_frames": 959
+    },
+    {
+      "stage": "district_medium_ppo",
+      "end_seconds": 167.66666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 167.66666666666666,
+      "frames_retained": 840,
+      "source_frames": 840
+    },
+    {
+      "stage": "district_medium_qr",
+      "end_seconds": 151.06666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 151.06666666666666,
+      "frames_retained": 757,
+      "source_frames": 757
+    },
+    {
+      "stage": "district_medium_hybrid025",
+      "end_seconds": 151.06666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 151.06666666666666,
+      "frames_retained": 757,
+      "source_frames": 757
+    },
+    {
+      "stage": "district_medium_cape",
+      "end_seconds": 151.06666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 151.06666666666666,
+      "frames_retained": 757,
+      "source_frames": 757
+    },
+    {
+      "stage": "district_medium_cage",
+      "end_seconds": 151.06666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 151.06666666666666,
+      "frames_retained": 757,
+      "source_frames": 757
+    },
+    {
+      "stage": "district_heavy_ppo",
+      "end_seconds": 160.13333333333333,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 160.13333333333333,
+      "frames_retained": 802,
+      "source_frames": 802
+    },
+    {
+      "stage": "district_heavy_qr",
+      "end_seconds": 159.06666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 159.06666666666666,
+      "frames_retained": 797,
+      "source_frames": 797
+    },
+    {
+      "stage": "district_heavy_hybrid025",
+      "end_seconds": 159.06666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 159.06666666666666,
+      "frames_retained": 797,
+      "source_frames": 797
+    },
+    {
+      "stage": "district_heavy_cape",
+      "end_seconds": 159.06666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 159.06666666666666,
+      "frames_retained": 797,
+      "source_frames": 797
+    },
+    {
+      "stage": "district_heavy_cage",
+      "end_seconds": 159.06666666666666,
+      "complete": true,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 159.06666666666666,
+      "frames_retained": 797,
+      "source_frames": 797
+    },
+    {
+      "stage": "jam_heavy_qr",
+      "end_seconds": 160.2,
+      "complete": false,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 160.2,
+      "frames_retained": 802,
+      "source_frames": 802
+    },
+    {
+      "stage": "jam_heavy_hybrid025",
+      "end_seconds": 162.0,
+      "complete": false,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 162.0,
+      "frames_retained": 811,
+      "source_frames": 811
+    },
+    {
+      "stage": "jam_heavy_cape",
+      "end_seconds": 160.2,
+      "complete": false,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 160.2,
+      "frames_retained": 802,
+      "source_frames": 802
+    },
+    {
+      "stage": "jam_heavy_cage",
+      "end_seconds": 160.2,
+      "complete": false,
+      "completion_rule": "First replay frame with car-body contact at the finite finish line, all turns completed, no collision/off-route.",
+      "native_end_seconds": 160.2,
+      "frames_retained": 802,
+      "source_frames": 802
+    }
+  ],
+  "finish_geometry_sha256": "348b24a057de8b104d8aee7407950b86c4c399eb614fdaf32a24965409ad125e",
+  "native_outcome_classifications_unchanged": true,
+  "replays": [
+    {
+      "replay": "highway_medium_ppo.json",
+      "sha256": "1ff6e9ad03e5d0f6442e56f8dbef5f69813f2c4807d4b87616ee758764ff59ba",
+      "source_log_sha256": "dcefa6428b2425a98fa5ed7bee0ef5f9d2be81169e536d91dc1340f909f6fd8d"
+    },
+    {
+      "replay": "highway_medium_qr.json",
+      "sha256": "0274a2786b10f61f12b9dbd7084ad4c2295e726fa6f6cbcfe7d625ccca2b3c09",
+      "source_log_sha256": "a607283b535d0d079e984471777cd8a07db49efd8ce1731883c948bf7fe98c21"
+    },
+    {
+      "replay": "highway_medium_hybrid025.json",
+      "sha256": "2a69d4e70aebbfe3b49f3b699c44174e5e8158912d7bbfdb5284a0abb4dc91e7",
+      "source_log_sha256": "39dda8be996d349595259e8409dd32ad0f8827db98cff4a2001dc06db6bb1ced"
+    },
+    {
+      "replay": "highway_medium_cape.json",
+      "sha256": "a6ee2db3364a2c00de9d899ef2a41a8ea83328158baf11dfdf0cfef24c60aa19",
+      "source_log_sha256": "33cbe65d3561dcf8bb3406219dc5bdffdf6e617a0f51fe54bf7b99727a1e78ff"
+    },
+    {
+      "replay": "highway_medium_cage.json",
+      "sha256": "a6ee2db3364a2c00de9d899ef2a41a8ea83328158baf11dfdf0cfef24c60aa19",
+      "source_log_sha256": "33cbe65d3561dcf8bb3406219dc5bdffdf6e617a0f51fe54bf7b99727a1e78ff"
+    },
+    {
+      "replay": "highway_heavy_ppo.json",
+      "sha256": "5afe49e27c01178784326af8084f0d072395da966d075f84a159204dbafffc16",
+      "source_log_sha256": "150f561020df9b65fda17457641830b5ad128d8c84d3dbace78219df5b0fe0f1"
+    },
+    {
+      "replay": "highway_heavy_qr.json",
+      "sha256": "c6d1594677dcf7f1c22e8dac693cf0f6e3a7004bd4d9569bccd456f0088c1c7f",
+      "source_log_sha256": "1d7b2173145b5f5ece9af67db4c24ceaeb244636de6e1b8ada24215abe0d925a"
+    },
+    {
+      "replay": "highway_heavy_hybrid025.json",
+      "sha256": "45ca3eb59ec2a64a6742fcbcb79bd36cfe686cc9f1486a0ecd1d18eefd2285b5",
+      "source_log_sha256": "589b930bf6d44380e93f0341b03c294c693aeaa9c229b9a41f96d95999c89b3c"
+    },
+    {
+      "replay": "highway_heavy_cape.json",
+      "sha256": "c03df78ce2151ca60816d9c9fb019c9d2b0e738745cf0d3578153d6882afb6a1",
+      "source_log_sha256": "f9258e88355cbfa4ff31802f8526cffa0ebfea378bee08ca47c9f743f3234e11"
+    },
+    {
+      "replay": "highway_heavy_cage.json",
+      "sha256": "c03df78ce2151ca60816d9c9fb019c9d2b0e738745cf0d3578153d6882afb6a1",
+      "source_log_sha256": "f9258e88355cbfa4ff31802f8526cffa0ebfea378bee08ca47c9f743f3234e11"
+    },
+    {
+      "replay": "jam_medium_ppo.json",
+      "sha256": "e3480d09bef4438c157e1461d675a4390bb678a6fb7fbccb81464936f394f695",
+      "source_log_sha256": "21be87cd28830caf71b8231c104c570e1490c7f63205dd50574c28b03691c470"
+    },
+    {
+      "replay": "jam_medium_qr.json",
+      "sha256": "ba3e914d8db965adc36de84d5fc07948acb13feb29193f1d4c47c678de068e09",
+      "source_log_sha256": "62113fc0e1911241c69bf31756a24745ee931ac6744396a4f3c7db7658d1acbc"
+    },
+    {
+      "replay": "jam_medium_hybrid025.json",
+      "sha256": "2884154fc04f640ae73d6d55683da660c13f0fd172990d47b47c1b1ef07e9075",
+      "source_log_sha256": "01c5301eb2b732ef7df9abc19d1b47b1af9c8df0214e6596e53548f08e02712b"
+    },
+    {
+      "replay": "jam_medium_cape.json",
+      "sha256": "e3614d38f96421c60f04d7c11f3fe7e84fcb68849ab4368727e6467faf43fbcc",
+      "source_log_sha256": "ba1ac3c2d53ba32e957b3a68cb212910203d2851f892f4f31c96d97133c4437e"
+    },
+    {
+      "replay": "jam_medium_cage.json",
+      "sha256": "e3614d38f96421c60f04d7c11f3fe7e84fcb68849ab4368727e6467faf43fbcc",
+      "source_log_sha256": "ba1ac3c2d53ba32e957b3a68cb212910203d2851f892f4f31c96d97133c4437e"
+    },
+    {
+      "replay": "jam_heavy_ppo.json",
+      "sha256": "ae749737fa2abcde7c702b49f4ab54fd5d86e7c14db11815adc2618d2243f74d",
+      "source_log_sha256": "8215eef9e8ca11f145ca7a816be3eca1c89a34de08fbcf4700d85a9e7e8cd88c"
+    },
+    {
+      "replay": "district_medium_ppo.json",
+      "sha256": "b1052b5cfef2158143824dcea2e9e1531b44a13561625a451197abcfe97a21e7",
+      "source_log_sha256": "20a99a9454c6e7a47259e5b5235fc27f151ed281dd429e5a556b0930b4682ae0"
+    },
+    {
+      "replay": "district_medium_qr.json",
+      "sha256": "1a6a7e0e30da938151479a6f3ccff8857bcfcba520a17edcaa219cf3e50f98ce",
+      "source_log_sha256": "c16c0d816c0d0801aaa39d80002a3079678ace4a3eb9c0578f0f5fbddeea0f6f"
+    },
+    {
+      "replay": "district_medium_hybrid025.json",
+      "sha256": "e6bfc6bf4c7297341eea44108038674024b6a11dc5d78d1d134902edcaf4065d",
+      "source_log_sha256": "f349d19da583110abeb9076d2723cd07866173e2d0d04812a0175ec163a00a40"
+    },
+    {
+      "replay": "district_medium_cape.json",
+      "sha256": "622256061e6a66850ee58bade4c9f292d8271f6982e42ac64b1c3fd9345f326f",
+      "source_log_sha256": "02ec635656bf894d7f72019c81157ea89d5c3982c2b08bc13b3070baeda99f05"
+    },
+    {
+      "replay": "district_medium_cage.json",
+      "sha256": "622256061e6a66850ee58bade4c9f292d8271f6982e42ac64b1c3fd9345f326f",
+      "source_log_sha256": "02ec635656bf894d7f72019c81157ea89d5c3982c2b08bc13b3070baeda99f05"
+    },
+    {
+      "replay": "district_heavy_ppo.json",
+      "sha256": "58dd082bf3d595cc2e5d5c92ac70f7b2987066f14d4a637183446fdb71efd5cf",
+      "source_log_sha256": "99ee4988b7a4d6e251a029155a9a590497ecb14ba7aa7ef7d8531ea4eeb32dd9"
+    },
+    {
+      "replay": "district_heavy_qr.json",
+      "sha256": "3c3ba7bf2d84cd153ab3fb863de9048980713638e9ba2d5b085fcdefa54faf1f",
+      "source_log_sha256": "f422df52f3f8b988dc3a422ce673dbce975879899df477944ae52c79877e41d6"
+    },
+    {
+      "replay": "district_heavy_hybrid025.json",
+      "sha256": "89d1756db89f04c4ca5a853608ef17705045f1c04eb520727df6c65b59eb2e0b",
+      "source_log_sha256": "26bbb2c5a208c130def5f3f8309ae8f1578c5048c2a2ae4519f6822fdda69bfc"
+    },
+    {
+      "replay": "district_heavy_cape.json",
+      "sha256": "2a768339033c3fc68f6c373b93f6239feba271ec3b98c6288accbe43ea8a0ab0",
+      "source_log_sha256": "2efb65b7febdb75ea8e31eb5a1001ea81e02b1f343f0fa9d5f3a98f7b6d6f9a0"
+    },
+    {
+      "replay": "district_heavy_cage.json",
+      "sha256": "2a768339033c3fc68f6c373b93f6239feba271ec3b98c6288accbe43ea8a0ab0",
+      "source_log_sha256": "2efb65b7febdb75ea8e31eb5a1001ea81e02b1f343f0fa9d5f3a98f7b6d6f9a0"
+    },
+    {
+      "replay": "jam_heavy_qr.json",
+      "sha256": "8b9c319477a77160ca42258d21e8c9535ed1a38918ece981953735818aae9084",
+      "source_log_sha256": "ee087631f97985f9e459938cdb190382c3ef5be69deefd65b8614d11cc8727a0"
+    },
+    {
+      "replay": "jam_heavy_hybrid025.json",
+      "sha256": "ceea4de376b59c9236d808e340b4a8cb28bcf29deb5d1597a4b5e51aebb08b6b",
+      "source_log_sha256": "de15c958dff7f5385aa716b3353f3883b06441c53f2a52c5e610a313642187ef"
+    },
+    {
+      "replay": "jam_heavy_cape.json",
+      "sha256": "d7da4b2c069ec4e5aacb8810f8ef68e527be385867ca9dfca29ee684c29f0b8e",
+      "source_log_sha256": "3f7c6aa7a124519c1100f88d64a87333e902867660a425cf388e328efb3337bd"
+    },
+    {
+      "replay": "jam_heavy_cage.json",
+      "sha256": "d7da4b2c069ec4e5aacb8810f8ef68e527be385867ca9dfca29ee684c29f0b8e",
+      "source_log_sha256": "3f7c6aa7a124519c1100f88d64a87333e902867660a425cf388e328efb3337bd"
+    }
+  ],
+  "html_sha256": "669aaaf1f36bce89b755cbb208af7b3aa8eed702a3b26b5210054fc304043b8b",
+  "report_sha256": "43079ae6b6ebe94803f738a5b73852a7a9e67fea8541886d4a523707e6cb0b01"
+}

@@ -1,0 +1,8 @@
+{
+  "only_native_changes": [
+    "300->600 stationary physics ticks",
+    "standstill_20s->standstill_40s reason"
+  ],
+  "unchanged_dynamics_and_models": true,
+  "focused_tests": 23
+}

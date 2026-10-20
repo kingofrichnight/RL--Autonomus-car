@@ -1,0 +1,20 @@
+{
+  "status": "pass",
+  "release_sha256": "31732fe2b4ee915ed3e2b564eb4705fcc02751514385df9e228d92979d5feb9a",
+  "input_count": 240,
+  "stage_order": [
+    "jam_medium_ppo",
+    "jam_medium_qr",
+    "jam_medium_hybrid025",
+    "jam_medium_cape",
+    "jam_medium_cage",
+    "jam_heavy_ppo",
+    "jam_heavy_qr",
+    "jam_heavy_hybrid025",
+    "jam_heavy_cape",
+    "jam_heavy_cage"
+  ],
+  "episode_budget": 10,
+  "training_budget": 0,
+  "scenario_seed": 74042
+}

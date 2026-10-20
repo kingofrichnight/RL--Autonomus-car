@@ -1,0 +1,337 @@
+{
+  "status": "pass",
+  "url": "http://127.0.0.1:8884/CITY_REPLAY.html",
+  "cases": [
+    {
+      "stage": "district_medium_ppo",
+      "first_action_and_assist_match": true,
+      "clock": "167.7 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_medium_qr",
+      "first_action_and_assist_match": true,
+      "clock": "151.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_medium_hybrid025",
+      "first_action_and_assist_match": true,
+      "clock": "151.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_medium_cape",
+      "first_action_and_assist_match": true,
+      "clock": "151.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_medium_cage",
+      "first_action_and_assist_match": true,
+      "clock": "151.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_heavy_ppo",
+      "first_action_and_assist_match": true,
+      "clock": "160.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_heavy_qr",
+      "first_action_and_assist_match": true,
+      "clock": "159.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_heavy_hybrid025",
+      "first_action_and_assist_match": true,
+      "clock": "159.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_heavy_cape",
+      "first_action_and_assist_match": true,
+      "clock": "159.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "district_heavy_cage",
+      "first_action_and_assist_match": true,
+      "clock": "159.1 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "10 / 10"
+    },
+    {
+      "stage": "highway_medium_ppo",
+      "first_action_and_assist_match": true,
+      "clock": "104.5 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_medium_qr",
+      "first_action_and_assist_match": true,
+      "clock": "104.5 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_medium_hybrid025",
+      "first_action_and_assist_match": true,
+      "clock": "104.5 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_medium_cape",
+      "first_action_and_assist_match": true,
+      "clock": "104.5 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_medium_cage",
+      "first_action_and_assist_match": true,
+      "clock": "104.5 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_heavy_ppo",
+      "first_action_and_assist_match": true,
+      "clock": "109.7 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_heavy_qr",
+      "first_action_and_assist_match": true,
+      "clock": "110.3 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_heavy_hybrid025",
+      "first_action_and_assist_match": true,
+      "clock": "110.3 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_heavy_cape",
+      "first_action_and_assist_match": true,
+      "clock": "110.7 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "highway_heavy_cage",
+      "first_action_and_assist_match": true,
+      "clock": "110.7 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "4 / 4"
+    },
+    {
+      "stage": "jam_medium_ppo",
+      "first_action_and_assist_match": true,
+      "clock": "86.7 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.1 / 40 s",
+      "status": "COMPLETE",
+      "turns": "3 / 3"
+    },
+    {
+      "stage": "jam_medium_qr",
+      "first_action_and_assist_match": true,
+      "clock": "86.6 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "3 / 3"
+    },
+    {
+      "stage": "jam_medium_hybrid025",
+      "first_action_and_assist_match": true,
+      "clock": "86.9 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "3 / 3"
+    },
+    {
+      "stage": "jam_medium_cape",
+      "first_action_and_assist_match": true,
+      "clock": "86.6 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "3 / 3"
+    },
+    {
+      "stage": "jam_medium_cage",
+      "first_action_and_assist_match": true,
+      "clock": "86.6 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.0 / 40 s",
+      "status": "COMPLETE",
+      "turns": "3 / 3"
+    },
+    {
+      "stage": "jam_heavy_ppo",
+      "first_action_and_assist_match": true,
+      "clock": "191.6 s",
+      "error": "",
+      "progress": "100.0%",
+      "standstill": "0.1 / 40 s",
+      "status": "COMPLETE",
+      "turns": "3 / 3"
+    },
+    {
+      "stage": "jam_heavy_qr",
+      "first_action_and_assist_match": true,
+      "clock": "160.2 s",
+      "error": "",
+      "progress": "60.7%",
+      "standstill": "40.0 / 40 s",
+      "status": "Timeout · 40 s stopped",
+      "turns": "2 / 3"
+    },
+    {
+      "stage": "jam_heavy_hybrid025",
+      "first_action_and_assist_match": true,
+      "clock": "162.0 s",
+      "error": "",
+      "progress": "60.7%",
+      "standstill": "40.0 / 40 s",
+      "status": "Timeout · 40 s stopped",
+      "turns": "2 / 3"
+    },
+    {
+      "stage": "jam_heavy_cape",
+      "first_action_and_assist_match": true,
+      "clock": "160.2 s",
+      "error": "",
+      "progress": "60.7%",
+      "standstill": "40.0 / 40 s",
+      "status": "Timeout · 40 s stopped",
+      "turns": "2 / 3"
+    },
+    {
+      "stage": "jam_heavy_cage",
+      "first_action_and_assist_match": true,
+      "clock": "160.2 s",
+      "error": "",
+      "progress": "60.7%",
+      "standstill": "40.0 / 40 s",
+      "status": "Timeout · 40 s stopped",
+      "turns": "2 / 3"
+    }
+  ],
+  "errors": [],
+  "boundaries": {
+    "oldCutoffState": {
+      "clock": "140.2 s",
+      "error": "",
+      "standstill": "20.0 / 40 s",
+      "status": "Stopped",
+      "stopReason": "Applied braking: SLOWER despite a positive FASTER forecast. This can be a turn-speed cap or model proposal; inspect the assist reason. The NPC guard does not hold the ego."
+    },
+    "thirtyState": {
+      "clock": "150.2 s",
+      "error": "",
+      "standstill": "30.0 / 40 s",
+      "status": "Stopped",
+      "stopReason": "Applied braking: SLOWER despite a positive FASTER forecast. This can be a turn-speed cap or model proposal; inspect the assist reason. The NPC guard does not hold the ego."
+    },
+    "lastActiveState": {
+      "clock": "160.0 s",
+      "standstill": "39.8 / 40 s",
+      "status": "Stopped"
+    },
+    "timeoutEndState": {
+      "clock": "160.2 s",
+      "standstill": "40.0 / 40 s",
+      "status": "Timeout · 40 s stopped"
+    }
+  },
+  "screenshots": [
+    "STILL_ACTIVE_AT_30_SECONDS.jpg",
+    "TIMEOUT40_VERIFIED.jpg"
+  ]
+}

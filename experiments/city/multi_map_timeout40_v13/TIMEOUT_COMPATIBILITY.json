@@ -1,0 +1,280 @@
+{
+  "status": "pass",
+  "standstill_limit_seconds": 40,
+  "retained_completions": 26,
+  "fresh_runs": 4,
+  "checks": [
+    {
+      "stage": "highway_medium_ppo",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.06666666666666667,
+      "all_physics_ticks_checked": 1567,
+      "source_sha256": "dcefa6428b2425a98fa5ed7bee0ef5f9d2be81169e536d91dc1340f909f6fd8d"
+    },
+    {
+      "stage": "highway_medium_qr",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.06666666666666667,
+      "all_physics_ticks_checked": 1567,
+      "source_sha256": "a607283b535d0d079e984471777cd8a07db49efd8ce1731883c948bf7fe98c21"
+    },
+    {
+      "stage": "highway_medium_hybrid025",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.06666666666666667,
+      "all_physics_ticks_checked": 1567,
+      "source_sha256": "39dda8be996d349595259e8409dd32ad0f8827db98cff4a2001dc06db6bb1ced"
+    },
+    {
+      "stage": "highway_medium_cape",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.06666666666666667,
+      "all_physics_ticks_checked": 1567,
+      "source_sha256": "33cbe65d3561dcf8bb3406219dc5bdffdf6e617a0f51fe54bf7b99727a1e78ff"
+    },
+    {
+      "stage": "highway_medium_cage",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.06666666666666667,
+      "all_physics_ticks_checked": 1567,
+      "source_sha256": "33cbe65d3561dcf8bb3406219dc5bdffdf6e617a0f51fe54bf7b99727a1e78ff"
+    },
+    {
+      "stage": "highway_heavy_ppo",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.4,
+      "all_physics_ticks_checked": 1645,
+      "source_sha256": "150f561020df9b65fda17457641830b5ad128d8c84d3dbace78219df5b0fe0f1"
+    },
+    {
+      "stage": "highway_heavy_qr",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 1.5333333333333334,
+      "all_physics_ticks_checked": 1654,
+      "source_sha256": "1d7b2173145b5f5ece9af67db4c24ceaeb244636de6e1b8ada24215abe0d925a"
+    },
+    {
+      "stage": "highway_heavy_hybrid025",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 1.5333333333333334,
+      "all_physics_ticks_checked": 1654,
+      "source_sha256": "589b930bf6d44380e93f0341b03c294c693aeaa9c229b9a41f96d95999c89b3c"
+    },
+    {
+      "stage": "highway_heavy_cape",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.7333333333333333,
+      "all_physics_ticks_checked": 1661,
+      "source_sha256": "f9258e88355cbfa4ff31802f8526cffa0ebfea378bee08ca47c9f743f3234e11"
+    },
+    {
+      "stage": "highway_heavy_cage",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.7333333333333333,
+      "all_physics_ticks_checked": 1661,
+      "source_sha256": "f9258e88355cbfa4ff31802f8526cffa0ebfea378bee08ca47c9f743f3234e11"
+    },
+    {
+      "stage": "jam_medium_ppo",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.4,
+      "all_physics_ticks_checked": 1301,
+      "source_sha256": "21be87cd28830caf71b8231c104c570e1490c7f63205dd50574c28b03691c470"
+    },
+    {
+      "stage": "jam_medium_qr",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.7333333333333334,
+      "all_physics_ticks_checked": 1299,
+      "source_sha256": "62113fc0e1911241c69bf31756a24745ee931ac6744396a4f3c7db7658d1acbc"
+    },
+    {
+      "stage": "jam_medium_hybrid025",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.3333333333333335,
+      "all_physics_ticks_checked": 1304,
+      "source_sha256": "01c5301eb2b732ef7df9abc19d1b47b1af9c8df0214e6596e53548f08e02712b"
+    },
+    {
+      "stage": "jam_medium_cape",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.7333333333333334,
+      "all_physics_ticks_checked": 1299,
+      "source_sha256": "ba1ac3c2d53ba32e957b3a68cb212910203d2851f892f4f31c96d97133c4437e"
+    },
+    {
+      "stage": "jam_medium_cage",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.7333333333333334,
+      "all_physics_ticks_checked": 1299,
+      "source_sha256": "ba1ac3c2d53ba32e957b3a68cb212910203d2851f892f4f31c96d97133c4437e"
+    },
+    {
+      "stage": "jam_heavy_ppo",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 13.533333333333333,
+      "all_physics_ticks_checked": 2874,
+      "source_sha256": "8215eef9e8ca11f145ca7a816be3eca1c89a34de08fbcf4700d85a9e7e8cd88c"
+    },
+    {
+      "stage": "jam_heavy_qr",
+      "kind": "new40second_run",
+      "old_decisions": 701,
+      "new_decisions": 801,
+      "pre_timeout_physics_and_proposals_exact": true,
+      "old_boundary_removed_out_of_map_actor_ids": []
+    },
+    {
+      "stage": "jam_heavy_hybrid025",
+      "kind": "new40second_run",
+      "old_decisions": 710,
+      "new_decisions": 810,
+      "pre_timeout_physics_and_proposals_exact": true,
+      "old_boundary_removed_out_of_map_actor_ids": [
+        46
+      ]
+    },
+    {
+      "stage": "jam_heavy_cape",
+      "kind": "new40second_run",
+      "old_decisions": 701,
+      "new_decisions": 801,
+      "pre_timeout_physics_and_proposals_exact": true,
+      "old_boundary_removed_out_of_map_actor_ids": []
+    },
+    {
+      "stage": "jam_heavy_cage",
+      "kind": "new40second_run",
+      "old_decisions": 701,
+      "new_decisions": 801,
+      "pre_timeout_physics_and_proposals_exact": true,
+      "old_boundary_removed_out_of_map_actor_ids": []
+    },
+    {
+      "stage": "district_medium_ppo",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.2666666666666666,
+      "all_physics_ticks_checked": 2515,
+      "source_sha256": "20a99a9454c6e7a47259e5b5235fc27f151ed281dd429e5a556b0930b4682ae0"
+    },
+    {
+      "stage": "district_medium_qr",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.6666666666666666,
+      "all_physics_ticks_checked": 2266,
+      "source_sha256": "c16c0d816c0d0801aaa39d80002a3079678ace4a3eb9c0578f0f5fbddeea0f6f"
+    },
+    {
+      "stage": "district_medium_hybrid025",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 1.8,
+      "all_physics_ticks_checked": 2266,
+      "source_sha256": "f349d19da583110abeb9076d2723cd07866173e2d0d04812a0175ec163a00a40"
+    },
+    {
+      "stage": "district_medium_cape",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.6666666666666666,
+      "all_physics_ticks_checked": 2266,
+      "source_sha256": "02ec635656bf894d7f72019c81157ea89d5c3982c2b08bc13b3070baeda99f05"
+    },
+    {
+      "stage": "district_medium_cage",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 0.6666666666666666,
+      "all_physics_ticks_checked": 2266,
+      "source_sha256": "02ec635656bf894d7f72019c81157ea89d5c3982c2b08bc13b3070baeda99f05"
+    },
+    {
+      "stage": "district_heavy_ppo",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 3.933333333333333,
+      "all_physics_ticks_checked": 2402,
+      "source_sha256": "99ee4988b7a4d6e251a029155a9a590497ecb14ba7aa7ef7d8531ea4eeb32dd9"
+    },
+    {
+      "stage": "district_heavy_qr",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.1333333333333333,
+      "all_physics_ticks_checked": 2386,
+      "source_sha256": "f422df52f3f8b988dc3a422ce673dbce975879899df477944ae52c79877e41d6"
+    },
+    {
+      "stage": "district_heavy_hybrid025",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.1333333333333333,
+      "all_physics_ticks_checked": 2386,
+      "source_sha256": "26bbb2c5a208c130def5f3f8309ae8f1578c5048c2a2ae4519f6822fdda69bfc"
+    },
+    {
+      "stage": "district_heavy_cape",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.1333333333333333,
+      "all_physics_ticks_checked": 2386,
+      "source_sha256": "2efb65b7febdb75ea8e31eb5a1001ea81e02b1f343f0fa9d5f3a98f7b6d6f9a0"
+    },
+    {
+      "stage": "district_heavy_cage",
+      "kind": "retained_completion",
+      "recorded_limit_seconds": 20,
+      "compatible_limit_seconds": 40,
+      "max_stationary_seconds": 2.1333333333333333,
+      "all_physics_ticks_checked": 2386,
+      "source_sha256": "2efb65b7febdb75ea8e31eb5a1001ea81e02b1f343f0fa9d5f3a98f7b6d6f9a0"
+    }
+  ],
+  "scope": "Retained traces finish before either deadline. Fresh traces match every pre-cutoff physical tick, observation, proposal and action; at the old cutoff only the timeout flag and independently verified off-map NPC removal may differ. No resumed or padded recordings.",
+  "posthoc_correction": "The sealed optional compatibility checker assumed identical traffic lists at the old cutoff; it failed on hybrid actor46, which had passed its road endpoint by10.0356m. Continuing the episode correctly invokes traffic maintenance, skipped by the old terminal run. The original checker/error are preserved; this separate read-only checker verifies the exact removal geometry. Native episode and primary audit were successful and unchanged.",
+  "preserved_checker_sha256": "5367f604960fd1afe632a11b878561d575306b81bcb1394d20c7399560c7e8c3",
+  "preserved_checker_error_sha256": "6cac89d6fb013b0121ca9bd0499efae934a8ab5e7f82e918de47713528923e5b"
+}

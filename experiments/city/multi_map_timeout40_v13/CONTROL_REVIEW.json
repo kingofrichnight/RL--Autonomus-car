@@ -1,0 +1,170 @@
+{
+  "status": "pass",
+  "episodes": 4,
+  "physics_ticks": 9639,
+  "npc_sweeps_including_ego_collision_ticks": "pass",
+  "runs": [
+    {
+      "stage": "jam_heavy_qr",
+      "outcome": "timeout",
+      "noncollision_ego_ticks_verified": 2403,
+      "impact_ticks_excluded_from_acceleration": 0,
+      "max_speed_reconstruction_error_mps": 2.220446049250313e-16,
+      "low_speed_positive_faster_forecast_seconds": 42.59999999999998,
+      "slowing_actions_with_positive_faster_forecast": 235,
+      "stop_entries_below_0_5_mps": 15,
+      "slower_faster_direction_changes": 269,
+      "restart_examples": [
+        {
+          "time_s": 11.4,
+          "before_mps": 0.16402451154482023,
+          "after_mps": 1.4547058297818216,
+          "target_mps": 4.5
+        },
+        {
+          "time_s": 14.4,
+          "before_mps": 0.2199702822568079,
+          "after_mps": 1.4939983326687045,
+          "target_mps": 4.5
+        },
+        {
+          "time_s": 18.6,
+          "before_mps": 0.01288262117970278,
+          "after_mps": 1.3485540494430834,
+          "target_mps": 4.5
+        }
+      ],
+      "positive_forecast_stop_example": {
+        "input_time_s": 11.4,
+        "action": 2,
+        "target_mps": 4.5,
+        "nearest_center_m": 11.26845062965969,
+        "faster_clipped_margin_m": 0.2500000037252903
+      },
+      "source_sha256": "ee087631f97985f9e459938cdb190382c3ef5be69deefd65b8614d11cc8727a0"
+    },
+    {
+      "stage": "jam_heavy_hybrid025",
+      "outcome": "timeout",
+      "noncollision_ego_ticks_verified": 2430,
+      "impact_ticks_excluded_from_acceleration": 0,
+      "max_speed_reconstruction_error_mps": 2.220446049250313e-16,
+      "low_speed_positive_faster_forecast_seconds": 42.59999999999995,
+      "slowing_actions_with_positive_faster_forecast": 237,
+      "stop_entries_below_0_5_mps": 14,
+      "slower_faster_direction_changes": 267,
+      "restart_examples": [
+        {
+          "time_s": 11.4,
+          "before_mps": 0.16402451154482023,
+          "after_mps": 1.4547058297818216,
+          "target_mps": 4.5
+        },
+        {
+          "time_s": 14.4,
+          "before_mps": 0.2199702822568079,
+          "after_mps": 1.4939983326687045,
+          "target_mps": 4.5
+        },
+        {
+          "time_s": 18.6,
+          "before_mps": 0.01288262117970278,
+          "after_mps": 1.3485540494430834,
+          "target_mps": 4.5
+        }
+      ],
+      "positive_forecast_stop_example": {
+        "input_time_s": 11.4,
+        "action": 2,
+        "target_mps": 4.5,
+        "nearest_center_m": 11.26845062965969,
+        "faster_clipped_margin_m": 0.2500000037252903
+      },
+      "source_sha256": "de15c958dff7f5385aa716b3353f3883b06441c53f2a52c5e610a313642187ef"
+    },
+    {
+      "stage": "jam_heavy_cape",
+      "outcome": "timeout",
+      "noncollision_ego_ticks_verified": 2403,
+      "impact_ticks_excluded_from_acceleration": 0,
+      "max_speed_reconstruction_error_mps": 2.220446049250313e-16,
+      "low_speed_positive_faster_forecast_seconds": 42.59999999999998,
+      "slowing_actions_with_positive_faster_forecast": 235,
+      "stop_entries_below_0_5_mps": 15,
+      "slower_faster_direction_changes": 269,
+      "restart_examples": [
+        {
+          "time_s": 11.4,
+          "before_mps": 0.16402451154482023,
+          "after_mps": 1.4547058297818216,
+          "target_mps": 4.5
+        },
+        {
+          "time_s": 14.4,
+          "before_mps": 0.2199702822568079,
+          "after_mps": 1.4939983326687045,
+          "target_mps": 4.5
+        },
+        {
+          "time_s": 18.6,
+          "before_mps": 0.01288262117970278,
+          "after_mps": 1.3485540494430834,
+          "target_mps": 4.5
+        }
+      ],
+      "positive_forecast_stop_example": {
+        "input_time_s": 11.4,
+        "action": 2,
+        "target_mps": 4.5,
+        "nearest_center_m": 11.26845062965969,
+        "faster_clipped_margin_m": 0.2500000037252903
+      },
+      "source_sha256": "3f7c6aa7a124519c1100f88d64a87333e902867660a425cf388e328efb3337bd"
+    },
+    {
+      "stage": "jam_heavy_cage",
+      "outcome": "timeout",
+      "noncollision_ego_ticks_verified": 2403,
+      "impact_ticks_excluded_from_acceleration": 0,
+      "max_speed_reconstruction_error_mps": 2.220446049250313e-16,
+      "low_speed_positive_faster_forecast_seconds": 42.59999999999998,
+      "slowing_actions_with_positive_faster_forecast": 235,
+      "stop_entries_below_0_5_mps": 15,
+      "slower_faster_direction_changes": 269,
+      "restart_examples": [
+        {
+          "time_s": 11.4,
+          "before_mps": 0.16402451154482023,
+          "after_mps": 1.4547058297818216,
+          "target_mps": 4.5
+        },
+        {
+          "time_s": 14.4,
+          "before_mps": 0.2199702822568079,
+          "after_mps": 1.4939983326687045,
+          "target_mps": 4.5
+        },
+        {
+          "time_s": 18.6,
+          "before_mps": 0.01288262117970278,
+          "after_mps": 1.3485540494430834,
+          "target_mps": 4.5
+        }
+      ],
+      "positive_forecast_stop_example": {
+        "input_time_s": 11.4,
+        "action": 2,
+        "target_mps": 4.5,
+        "nearest_center_m": 11.26845062965969,
+        "faster_clipped_margin_m": 0.2500000037252903
+      },
+      "source_sha256": "3f7c6aa7a124519c1100f88d64a87333e902867660a425cf388e328efb3337bd"
+    }
+  ],
+  "limits": [
+    "Positive forecast is a finite 3-second prediction from at most 14 observed actors, not proof the road is safe.",
+    "Low speed means less than 0.5 m/s; durations attach each pre-action diagnosis to the ensuing decision interval.",
+    "All noncollision ego speeds are reconstructed from the saved policy target and native proportional controller; no ego traffic hold detected.",
+    "Three maps, one previously observed scenario each and one model seed. Exploratory engineering demonstrations, not comparative success estimates."
+  ]
+}

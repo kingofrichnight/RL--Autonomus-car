@@ -1,0 +1,311 @@
+{
+  "status": "pass",
+  "runs": [
+    {
+      "stage": "highway_medium_ppo",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 104.46666666666667,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 457,
+      "decisions": 523
+    },
+    {
+      "stage": "highway_medium_qr",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 104.46666666666667,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 494,
+      "decisions": 523
+    },
+    {
+      "stage": "highway_medium_hybrid025",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 104.46666666666667,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 499,
+      "decisions": 523
+    },
+    {
+      "stage": "highway_medium_cape",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 104.46666666666667,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 494,
+      "decisions": 523
+    },
+    {
+      "stage": "highway_medium_cage",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 104.46666666666667,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 494,
+      "decisions": 523
+    },
+    {
+      "stage": "highway_heavy_ppo",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 109.66666666666667,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 465,
+      "decisions": 549
+    },
+    {
+      "stage": "highway_heavy_qr",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 110.26666666666667,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 493,
+      "decisions": 552
+    },
+    {
+      "stage": "highway_heavy_hybrid025",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 110.26666666666667,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 491,
+      "decisions": 552
+    },
+    {
+      "stage": "highway_heavy_cape",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 110.73333333333333,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 490,
+      "decisions": 554
+    },
+    {
+      "stage": "highway_heavy_cage",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 110.73333333333333,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 490,
+      "decisions": 554
+    },
+    {
+      "stage": "jam_medium_ppo",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 86.73333333333333,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 149,
+      "decisions": 434
+    },
+    {
+      "stage": "jam_medium_qr",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 86.6,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 298,
+      "decisions": 433
+    },
+    {
+      "stage": "jam_medium_hybrid025",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 86.93333333333334,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 290,
+      "decisions": 435
+    },
+    {
+      "stage": "jam_medium_cape",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 86.6,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 298,
+      "decisions": 433
+    },
+    {
+      "stage": "jam_medium_cage",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 86.6,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 298,
+      "decisions": 433
+    },
+    {
+      "stage": "jam_heavy_ppo",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_intersections_v9",
+      "outcome": "complete",
+      "seconds": 191.6,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 204,
+      "decisions": 958
+    },
+    {
+      "stage": "district_medium_ppo",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 167.66666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 512,
+      "decisions": 839
+    },
+    {
+      "stage": "district_medium_qr",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 151.06666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 691,
+      "decisions": 756
+    },
+    {
+      "stage": "district_medium_hybrid025",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 151.06666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 678,
+      "decisions": 756
+    },
+    {
+      "stage": "district_medium_cape",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 151.06666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 691,
+      "decisions": 756
+    },
+    {
+      "stage": "district_medium_cage",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 151.06666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 691,
+      "decisions": 756
+    },
+    {
+      "stage": "district_heavy_ppo",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 160.13333333333333,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 525,
+      "decisions": 801
+    },
+    {
+      "stage": "district_heavy_qr",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 159.06666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 732,
+      "decisions": 796
+    },
+    {
+      "stage": "district_heavy_hybrid025",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 159.06666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 719,
+      "decisions": 796
+    },
+    {
+      "stage": "district_heavy_cape",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 159.06666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 719,
+      "decisions": 796
+    },
+    {
+      "stage": "district_heavy_cage",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_city_flow_v12",
+      "outcome": "complete",
+      "seconds": 159.06666666666666,
+      "recorded_standstill_limit_seconds": 20,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 719,
+      "decisions": 796
+    },
+    {
+      "stage": "jam_heavy_qr",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_timeout40_v13",
+      "outcome": "timeout",
+      "seconds": 160.2,
+      "recorded_standstill_limit_seconds": 40,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 198,
+      "decisions": 801
+    },
+    {
+      "stage": "jam_heavy_hybrid025",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_timeout40_v13",
+      "outcome": "timeout",
+      "seconds": 162.0,
+      "recorded_standstill_limit_seconds": 40,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 161,
+      "decisions": 810
+    },
+    {
+      "stage": "jam_heavy_cape",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_timeout40_v13",
+      "outcome": "timeout",
+      "seconds": 160.2,
+      "recorded_standstill_limit_seconds": 40,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 198,
+      "decisions": 801
+    },
+    {
+      "stage": "jam_heavy_cage",
+      "source_dir": "C:\\Users\\hades\\OneDrive\\Documents\\ChatGPT\\RL 2\\multi_map_timeout40_v13",
+      "outcome": "timeout",
+      "seconds": 160.2,
+      "recorded_standstill_limit_seconds": 40,
+      "standstill_limit_seconds": 40,
+      "assist_override_count": 198,
+      "decisions": 801
+    }
+  ],
+  "outcome_counts": {
+    "complete": 26,
+    "timeout": 4
+  },
+  "complete_sha256": "1dffb575cab9380888d059f355e513451b31be829f9dde078c532ffa4318330c",
+  "limits": "Four fresh observed-scenario runs;26 retained completions independently compatible with40seconds. No training or safety/general superiority claim."
+}

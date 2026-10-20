@@ -1,0 +1,15 @@
+{
+  "published_city_versions": [
+    "multi_map_jam_cross_v14",
+    "multi_map_timeout40_v13"
+  ],
+  "runtime_module_count": 14,
+  "retained_import_count": 148,
+  "not_published": "Older city versions, unfinished v15, unused runtime training/launch tooling, deployment access files",
+  "release_asset_allowlist": [
+    "core-models-and-dataset.zip",
+    "multi_map_timeout40_v13.zip",
+    "multi_map_jam_cross_v14.zip",
+    "city-policy-checkpoints-and-vendor.zip"
+  ]
+}

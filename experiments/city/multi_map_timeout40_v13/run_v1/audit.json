@@ -1,0 +1,16 @@
+{
+  "status": "pass",
+  "episodes": 4,
+  "decisions_reconstructed": 3213,
+  "all_observation_actor_rows_independently_reconstructed": true,
+  "no_admission_between_observation_and_action": true,
+  "all_npc_speeds_nonnegative": true,
+  "all_nonimpact_npc_steps_forward_or_stationary": true,
+  "model_actions_rechecked": 3213,
+  "all_route_turns_rewards_and_outcomes_reconstructed": true,
+  "all_physics_standstill_timers_reconstructed": true,
+  "npc_swept_separation_checked_on_all_non_ego_collision_physics_ticks": true,
+  "complete_sha256": "1dffb575cab9380888d059f355e513451b31be829f9dde078c532ffa4318330c",
+  "release_sha256": "c32d358cfa9aba60ca610a66502a26b15ce1a39530594f9c27f6133074477d57",
+  "limitation": "Same-machine engineering audit; no independent simulator or large-sample transfer validation."
+}
