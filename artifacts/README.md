@@ -4,6 +4,7 @@
 checksums. The organized local checkout contains these files under `models/` and `data/`.
 They are deliberately excluded from Git. Download the selected bundles from the
 repository's GitHub Releases and verify them against `release-manifest.json`.
+[Download the curated release](https://github.com/kingofrichnight/RL--Autonomus-car/releases/tag/research-artifacts-2026-10-20).
 A GitHub clone cannot reproduce checkpoint-based results until these exact artifacts
 are restored. The smoke checkpoint and four sector-history/repeat checkpoints not
 referenced by the original GitHub research were excluded from publication.
@@ -21,9 +22,6 @@ the original checkpoint or its published metrics byte for byte.
 
 ## Still required
 
-- Publication of the prepared GitHub Release bundles, including core artifacts,
-  selected v13/v14 city traces, paired PPO/QR-DQN checkpoints, and the vendored
-  QR-DQN package with its distribution metadata.
 - Historical predecessor snapshots required by checksum-locked city release manifests.
   Superseded experiments remain local per the owner's curation request; these releases
   do not claim to support a complete historical rerun from GitHub alone.

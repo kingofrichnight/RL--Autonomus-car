@@ -67,8 +67,10 @@ claiming a match.
 ## Outstanding owner inputs
 
 The owner selected GitHub Releases for artifact storage. Only the assets allowlisted
-in [publication-selection.json](publication-selection.json) are intended for upload;
-other prepared archives remain local. Choose a license if redistribution is intended.
+in [publication-selection.json](publication-selection.json) were
+[published](https://github.com/kingofrichnight/RL--Autonomus-car/releases/tag/research-artifacts-2026-10-20).
+The four bundles passed ZIP CRC and every included file's SHA-256 check; other
+prepared archives remain local. Choose a license if redistribution is intended.
 No license was invented.
 
 See [artifact recovery](../../artifacts/README.md) for details.

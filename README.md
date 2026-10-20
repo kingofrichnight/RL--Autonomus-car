@@ -11,6 +11,7 @@ and TTC/predictive safety observations. City and multi-map experiments are a sep
 - [Research documents and project map](docs/README.md)
 - [City / multi-map experiment catalog](experiments/city/README.md)
 - [Artifacts and remaining requirements](artifacts/README.md)
+- [Download models, dataset and selected city traces](https://github.com/kingofrichnight/RL--Autonomus-car/releases/tag/research-artifacts-2026-10-20)
 - [Repository audit and preservation](docs/audit/README.md)
 - [Contribution and validation](CONTRIBUTING.md)
 
